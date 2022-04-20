@@ -1,0 +1,153 @@
+* {
+    box-sizing: border-box;
+}
+
+/deep/.van-nav-bar__content {
+    .van-nav-bar__title {
+        color: #ffffff;
+        font-size: 18px;
+    }
+
+    .icon-sousuo1 {
+        font-size: 18px;
+    }
+}
+
+/deep/.van-nav-bar {
+    background-color: #ff4444;
+    color: #ffffff;
+}
+
+/deep/.van-nav-bar__content {
+    .van-icon {
+        color: #ffffff;
+    }
+}
+
+/deep/.van-tab__text {
+    font-size: 16px;
+}
+
+/deep/.van-nav-bar__arrow {
+    font-size: 22px;
+}
+
+/deep/.van-nav-bar__left {
+    font-size: 22px;
+}
+
+/deep/.van-tabs__line {
+    background-color: #ff4444;
+}
+
+/deep/.van-button__text {
+    font-size: 16px;
+}
+
+/deep/.van-skeleton {
+    padding: 0;
+}
+
+/deep/.van-dialog {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/deep/.bgc-f {
+    background: transparent;
+}
+
+
+.wu-list {
+    width: 100%;
+    display: flex;
+    padding: 5px;
+    align-items: center;
+    box-sizing: border-box;
+
+    .wuicon {
+        min-width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #ff4444;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .iconfont {
+            color: #ffffff;
+            font-size: 20px;
+        }
+    }
+
+    .wu-list-content {
+        padding: 0 5px;
+        width: 82%;
+        box-sizing: border-box;
+
+        .title {
+            color: #000000;
+            font-size: 16px;
+        }
+    }
+
+    .wuicon-right {
+        display: flex;
+        min-width: 24px;
+        justify-content: center;
+        align-items: center;
+
+        /deep/.van-icon-arrow {
+            opacity: 0.5;
+        }
+    }
+}
+
+.card {
+    margin-bottom: 16px;
+    box-shadow: 0px 2px 6px 0px rgba(97, 101, 105, 0.08);
+    border-radius: 8px;
+    background-color: #ffffff;
+}
+
+.wu-card {
+    box-shadow: 0px 2px 6px 0px rgba(97, 101, 105, 0.08);
+    border-radius: 8px;
+    margin-bottom: 16px;
+    background-color: #ffffff;
+    padding: 16px;
+}
+
+.vertical-divider {
+    width: 3px;
+    height: 18px;
+    background-color: #ff4444;
+    margin-right: 5px;
+}
+
+.content-intro {
+    font-size: 14px;
+    color: #969799;
+    display: flex;
+    align-items: center;
+    width: 100%;
+
+    &> :first-child {
+        min-width: 82px;
+        //width: 6em;
+    }
+
+    &> :nth-child(3) {
+        width: 12em;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+
+    .divider {
+        width: 1px;
+        height: 16px;
+        margin: 0 6px;
+        background-color: #ebedf0;
+    }
+}

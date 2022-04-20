@@ -1,0 +1,87 @@
+@font-face {
+  font-family: "iconfont";
+  /* Project id 2811174 */
+  src: url('iconfont.woff2?t=1631779024402') format('woff2'),
+    url('iconfont.woff?t=1631779024402') format('woff'),
+    url('iconfont.ttf?t=1631779024402') format('truetype');
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-yulan:before {
+  content: "\e637";
+}
+
+.icon-file-unknown-fill:before {
+  content: "\ebb5";
+  color: #bfbfbf;
+}
+
+.icon-file_zip:before {
+  content: "\e697";
+  color: #DBB375;
+}
+
+.icon-file_ppt:before {
+  content: "\e699";
+  color: #FF8278;
+}
+
+.icon-jpg1:before {
+  content: "\e61b";
+  color: #30D1CA;
+}
+
+.icon-file_excel:before {
+  content: "\e698";
+  color: #72DCA2;
+}
+
+.icon-file_word:before {
+  content: "\e69a";
+  color: #6CA2FF;
+}
+
+.icon-file_pdf:before {
+  content: "\e69b";
+  color: #FF5562;
+}
+
+.icon-file_txt:before {
+  content: "\e6a4";
+  color: #92A8C1;
+}
+
+.icon-liucheng:before {
+  content: "\e610";
+}
+
+.icon-tuichu:before {
+  content: "\e6b0";
+}
+
+.icon-yiban:before {
+  content: "\e64b";
+}
+
+.icon-daiban:before {
+  content: "\e629";
+}
+
+.icon-Down-:before {
+  content: "\ebb7";
+}
+
+.icon-sousuo:before {
+  content: "\e678";
+}
+
+.icon-sousuo1:before {
+  content: "\e606";
+}
