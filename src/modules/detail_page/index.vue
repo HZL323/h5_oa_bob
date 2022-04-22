@@ -231,12 +231,12 @@ export default {
           this.getBackLink();
           this.getFromConfig();
           this.isSubmmit();
-          //this.updateProcessState(); 
+          this.updateProcessState();
         });
       }
     } else {
       if (this.$store.state.currentList !== "doing") { 
-         //this.updateProcessState();   
+         this.updateProcessState();
       }
       this.getBackLink();
       this.getFromConfig();
