@@ -9,7 +9,7 @@
 import { ajaxGet, ajaxPost } from '../mxApi'
 
 const URL = `http://10.116.71.25` // 生产
-//const URL = `http://10.51.228.84:8080` // 测试 UAT
+//const URL = `http://10.51.228.84:8080` // 测试
 
 export function queryMessage(data) {
     //return ajaxGet('/api/v1/users?limit=1') //测试接口
