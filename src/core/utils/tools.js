@@ -48,7 +48,8 @@ router.beforeEach((to, from, next) => {
         getCurrentUser().then(user => {
             console.log("获取当前用户信息", user);
             api.checkUser({
-                Id: user.login_name
+                id: user.login_name,
+                uCode: ""
                 //Id:""
             }).then(res => {
                 if (res.data.status === '200') {

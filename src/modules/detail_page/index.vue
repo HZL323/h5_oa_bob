@@ -202,38 +202,90 @@ export default {
     },
   },
   created() {
-    if (this.$route.query.from !== "oa") {
-      console.log(this.$route.query.workName);
-      if (this.$route.query.workName != undefined && (
-        //this.$route.query.workName.indexOf("部室经理会签") != -1
-          this.$route.query.workName==="部室经理会签"
-          || this.$route.query.workName === "相关业务线办理" 
-          || this.$route.query.workName === "相关部室办理" 
-          || this.$route.query.workName === "辅办部室办理") 
-          // || this.$route.query.workName === "相关人员办理"  
-          // || this.$route.query.workName === "送相关支行" 
-          // || this.$route.query.workName === "收文经办")       
-      ) {
-        Toast("请前往PC端处理!");
-        setTimeout(() => {
-          closeWindow();
-        }, 2000);
-      } else {
-        this.$store.commit("setFromOut", true);
-        this.$store.commit("setCurrentList", this.$route.query.queryKind);
-        const queryKind = this.$route.query.queryKind;
-        const workItemId = this.$route.query.workItemId;
-        const pubFormDataId = this.$route.query.pubFormDataId;
-        // 此处需调用接口获取数据
-        this.getData(queryKind, workItemId, pubFormDataId).then((res) => {
-          let data = res.data.model.curPageData[0];
-          this.$store.commit("setCurrentProcess", data);
-          this.getBackLink();
-          this.getFromConfig();
-          this.isSubmmit();
-          this.updateProcessState();
-        });
-      }
+
+     if (this.$route.query.from !== "oa") {
+      if(this.$store.state.userInfo.userCode !== this.$route.query.userCode){
+        api.checkUser({
+            uCode: this.$route.query.userCode,
+            id: ""
+        }).then(res => {
+            if (res.data.status === '200') {
+                if (res.data.model.usercode !== "") {
+                    this.$store.commit('setUserInfo', {
+                        userCode: res.data.model.usercode,
+                        userId: res.data.model.useruuid,
+                        userName: res.data.model.username,
+                        ou: res.data.model.ou
+                    })
+                    //Toast.clear()
+                    console.log(this.$route.query.workName);
+                    if (this.$route.query.workName != undefined && (
+                      //this.$route.query.workName.indexOf("部室经理会签") != -1
+                        this.$route.query.workName==="部室经理会签"
+                        || this.$route.query.workName === "相关业务线办理" 
+                        || this.$route.query.workName === "相关部室办理" 
+                        || this.$route.query.workName === "辅办部室办理") 
+                        // || this.$route.query.workName === "相关人员办理"  
+                        // || this.$route.query.workName === "送相关支行" 
+                        // || this.$route.query.workName === "收文经办")       
+                    ) {
+                      Toast("请前往PC端处理!");
+                      setTimeout(() => {
+                        closeWindow();
+                      }, 2000);
+                    } else {
+                      this.$store.commit("setFromOut", true);
+                      this.$store.commit("setCurrentList", this.$route.query.queryKind);
+                      const queryKind = this.$route.query.queryKind;
+                      const workItemId = this.$route.query.workItemId;
+                      const pubFormDataId = this.$route.query.pubFormDataId;
+                      // 此处需调用接口获取数据
+                      this.getData(queryKind, workItemId, pubFormDataId).then((res) => {
+                        let data = res.data.model.curPageData[0];
+                        this.$store.commit("setCurrentProcess", data);
+                        this.getBackLink();
+                        this.getFromConfig();
+                        this.isSubmmit();
+                        this.updateProcessState(); 
+                      });
+                    }
+                } 
+            }
+        })
+      }else{
+        console.log(this.$route.query.workName);
+        if (this.$route.query.workName != undefined && (
+          //this.$route.query.workName.indexOf("部室经理会签") != -1
+            this.$route.query.workName==="部室经理会签"
+            || this.$route.query.workName === "相关业务线办理" 
+            || this.$route.query.workName === "相关部室办理" 
+            || this.$route.query.workName === "辅办部室办理") 
+            // || this.$route.query.workName === "相关人员办理"  
+            // || this.$route.query.workName === "送相关支行" 
+            // || this.$route.query.workName === "收文经办")       
+        ) {
+          Toast("请前往PC端处理!");
+          setTimeout(() => {
+            closeWindow();
+          }, 2000);
+        } else {
+          this.$store.commit("setFromOut", true);
+          this.$store.commit("setCurrentList", this.$route.query.queryKind);
+          const queryKind = this.$route.query.queryKind;
+          const workItemId = this.$route.query.workItemId;
+          const pubFormDataId = this.$route.query.pubFormDataId;
+          // 此处需调用接口获取数据
+          this.getData(queryKind, workItemId, pubFormDataId).then((res) => {
+            let data = res.data.model.curPageData[0];
+            this.$store.commit("setCurrentProcess", data);
+            this.getBackLink();
+            this.getFromConfig();
+            this.isSubmmit();
+            this.updateProcessState(); 
+          });
+        }
+      } 
+
     } else {
       if (this.$store.state.currentList !== "doing") { 
           this.updateProcessState();
@@ -297,7 +349,8 @@ export default {
                 item.extendKey === "isMustEditField" ||
                 item.extendKey === "wordNoEdit" ||
                 item.extendKey === "subProcess" ||
-                item.actDefId === "pb" 
+                item.actDefId === "pb" ||
+                item.extendKey === "isFjSeal"
                 // || item.extendKey === "deptCount"
               ) {
                 this.SubmitPermission = false;
