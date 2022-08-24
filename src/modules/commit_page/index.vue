@@ -160,6 +160,7 @@ export default {
             proDirId: this.currentProcess.proDirId,
             actDefId: this.currentProcess.actDefId,
             userId: this.userInfo.userId,
+            // sendUserIds: this.currentProcess.sendUserIds ? this.currentProcess.sendUserIds:"",
           },
         })
         .then((res) => {      
@@ -214,7 +215,7 @@ export default {
       } else {
         if (
           row.actDefName.indexOf("部室经理会签") != -1  
-          //row.actDefName==="部室经理会签"
+          || row.actDefName==="部门经理会签" 
           || row.actDefName.indexOf("排版") != -1  
           || row.actDefName === "相关业务线办理"  
           || row.actDefName === "相关部室办理"  
@@ -250,7 +251,6 @@ export default {
       this.flag = false;
     },
     onCommit() {
-      debugger
       // 提交
       Toast.loading({
         message: "提交中...",
@@ -284,40 +284,61 @@ export default {
           },
         ],
       };
-      this.onSave();
+      //校验是否必填，必填的话调用意见保存方法 20220714
+      if(this.$store.state.noteRequired){
+        this.onSave();
+      }
       setTimeout(() => {
             api.completeWorkitem(data).then((res) => {
               Toast.clear();
               if (res.data.status === "200") {
                 this.$store.commit("setRefresh", true);
                 if (this.fromOut) {
-                  Dialog.confirm({
-                    title:
-                      "提交成功，请选择是否继续留在OA系统？(安卓返回待办请下拉刷新列表)",
-                    confirmButtonColor: "#ff4444",
-                    cancelButtonText: "返回待办",
-                    width: "300px",
-                    closeOnClickOverlay: true,
-                  })
-                    .then(() => {
+                  //Dialog.confirm({
+                    //title:"提交成功",
+                    //title:"提交成功，请选择是否继续留在OA系统？",
+                    //confirmButtonColor: "#ff4444",
+                    //cancelButtonText: "返回待办",
+                    //width: "300px",
+                    //closeOnClickOverlay: true,
+                  //})
+                    //.then(() => {
+                    //  this.$store.commit("setFromOut", false);
+                    //  this.$router.replace({
+                    //    name: this.backRoute,
+                    //  });
+                   // })
+                    //.catch((action) => {
+                     // if (action !== "overlay") {
+                     //   setTimeout(() => {
+                       //   closeWindow();
+                       // }, 2000);
+                      //}
+                    //});
+                  //return;
+
+                  Dialog.alert({
+                      message: "提交成功",
+                      width: "200px",                  
+                      confirmButtonColor: "#ff4444",
+                  }).then(() => {
                       this.$store.commit("setFromOut", false);
                       this.$router.replace({
                         name: this.backRoute,
                       });
-                    })
-                    .catch((action) => {
-                      if (action !== "overlay") {
-                        setTimeout(() => {
-                          closeWindow();
-                        }, 2000);
-                      }
-                    });
+                  });
                   return;
                 }
-                //this.onSave();
-                this.$router.replace({
-                  name: this.backRoute,
-                });
+
+                Dialog.alert({
+                    message: "提交成功",
+                    width: "200px",                 
+                    confirmButtonColor: "#ff4444",
+                }).then(() => {
+                    this.$router.replace({
+                      name: this.backRoute,
+                    });
+                });       
               } else {
                 Toast("提交失败");
               }
@@ -350,32 +371,50 @@ export default {
               if (res.data.status === "200") {
                 this.$store.commit("setRefresh", true);
                 if (this.fromOut) {
-                  Dialog.confirm({
-                    title:
-                      "提交成功，请选择是否继续留在OA系统？(安卓返回待办请下拉刷新列表)",
-                    confirmButtonColor: "#ff4444",
-                    cancelButtonText: "返回待办",
-                    width: "300px",
-                    closeOnClickOverlay: true,
-                  })
-                    .then(() => {
+                  //Dialog.confirm({
+                    //title:"提交成功，请选择是否继续留在OA系统？",
+                    //title:"提交成功",
+                    //confirmButtonColor: "#ff4444",
+                    //cancelButtonText: "返回待办",
+                    //width: "300px",
+                    //closeOnClickOverlay: true,
+                  //})
+                  //  .then(() => {
+                  //    this.$store.commit("setFromOut", false);
+                  //    this.$router.replace({
+                  //      name: this.backRoute,
+                  //    });
+                  //  })
+                  //  .catch((action) => {
+                  //    if (action !== "overlay") {
+                  //      setTimeout(() => {
+                  //        closeWindow();
+                  //      }, 2000);
+                  //    }
+                  //  });
+                  return;
+
+                  Dialog.alert({
+                      message: "提交成功",
+                      width: "200px",
+                      confirmButtonColor: "#ff4444",
+                  }).then(() => {
                       this.$store.commit("setFromOut", false);
                       this.$router.replace({
                         name: this.backRoute,
                       });
-                    })
-                    .catch((action) => {
-                      if (action !== "overlay") {
-                        setTimeout(() => {
-                          closeWindow();
-                        }, 2000);
-                      }
-                    });
+                  });
                   return;
                 }
-                this.$router.replace({
-                  name: this.backRoute,
-                });
+                Dialog.alert({
+                      message: "提交成功",
+                      width: "200px",
+                      confirmButtonColor: "#ff4444",
+                }).then(() => {
+                    this.$router.replace({
+                      name: this.backRoute,
+                    });
+                });   
               } else {
                 Toast("提交失败");
               }
@@ -424,32 +463,51 @@ export default {
               if (res.data.status === "200") {
                 this.$store.commit("setRefresh", true);
                 if (this.fromOut) {
-                  Dialog.confirm({
-                    title:
-                      "提交成功，请选择是否继续留在OA系统？(安卓返回待办请下拉刷新列表)",
-                    confirmButtonColor: "#ff4444",
-                    cancelButtonText: "返回待办",
-                    width: "300px",
-                    closeOnClickOverlay: true,
-                  })
-                    .then(() => {
+                  //Dialog.confirm({
+                    //title:"提交成功，请选择是否继续留在OA系统？",
+                    //title:"提交成功",
+                    //confirmButtonColor: "#ff4444",
+                    //cancelButtonText: "返回待办",
+                    //width: "300px",
+                    //closeOnClickOverlay: true,
+                  //})
+                   // .then(() => {
+                    //  this.$store.commit("setFromOut", false);
+                    //  this.$router.replace({
+                    //    name: this.backRoute,
+                    //  });
+                    //})
+                    //.catch((action) => {
+                    //  if (action !== "overlay") {
+                     //   setTimeout(() => {
+                     //     closeWindow();
+                     //   }, 2000);
+                     // }
+                    //});
+                  //return;
+
+                  Dialog.alert({
+                      message: "提交成功",
+                      width: "200px",
+                      confirmButtonColor: "#ff4444",
+                  }).then(() => {
                       this.$store.commit("setFromOut", false);
                       this.$router.replace({
                         name: this.backRoute,
                       });
-                    })
-                    .catch((action) => {
-                      if (action !== "overlay") {
-                        setTimeout(() => {
-                          closeWindow();
-                        }, 2000);
-                      }
-                    });
+                  });
                   return;
                 }
-                this.$router.replace({
-                  name: this.backRoute,
+                Dialog.alert({
+                      message: "提交成功",
+                      width: "200px",
+                      confirmButtonColor: "#ff4444",
+                }).then(() => {
+                    this.$router.replace({
+                      name: this.backRoute,
+                    });
                 });
+                
               } else {
                 Toast("提交失败");
               }

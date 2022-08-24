@@ -157,7 +157,8 @@ export default {
       opinionConfig: [], // 编辑意见
       preRoute: this.$route.params.preRoute || "home",
       loading: true, // 等待加载
-      SubmitPermission: true, // 提交权限 true: 不可直接提交
+      SubmitPermission: true, // 提交权限 true: 可提交，false: 不可提交
+      noteRequired: true,  //意见必填  true: 必填, false: 非必填   20220714
       //fromOut: true, // 是否从外部跳转进OA
     };
   },
@@ -323,11 +324,13 @@ export default {
     },
 
     updateProcessState(){
+      console.log("-----------workitemId------------",this.currentProcess.workitemId)
        api
         .updateProcessState({
           proInstId: this.currentProcess.proInstId,
           userId: this.userInfo.userId,
           name: this.currentProcess.workitemName,
+          workitemId: this.currentProcess.workitemId,
         })
         .then((res) => {
           if (res.data.status === "200") {
@@ -345,6 +348,7 @@ export default {
         .then((res) => {
           if (res.data.status === "200") {
             res.data.model.forEach((item) => {
+              console.log("itemContent",item)
               if (
                 item.extendKey === "isMustEditField" ||
                 item.extendKey === "wordNoEdit" ||
@@ -354,6 +358,10 @@ export default {
                 // || item.extendKey === "deptCount"
               ) {
                 this.SubmitPermission = false;
+              }
+              //处理下，判断意见是否必填   20220714
+              if(item.extendKey ==="noteIsRequired" && item.extendValue==="1"){
+                this.noteRequired = false;
               }
             });
           }
@@ -538,21 +546,27 @@ export default {
       var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
       console.log("isiOS", isiOS);
       for (let i = 0; i < this.opinionConfig.length; i++) {
-        if (!this.opinionConfig[i].noteContent) {
-          if (isiOS) {
-            document.documentElement.scrollTop = this.$refs.detailWrap.clientHeight - 255;
-          } else {
-            window.scrollTo(0, 9999);
-          }
-          Toast("请填写审批意见");
-          return;
-        } else {
-          if (this.opinionConfig[i].noteContent.length > 500) {
-            Toast("意见内容已超过500字限制");
+        //意见必填时再进行意见填写  20220714
+        if(this.noteRequired){
+          if (!this.opinionConfig[i].noteContent) {
+            if (isiOS) {
+              document.documentElement.scrollTop = this.$refs.detailWrap.clientHeight - 255;
+            } else {
+              window.scrollTo(0, 9999);
+            }
+            Toast("请填写审批意见");
             return;
+          } else {
+            if (this.opinionConfig[i].noteContent.length > 500) {
+              Toast("意见内容已超过500字限制");
+              return;
+            }
           }
         }
       }
+
+      //保存意见是否必填  20220714
+      this.$store.commit("setNoteRequired",this.noteRequired);
       // this.onSave();
       this.$store.commit("setOpinionData", this.opinionConfig);
       this.$router.replace({
@@ -564,7 +578,7 @@ export default {
     },
     onClick(activity, radio) {
       //console.log("---退回节点名称---", activity.name);
-      // 选择退回节点
+      //选择退回节点
       this.activity = activity;
       this.radio = radio;
     },
@@ -617,41 +631,54 @@ export default {
 
             //如果从统一待办进入选择退回的，应在退回后可选择是否返回统一待办  (安卓返回待办请下拉刷新列表)
             if (this.fromOut) {
-              Dialog.confirm({
-                title:
-                  "退回成功，请选择是否继续留在OA系统？",
-                confirmButtonColor: "#ff4444",
-                cancelButtonText: "返回待办",
-                width: "300px",
-                closeOnClickOverlay: true,
-              })
-                .then(() => {
+              //Dialog.confirm({
+              //  title:
+              //    "退回成功，请选择是否继续留在OA系统？",
+              //  confirmButtonColor: "#ff4444",
+              //  cancelButtonText: "返回待办",
+              //  width: "300px",
+              //  closeOnClickOverlay: true,
+              //})
+              //  .then(() => {
+              //    this.$store.commit("setFromOut", false);
+              //    this.$router.replace({
+              //      name: this.preRoute,
+              //    });
+              //  })
+              //  .catch((action) => {
+              //    if (action !== "overlay") {
+              //      setTimeout(() => {
+              //       closeWindow();
+              //      }, 2000);
+              //    }
+              //  });
+              //return;
+              
+              Dialog.alert({
+                  message: "退回成功",
+                  width: "200px",                  
+                  confirmButtonColor: "#ff4444",
+              }).then(() => {
                   this.$store.commit("setFromOut", false);
                   this.$router.replace({
-                    //name: this.backRoute,
                     name: this.preRoute,
                   });
-                })
-                .catch((action) => {
-                  if (action !== "overlay") {
-                    setTimeout(() => {
-                      closeWindow();
-                    }, 2000);
-                  }
-                });
+              });
               return;
+                
             }
-            this.$store.commit("setRefresh", true);
-            this.$router.replace({
-              //name: this.backRoute,
-              name: this.preRoute,
+            Dialog.alert({
+                message: "退回成功",
+                width: "200px",                  
+                confirmButtonColor: "#ff4444",
+            }).then(() => {
+                this.$store.commit("setRefresh", true);
+                this.$router.replace({
+                  //name: this.backRoute,
+                  name: this.preRoute,
+                });
             });
-
-            //this.show = false;
-            //this.$store.commit("setRefresh", true);
-            //this.$router.replace({
-            //  name: this.preRoute,
-            //});
+            
           } else {
             Toast("退回失败");
           }
@@ -743,6 +770,7 @@ export default {
   .tab-wrap {
     flex:1;
     padding: 16px;
+    white-space:pre-line;
   }
 
   .tab-wrap-attachment {

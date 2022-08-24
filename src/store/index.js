@@ -28,6 +28,8 @@ export default new Vuex.Store({
         refresh: false, // 是否刷新页面
         fromOut: false, // 是否外部跳转到OA
         opinionData: null, // 保存意见内容
+        noteRequired: null, // 意见是否必填
+        count: 0, // 页面加载数量
     },
     mutations: {
         setUserInfo(state, payload) {
@@ -59,6 +61,14 @@ export default new Vuex.Store({
         },
         setOpinionData(state, payload) {
             state.opinionData = payload
+        },
+        //保存意见是否需要填写的全局属性值 20220714
+        setNoteRequired(state, payload) {
+            state.noteRequired = payload
+        },
+        //wulianjia  2022/8/19
+        updateCount(state, payload) {
+            payload === 0 ? state.count = 0 : state.count++
         }
     }
 })

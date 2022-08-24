@@ -37,7 +37,9 @@
                     <div class="name">{{ item_.createUserName }}</div>
                     <div class="date-time">{{ item_.createTime }}</div>
                   </div>
-                  <div class="opinion-content"><p v-html="item_.noteContent"></p></div>
+                  <div class="opinion-content">
+                    <p v-html="item_.noteContent"></p>
+                  </div>
                 </div>
               </template>
             </van-collapse-item>
@@ -46,9 +48,21 @@
       </van-collapse>
       <div class="opinion-field card" v-if="opinionConfig.length > 0">
         <div id="showNoteText" v-if="showNote">
-          <div class="header">
-            <div class="vertical-divider"></div>
-            <div class="field-title">填写意见</div>
+          <div class="header-wrap">
+            <div class="header">
+              <div class="vertical-divider"></div>
+              <div class="field-title">填写意见</div>
+            </div>
+            <div>
+              <van-button
+                class="auto-fill"
+                color="#ff4444"
+                round
+                size="small"
+                @click="autoFill"
+                >常用意见</van-button
+              >
+            </div>
           </div>
           <van-divider />
           <div
@@ -79,11 +93,36 @@
     >
       <van-field class="bgc-f" v-model="message" type="input" />
     </div>
+    <van-popup
+      v-model="show"
+      round
+      :style="{ height: '70%' }"
+      position="bottom"
+    >
+      <van-picker
+        title="选择意见"
+        show-toolbar
+        :columns="columns"
+        @confirm="onConfirm"
+        @cancel="onCancel"
+        swipe-duration="500"
+        default-index="0"
+      />
+    </van-popup>
   </div>
 </template>
 
 <script>
-import { Collapse, CollapseItem, Divider, Field, Popup, Skeleton } from "vant";
+import {
+  Collapse,
+  CollapseItem,
+  Divider,
+  Field,
+  Picker,
+  Skeleton,
+  Button,
+  Popup,
+} from "vant";
 import { api } from "../core/api/index";
 export default {
   name: "opinion",
@@ -93,6 +132,9 @@ export default {
     [Divider.name]: Divider,
     [Field.name]: Field,
     [Skeleton.name]: Skeleton,
+    [Button.name]: Button,
+    [Picker.name]: Picker,
+    [Popup.name]: Popup,
   },
   data() {
     return {
@@ -102,6 +144,8 @@ export default {
       loading: true, // 等待数据加载
       showAdd: true, // 控制多行文本显示
       showNote: true, //控制意见显示
+      show: false,
+      columns: ["同意", "已阅"],
     };
   },
   props: {
@@ -128,7 +172,7 @@ export default {
   methods: {
     init() {
       this.getOpinion();
-      this.getEditOpinion();
+      // this.getEditOpinion();
     },
     getOpinion() {
       // 获取意见数据
@@ -166,7 +210,6 @@ export default {
         .getOpinionConfig({
           configId: this.currentProcess.configId,
           proDirId: this.currentProcess.proDirId,
-          
           userId: this.$store.state.userInfo.userId,
           processName: this.currentProcess.processName,
           actDefId: this.currentProcess.actDefId,
@@ -222,9 +265,28 @@ export default {
           ) {
             showNote.hidden = true;
           }
+          // this.$store.commit("updateCount", 1);
         });
     },
-
+    autoFill() {
+      // this.opinionConfig.forEach((item) => {
+      //   if (item.noteId !== "bz") {
+      //     item.noteContent = "同意";
+      //   }
+      // });
+      this.show = true;
+    },
+    onConfirm(value, index) {
+      this.opinionConfig.forEach((item) => {
+        if (item.noteId !== "bz") {
+          item.noteContent = value;
+        }
+      });
+      this.show = false;
+    },
+    onCancel() {
+      this.show = false;
+    },
     onClickInput() {
       this.$emit("onClickInput");
     },
@@ -299,9 +361,19 @@ export default {
   .opinion-field {
     padding: 16px;
 
+    .header-wrap {
+      display: flex;
+    }
+
     .header {
+      flex: 1;
       display: flex;
       align-items: center;
+    }
+
+    .auto-fill {
+      width: 100px;
+      height: 32px;
     }
 
     .field-wrap {
@@ -315,6 +387,24 @@ export default {
     /deep/.van-field {
       background-color: #fafafa;
     }
+  }
+  /deep/.van-picker__toolbar {
+    .van-picker__title {
+      font-size: 18px;
+    }
+
+    .van-picker__cancel,
+    .van-picker__confirm {
+      font-size: 16px;
+    }
+
+    .van-picker__confirm {
+      color: #ff4444;
+    }
+  }
+
+  /deep/.van-picker-column__item--selected {
+    color: #ff4444;
   }
 }
 </style>

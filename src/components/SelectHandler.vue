@@ -185,6 +185,7 @@ export default {
             proDirId: this.currentLink.proDirId,
             actDefId: this.currentProcess.actDefId,
             userId: this.userInfo.userId,
+            sendUserIds: this.currentProcess.sendUserIds ? this.currentProcess.sendUserIds:"",
             activity: {
               actDefId: this.currentLink.actDefId,
               actDefName: this.currentLink.actDefName,

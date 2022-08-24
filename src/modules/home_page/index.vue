@@ -2,8 +2,8 @@
   <div class="home-wrap">
     <van-sticky>
       <div class="banner">
-        <img src="../../assets/img/logo.png" alt="" srcset="" />
-        <div class="tips">移动办公系统</div>
+        <img class="logo" src ="../../assets/img/logo.png" alt="" srcset=""/>
+        <img class="word" src ="../../assets/img/word.png" alt="" srcset=""/>
       </div>
       <div class="user-info van-ellipsis" @click="show = true">
         {{ welcome + "：" + userInfo.userName + "_" + userInfo.ou }}
@@ -37,11 +37,17 @@
                   :key="item_.id"
                   @click="rowClick(item.type, item_)"
                 >
-                  <div class="wuicon">
-                    <i class="iconfont icon-daiban"></i>
-                  </div>
+                  <div v-if="item.title !='已办' && item_.priority === '001'">
+                  <img style="height:40px;" src ="../../assets/img/icon_flag_blue.png"></div>
+                  <div v-if="item.title !='已办' && item_.priority === '002'">
+                  <img style="height:40px;" src ="../../assets/img/icon_flag_yellow.png"></div>
+                  <div v-if="item.title !='已办' && item_.priority === '003'">
+                  <img style="height:40px;" src ="../../assets/img/icon_flag_red.png"></div>
+                  <div v-if="item_.priority ===null || item_.priority ===''">
+                  <img style="height:40px;" src ="../../assets/img/icon_flag_white.png"></div>
                   <div class="wu-list-content">
-                    <div class="title">{{ item_.title }}</div>
+                    <div class="title">
+                    {{ item_.title }}</div>          
                     <div class="content-intro">
                       <div>{{ item_.actCreateTime }}</div>  
                       <div class="divider"></div>
@@ -286,16 +292,26 @@ export default {
   .banner {
     height: 120px;
     background-color: #ffffff;
-    text-align: center;
+    //text-align: center;
     background-image: url("../../assets/img/banner.jpg");
-    background-position: center;
+    //background-position: center;
     position: relative;
+    background-repeat: no-repeat;
+    background-size:100% 100%;
 
-    img {
-      width: 300px;
-      height: 88px;
-      position: absolute;
-      left: 0;
+    img.logo {
+      width: 100px;
+      height: 30px;
+      position: relative;
+      left: 20px;
+    }
+
+    img.word {
+      width: 250px;
+      height: 50px;
+      position: relative;
+      left: -87px;
+      top: 55px;
     }
 
     .tips {

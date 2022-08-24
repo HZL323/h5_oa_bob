@@ -8,8 +8,8 @@
  */
 import { ajaxGet, ajaxPost } from '../mxApi'
 
-//const URL = `http://10.116.71.25` // 生产
-const URL = `http://10.51.228.84:8080` // 测试
+const URL = `http://10.116.71.25` // 生产
+//const URL = `http://10.51.228.84:8080` // 测试
 
 export function queryMessage(data) {
     //return ajaxGet('/api/v1/users?limit=1') //测试接口
@@ -47,10 +47,10 @@ export function list(data) {
 // 获取数据字典
 export function queryKeyValueByTypes() {
     console.log(`获取数据字典`,URL+`/mob/oa/DictServiceContainer/queryKeyValueByTypes`)
-    console.log(`参数`,`DOC_PRIORITY,DOC_SECURITY_LEVEL,FILE_TYPE,is_direct,send_method,PRESERVATION_PERIOD,sys_file_position,HOST_DEP,APPLY_CHANGE_TYPE,DOC_TYPE,ARCHIVE_YEAR,OPEN_STATE,RESPON_PERSON,AUDIO_VISUAL_TYPE`)
+    console.log(`参数`,`DOC_PRIORITY,DOC_SECURITY_LEVEL,FILE_TYPE,is_direct,send_method,PRESERVATION_PERIOD,sys_file_position,HOST_DEP,APPLY_CHANGE_TYPE,DOC_TYPE,ARCHIVE_YEAR,OPEN_STATE,RESPON_PERSON,AUDIO_VISUAL_TYPE,TEXT_SOURCE,PRINT_WAY`)
     return ajaxPost(`${URL}/mob/oa/DictServiceContainer/queryKeyValueByTypes`,
         {
-            dictTypes: `DOC_PRIORITY,DOC_SECURITY_LEVEL,FILE_TYPE,is_direct,send_method,PRESERVATION_PERIOD,sys_file_position,HOST_DEP,APPLY_CHANGE_TYPE,DOC_TYPE,ARCHIVE_YEAR,OPEN_STATE,RESPON_PERSON,AUDIO_VISUAL_TYPE`
+            dictTypes: `DOC_PRIORITY,DOC_SECURITY_LEVEL,FILE_TYPE,is_direct,send_method,PRESERVATION_PERIOD,sys_file_position,HOST_DEP,APPLY_CHANGE_TYPE,DOC_TYPE,ARCHIVE_YEAR,OPEN_STATE,RESPON_PERSON,AUDIO_VISUAL_TYPE,TEXT_SOURCE,PRINT_WAY`
         })
 }
 
@@ -94,6 +94,13 @@ export function Preview(data) {
     console.log(`附件预览`,URL+`/mob/bob/PreviewToZt/preview`)
     console.log(`参数`,data)
     return ajaxPost(`${URL}/mob/bob/PreviewToZt/preview`, data)
+}
+
+// 查询未盖章附件是否有对应的已盖章附件
+export function getSealAttach(data) {
+    console.log(`查询未盖章附件是否有对应的已盖章附件`,URL+`/mob/attachementService/getAttachRelIds`)
+    console.log(`参数`,data)
+    return ajaxPost(`${URL}/mob/attachementService/getAttachRelIds`, data)
 }
 
 // 保存意见

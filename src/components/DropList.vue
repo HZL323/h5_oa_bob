@@ -23,9 +23,14 @@
             @click="rowClick(item)"
           >
             <div class="wu-list">
-              <div class="wuicon">
-                <i class="iconfont icon-daiban"></i>
-              </div>
+              <div v-if="state !='closed.completed' && state!='closed.terminated' && item.priority === '001'">
+                  <img style="height:40px;" src ="../assets/img/icon_flag_blue.png"></div>
+                  <div v-if="state !='closed.completed' && state!='closed.terminated' && item.priority === '002'">
+                  <img style="height:40px;" src ="../assets/img/icon_flag_yellow.png"></div>
+                  <div v-if="state !='closed.completed' && state!='closed.terminated' && item.priority === '003'">
+                  <img style="height:40px;" src ="../assets/img/icon_flag_red.png"></div>
+                  <div v-if="item.priority ===null || item.priority ===''">
+                  <img style="height:40px;" src ="../assets/img/icon_flag_white.png"></div>
               <div class="wu-list-content">
                 <div class="title">{{ item.title }}</div>
                 <div class="content-intro">

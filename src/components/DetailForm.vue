@@ -17,10 +17,15 @@
         <div>{{ processTitle }}</div>
       </div>
       <van-divider />
-      <div class="form-wrap">
-        <div class="form-item" v-for="(item, index) in formConfig" :key="index">
-          <div class="form-key">{{ item.colName }}</div>
-          <div class="form-value" ref="formValue">{{ formMatData(item) }}</div>
+      <div class="form-wrap">     
+        <template v-for="(item,index) in formConfig">
+          <div :class="{'form-item':true,'yyxx-row':item.colCode==='yyxx'}"  :key="index">
+             <div class="form-key">{{item.colName}}</div>
+             <div style="margin-top:6px;" v-if="item.colCode==='yyxx' && formMatData(item)!='' "></div>
+             <div class="formRemark-value" ref="formValue" v-if="item.colCode==='yyxx' && formMatData(item)!='' ">{{ formMatData(item)}}</div>
+             <div class="form-value" ref="formValue" v-if="item.colCode!='yyxx' ">{{ formMatData(item)}}</div>
+          </div>   
+        </template>
         </div>
       </div>
     </div>
@@ -97,6 +102,10 @@ export default {
                this.processTitle = "总行支行收文";
             }else{
                this.processTitle = res.data.model.processTitle;
+            }
+            if(res.data.model.dataForm.sendUserIds!=null){
+              this.currentProcess.sendUserIds=res.data.model.dataForm.sendUserIds;
+              console.log("------sendUserIds这个字段有值--------")
             }   
             this.loading = false;
             this.$nextTick(() => {
@@ -157,6 +166,10 @@ export default {
           return reg("RESPON_PERSON", "responsiblePerson");
         case "audioVisualTypeText":
           return reg("AUDIO_VISUAL_TYPE", "audioVisualType");
+        case "printWayText":
+          return reg("PRINT_WAY", "printWay");
+        case "textSourceText":
+          return reg("TEXT_SOURCE", "textSource");
         case "sysFilePositionText":
           return formatArr("sysFilePosition");
         default:
@@ -204,7 +217,24 @@ export default {
           text-align: right;
           color: #323233;
         }
+
+        .formRemark-value {
+          width: 100%;
+          text-align: right;
+          color: #697184;
+          padding-left:26px;
+          font-size:12px;
+        }
       }
+    }
+  }
+
+  .yyxx-row{
+    display:block !important;
+    .form-value{
+      width:100%  !important;
+      text-align:left !important;
+      padding: 8px 0 0 12px; 
     }
   }
 }

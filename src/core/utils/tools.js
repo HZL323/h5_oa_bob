@@ -24,8 +24,9 @@ router.beforeEach((to, from, next) => {
     }
     console.log("----路由位置----",Store.state.currentProcess);
     if(to.name === 'detail' && Store.state.currentProcess.workitemName !=undefined  && ( 
-    //Store.state.currentProcess.workitemName.indexOf('部室经理会签')!=-1  ||
+    //Store.state.currentProcess.workitemName.indexOf('部室经理会签')!=-1  || 
     Store.state.currentProcess.workitemName==='部室经理会签' || 
+    Store.state.currentProcess.workitemName==='部门经理会签' || 
     Store.state.currentProcess.workitemName==='相关业务线办理' || 
     //Store.state.currentProcess.workitemName==='相关人员办理' ||
     Store.state.currentProcess.workitemName==='相关部室办理' || 
