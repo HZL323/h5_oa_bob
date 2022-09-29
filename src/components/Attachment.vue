@@ -132,6 +132,7 @@ export default {
       }
     },
     onPreview(file) {
+      debugger
       console.log("未查找之前id",file.attachmentId);
       api
         .getSealAttach({
@@ -146,6 +147,7 @@ export default {
           api
             .Preview({
               fileid: file.attachmentId,
+              userid: this.$store.state.userInfo.userId
             })
             .then((res) => {
               if (res.data.status === "200") {
