@@ -170,7 +170,7 @@ export function queryList(data) {
                                 workitemName: "分行主办部门负责人审核主办部门负责人审核"
                             }
                         ],
-                        allDataCount: 1,
+                        allDataCount: 3,
                     }
                 }
             })
@@ -538,7 +538,7 @@ export function queryHandlerList(data) {
                             {
                                 orgDeptId: "39ba5041942c416691e9f2853d3781e2",
                                 orgDeptName: "行领导",
-                                orgId: "42fdecdad61f42f181fef3b31b1ababe",
+                                orgId: "42fdecdad61f42f181fef3b31b1abab1",
                                 orgName: "张燕",
                                 orgType: "user",
                                 orgTypeName: "用户"
@@ -546,7 +546,7 @@ export function queryHandlerList(data) {
                             {
                                 orgDeptId: "39ba5041942c416691e9f2853d3781e3",
                                 orgDeptName: "行领导",
-                                orgId: "42fdecdad61f42f181fef3b31b1ababe",
+                                orgId: "42fdecdad61f42f181fef3b31b1abab2",
                                 orgName: "王琪",
                                 orgType: "user",
                                 orgTypeName: "用户"
@@ -554,7 +554,7 @@ export function queryHandlerList(data) {
                             {
                                 orgDeptId: "39ba5041942c416691e9f2853d3781e4",
                                 orgDeptName: "行领导",
-                                orgId: "42fdecdad61f42f181fef3b31b1ababe",
+                                orgId: "42fdecdad61f42f181fef3b31b1abab9",
                                 orgName: "刘枫",
                                 orgType: "user",
                                 orgTypeName: "用户"
@@ -562,7 +562,7 @@ export function queryHandlerList(data) {
                             {
                                 orgDeptId: "39ba5041942c416691e9f2853d3781e5",
                                 orgDeptName: "行领导",
-                                orgId: "42fdecdad61f42f181fef3b31b1ababe",
+                                orgId: "42fdecdad61f42f181fef3b31b1abab3",
                                 orgName: "华雄",
                                 orgType: "user",
                                 orgTypeName: "用户"
@@ -570,7 +570,7 @@ export function queryHandlerList(data) {
                             {
                                 orgDeptId: "39ba5041942c416691e9f2853d3781e6",
                                 orgDeptName: "行领导",
-                                orgId: "42fdecdad61f42f181fef3b31b1ababe",
+                                orgId: "42fdecdad61f42f181fef3b31b1abab4",
                                 orgName: "展飞",
                                 orgType: "user",
                                 orgTypeName: "用户"
@@ -578,7 +578,7 @@ export function queryHandlerList(data) {
                             {
                                 orgDeptId: "39ba5041942c416691e9f2853d3781e7",
                                 orgDeptName: "行领导",
-                                orgId: "42fdecdad61f42f181fef3b31b1ababe",
+                                orgId: "42fdecdad61f42f181fef3b31b1abab5",
                                 orgName: "悟空",
                                 orgType: "user",
                                 orgTypeName: "用户"
@@ -586,7 +586,7 @@ export function queryHandlerList(data) {
                             {
                                 orgDeptId: "39ba5041942c416691e9f2853d3781e8",
                                 orgDeptName: "行领导",
-                                orgId: "42fdecdad61f42f181fef3b31b1ababe",
+                                orgId: "42fdecdad61f42f181fef3b31b1abab6",
                                 orgName: "李丽",
                                 orgType: "user",
                                 orgTypeName: "用户"
@@ -594,14 +594,14 @@ export function queryHandlerList(data) {
                             {
                                 orgDeptId: "39ba5041942c416691e9f2853d3781e9",
                                 orgDeptName: "行领导",
-                                orgId: "42fdecdad61f42f181fef3b31b1ababe",
+                                orgId: "42fdecdad61f42f181fef3b31b1abab7",
                                 orgName: "琼江",
                                 orgType: "user",
                                 orgTypeName: "用户"
                             }
                         ],
                         returnSelect: "false",
-                        selectPersonType: "all"
+                        selectPersonType: "radio"
                     },
                     msg: "",
                     status: "200",
@@ -1445,7 +1445,8 @@ export function getFormData(data) {
                             telephone: "17640214817",
                             title: "测试总行发文流程要点",
                             wordNo: "",
-                            remark:"文件名称：123（未盖章）.pdf\n用印事项：正式环境中，哪有那么多事情呢\n 用印枚数：4\n打印份数：2\n用印类型及页码：董事长手签:骑缝章;北京银行:骑缝章\n发往单位：大理寺审夺"
+                            remark:"",
+                            //remark:"文件名称：123（未盖章）.pdf\n用印事项：正式环境中，哪有那么多事情呢\n 用印枚数：4\n打印份数：2\n用印类型及页码：董事长手签:骑缝章;北京银行:骑缝章\n发往单位：大理寺审夺"
                         },
                         processTitle: "乱七八糟流程"
                     },
@@ -1668,6 +1669,53 @@ export function Preview(data) {
     })
 }
 
+// 更新流程接收状态
+export function updateProcessState(data) {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve({
+                data: {
+                    "model": true,
+                    "msg": "",
+                    "status": "200",
+                    "wrapModel": true
+                }
+            })
+        }, 1000)
+    })
+}
+
+// 用印申请单
+export function sealDetail() {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve({
+                data: {
+                    "model": [{
+                        '文件名称':"类型.pdf",
+                        '用印事项':"章类",
+                        '用印类型及页码':'北京银行股份有限公司：3,5,6',
+                        '用印枚数':'3',
+                        '打印份数':'2',
+                        '发往单位':'北京银行'
+                    },{
+                        '文件名称':"就实际用途进行分析.pdf",
+                        '用印事项':"因事关重大，特此慎重批复，今研究决定，可以进行试点推广",
+                        '用印类型及页码':'北京银行上海分行：3,5,6',
+                        '用印枚数':'12',
+                        '打印份数':'11',
+                        '发往单位':'北京银行'
+                    }
+                    ],
+                    "msg": "",
+                    "status": "200",
+                    "wrapModel": true
+                }
+            })
+        }, 1000)
+    })
+}
+
 // 是否可以直接提交
 export function SubmitPermission(data) {
     return new Promise((resolve, reject) => {
@@ -1675,26 +1723,7 @@ export function SubmitPermission(data) {
             resolve({
                 data: {
                     "model": [
-                        // {
-                        //     "actDefId": "ngbsjlsh",
-                        //     "configId": "834d9700313c42f39ef12a5ccf2e3e09",
-                        //     "createtime": "2021-07-14 16:01:28",
-                        //     "creator": "c8f1ba6c7cf842409aba43206e9f7442",
-                        //     "description": "",
-                        //     "extendKey": "isCanEditField",
-                        //     "extendValue": "title,remark",
-                        //     "proDirId": "4569037a74804d0d9b24c5dd8fa7d1eb"
-                        // },
-                        // {
-                        //     "actDefId": "ngbsjlsh",
-                        //     "configId": "834d9700313c42f39ef12a5ccf2e3e09",
-                        //     "createtime": "2021-07-14 16:01:28",
-                        //     "creator": "c8f1ba6c7cf842409aba43206e9f7442",
-                        //     "description": "主办部室经理审核意见",
-                        //     "extendKey": "noteEdit",
-                        //     "extendValue": "zbbsjlshyj",
-                        //     "proDirId": "4569037a74804d0d9b24c5dd8fa7d1eb"
-                        // }
+                        
                     ],
                     "msg": "",
                     "status": "200",

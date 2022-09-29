@@ -103,6 +103,7 @@ export default {
     onLoad() {
       // 加载数据
       if (this.currentList === "doing") {
+        document.querySelectorAll("div.van-nav-bar__title")[0].innerHTML="我的已办"
         api
           .list({
             ...this.params,
@@ -121,12 +122,28 @@ export default {
             if (this.list.length >= this.allDataCount) {
               this.finished = true;
             }
+            this.navTitle = "我的已办";
+            // if(this.allDataCount>0){
+            //     document.querySelectorAll("div.van-nav-bar__title")[0].innerHTML=
+            //     this.navTitle+"(99+)";
+            // }else{
+                document.querySelectorAll("div.van-nav-bar__title")[0].innerHTML=
+                this.navTitle+"("+this.allDataCount+")";
+            //}
+            
           });
       } else {
+        if(this.currentList === "todo"){
+          document.querySelectorAll("div.van-nav-bar__title")[0].innerHTML="我的公文待办";
+        }else if(this.currentList === "seal"){
+          document.querySelectorAll("div.van-nav-bar__title")[0].innerHTML="我的用印待办";
+        }else{
+          document.querySelectorAll("div.van-nav-bar__title")[0].innerHTML="我的待阅";
+        }
         api
           .queryList({ ...this.params, queryKind: this.currentList })
           .then((res) => {
-            console.log("currentList",res.data);
+            console.log("currentList");
             this.allDataCount = res.data.model.allDataCount;
             res.data.model.curPageData.forEach((item) => {
               this.list.push(item);
@@ -139,6 +156,21 @@ export default {
             if (this.list.length >= this.allDataCount) {
               this.finished = true;
             }
+            this.navTitle="我的待阅";
+            if(this.currentList === "todo"){
+              this.navTitle='我的公文待办';
+            }
+            if(this.currentList === "seal"){
+              this.navTitle='我的用印待办';
+            }
+            //if(this.allDataCount>0){
+            //    document.querySelectorAll("div.van-nav-bar__title")[0].innerHTML=
+            //    this.navTitle+"(99+)";
+            //}else{
+                document.querySelectorAll("div.van-nav-bar__title")[0].innerHTML=
+                this.navTitle+"("+this.allDataCount+")";
+            //}
+
           });
       }
     },

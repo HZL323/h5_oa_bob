@@ -34,13 +34,14 @@
                 v-for="(item, index) in handlerList"
                 clickable
                 :key="index"
-                :title="item.orgName"
+                :title="item.orgName"             
                 @click="toggle(index)"
                 v-show="reg.test(item.orgName)"
               >
                 <template slot="right-icon">
                   <van-checkbox
                     :name="formatName(item)"
+                    :disabled="!showMulti"              
                     ref="checkboxes"
                     icon-size="16"
                     checked-color="#ff4444"
@@ -50,7 +51,7 @@
               </van-cell>
             </van-cell-group>
           </van-checkbox-group>
-          <van-radio-group v-model="radio" v-else>
+          <van-radio-group v-model="radio"  v-else>
             <van-cell-group>
               <template v-for="(item, index) in handlerList">
                 <van-cell
@@ -61,9 +62,10 @@
                   v-show="reg.test(item.orgName)"
                 >
                   <template slot="right-icon">
-                    <van-radio
+                    <van-radio                 
                       :name="item.orgId"
                       icon-size="16"
+                      ref="celles"
                       checked-color="#ff4444"
                     />
                   </template>
@@ -84,7 +86,7 @@
           round
           plain
           @click="onCheckAll"
-          v-if="multiCheck"
+          v-if="showMulti"
           >全选</van-button
         >
         <van-button color="#ff4444" block round @click="onCommit"
@@ -133,7 +135,9 @@ export default {
       radio: "", // 单选办理人
       result: [], // 选择的多选办理人/部门
       multiCheck: false, // 是否可以多选
+      showMulti:false, //是否显示全选按钮
       handlerList: [], // 办理人或办理部门list
+      multiFlag:false,//多选flag
       loading: true, // 加载数据
     };
   },
@@ -183,7 +187,7 @@ export default {
             workitemId: this.currentProcess.workitemId,
             configId: this.currentProcess.configId,
             proDirId: this.currentLink.proDirId,
-            actDefId: this.currentProcess.actDefId,
+            actDefId: this.currentProcess.actDefId, 
             userId: this.userInfo.userId,
             sendUserIds: this.currentProcess.sendUserIds ? this.currentProcess.sendUserIds:"",
             activity: {
@@ -199,8 +203,16 @@ export default {
         .then((res) => {
           if (res.data.status === "200") {
             // 回显
+            console.log("是否有单选选择标志位----",res);
+            console.log("-------选项------",res.data.model.selectPersonType);
             if (res.data.model.selectPersonType !== "radio") {
-              this.multiCheck = true;
+              
+              //if(res.data.model.selectPersonType != "all"){
+                  this.multiCheck = true;
+                  if(res.data.model.selectPersonType !== "all"){
+                     this.showMulti = true;
+                  }       
+              //}    
               this.result = this.currentSelectData.map((item) =>
                 JSON.stringify(item)
               );
@@ -211,9 +223,26 @@ export default {
 
             // 数据赋值
             this.handlerList = res.data.model.resourceIds;
+
+            if(res.data.model.selectPersonType === "radio" && 
+              this.handlerList.length>0 && res.data.model.isCheckFirst==="true"){
+                this.radio=this.handlerList[0].orgId; 
+            }
+
           }
           this.loading = false;
+          if(res.data.model.selectPersonType === "all"){
+            setTimeout(() => {    
+                this.$refs.checkboxGroup.toggleAll(true);             
+            }, 600)
+          }
+          // if(res.data.model.selectPersonType === "radio"){
+          //   setTimeout(() => {    
+          //     this.radio=this.handlerList[0].orgId; 
+          //   }, 600)
+          // }
         });
+        
     },
     formatName(name) {
       // 返回json串作为标识符
@@ -229,11 +258,14 @@ export default {
     },
     toggle(index) {
       // 多选点击cell
-      this.$refs.checkboxes[index].toggle();
+      if(this.multiFlag){
+        this.$refs.checkboxes[index].toggle();
+      }
     },
     onCheckAll() {
+      this.multiFlag = !this.multiFlag;
       // 全选
-      this.$refs.checkboxGroup.toggleAll(true);
+      this.$refs.checkboxGroup.toggleAll(this.multiFlag);
     },
     onCommit() {
       // 确定选择的数据

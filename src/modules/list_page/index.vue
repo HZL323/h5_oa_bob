@@ -54,11 +54,13 @@ export default {
     getNavTitle(type) {
       switch (type) {
         case "todo":
-          return "待办列表";
+          return "公文待办列表";
         case "doing":
           return "已办列表";
         case "toread":
           return "待阅列表";
+        case "seal":
+          return "用印待办列表";
         default:
           return "";
       }

@@ -108,26 +108,33 @@ export default {
   },
   data() {
     return {
-      activeNames: ["1", "2", "3"],
+      activeNames: ["1", "2", "3","4"],
       collapseList: [
         {
-          title: "待办",
+          title: "公文待办",
           type: "todo",
           name: "1",
           loading: true,
           list: [],
         },
         {
+          title: "用印待办",
+          type: "seal",
+          name: "2",
+          loading: true,
+          list: [],
+        },
+        {
           title: "已办",
           type: "doing",
-          name: "2",
+          name: "3",
           loading: true,
           list: [],
         },
         {
           title: "待阅",
           type: "toread",
-          name: "3",
+          name: "4",
           loading: true,
           list: [],
         },
@@ -178,8 +185,33 @@ export default {
           queryKind: "todo",
         })
         .then((res) => {
+          console.log("-------公文待办---------",res.data.model);
           this.collapseList[0].list = res.data.model.curPageData;
+          if(res.data.model.allDataCount>99){
+              this.collapseList[0].title = '公文待办(99+)';
+          }else{
+              this.collapseList[0].title = '公文待办('+res.data.model.allDataCount+')';
+          }
+          //this.collapseList[0].title = '待办('+res.data.model.allDataCount+')';
           this.collapseList[0].loading = false;
+        });
+      api
+        .queryList({
+          curPage: 1,
+          pageSize: 5,
+          userCode: this.$store.state.userInfo.userCode,
+          queryKind: "seal",
+        })
+        .then((res) => {
+          console.log("-------用印待办---------",res.data.model);
+          this.collapseList[1].list = res.data.model.curPageData;
+          if(res.data.model.allDataCount>99){
+              this.collapseList[1].title = '用印待办(99+)';
+          }else{
+              this.collapseList[1].title = '用印待办('+res.data.model.allDataCount+')';
+          }
+          //this.collapseList[0].title = '待办('+res.data.model.allDataCount+')';
+          this.collapseList[1].loading = false;
         });
       api
         .list({
@@ -193,8 +225,13 @@ export default {
               // item.actCreateTime = this.$format("YYYY-mm-dd", item.createTime);
             });
           }
-          this.collapseList[1].list = res.data.model.pageData;
-          this.collapseList[1].loading = false;
+          this.collapseList[2].list = res.data.model.pageData;
+          if(res.data.model.dataCount>99){
+              this.collapseList[2].title = '已办(99+)';
+          }else{
+              this.collapseList[2].title = '已办('+res.data.model.dataCount+')';
+          }
+          this.collapseList[2].loading = false;
         });
       api
         .queryList({
@@ -204,9 +241,15 @@ export default {
           queryKind: "toread",
         })
         .then((res) => {
-          this.collapseList[2].list = res.data.model.curPageData;
-          this.collapseList[2].loading = false;
+          this.collapseList[3].list = res.data.model.curPageData;
+          if(res.data.model.allDataCount>99){
+              this.collapseList[3].title = '待阅(99+)';
+          }else{
+              this.collapseList[3].title = '待阅('+res.data.model.allDataCount+')';
+          }
+          this.collapseList[3].loading = false;
         });
+      
     },
     getTimeState() {
       // 获取当前时间

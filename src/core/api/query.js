@@ -8,8 +8,9 @@
  */
 import { ajaxGet, ajaxPost } from '../mxApi'
 
-//const URL = `http://10.116.71.25` // 生产
-const URL = `http://10.51.228.84:8080` // 测试
+// const URL = `http://10.116.71.25` // 生产
+const URL = `http://10.51.228.84:8080` // UAT
+//const URL = `http://10.51.252.190:8088` // 测试
 
 export function queryMessage(data) {
     //return ajaxGet('/api/v1/users?limit=1') //测试接口
@@ -171,4 +172,11 @@ export function updateProcessState(data) {
     console.log(`更新待办流程状态`,URL+`/mob/taskDetailService/updateProcessState`)
     console.log(`参数`,data)
     return ajaxPost(`${URL}/mob/taskDetailService/updateProcessState`, data)
+}
+
+// 获取用印文件信息
+export function sealDetail(data) {
+    console.log(`获取用印文件信息`,URL+`/mob/taskDetailService/getPrintAttachInfo`)
+    console.log(`参数`,data)
+    return ajaxPost(`${URL}/mob/taskDetailService/getPrintAttachInfo`, data)
 }

@@ -15,7 +15,6 @@ import { Toast, Dialog } from 'vant'
 
 router.beforeEach((to, from, next) => {
 
-    //debugger
     // 路由守卫，动态设置缓存组件
     if (to.name === 'detail' || to.name === 'selectlink' || to.name === 'tracking' || to.name === 'preview') {
         Store.commit('setCacheList', ['homePage', 'listPage', 'detail', 'selectLink', 'processTracking'])
@@ -28,9 +27,9 @@ router.beforeEach((to, from, next) => {
     Store.state.currentProcess.workitemName==='部室经理会签' || 
     Store.state.currentProcess.workitemName==='部门经理会签' || 
     Store.state.currentProcess.workitemName==='相关业务线办理' || 
-    //Store.state.currentProcess.workitemName==='相关人员办理' ||
     Store.state.currentProcess.workitemName==='相关部室办理' || 
     Store.state.currentProcess.workitemName==='辅办部室办理' 
+    //Store.state.currentProcess.workitemName==='相关人员办理' ||
     //Store.state.currentProcess.workitemName==='送相关支行' || 
     //Store.state.currentProcess.workitemName==='收文经办' || 
     // || Store.state.currentProcess.actDefId.indexOf('sub_process')!=-1 
@@ -51,7 +50,6 @@ router.beforeEach((to, from, next) => {
             api.checkUser({
                 id: user.login_name,
                 uCode: ""
-                //Id:""
             }).then(res => {
                 if (res.data.status === '200') {
                     if (typeof res.data.model === "string") {

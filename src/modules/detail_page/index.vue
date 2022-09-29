@@ -211,7 +211,7 @@ export default {
             id: ""
         }).then(res => {
             if (res.data.status === '200') {
-                if (res.data.model.usercode !== "") {
+                if (res.data.model.usercode !== "") { 
                     this.$store.commit('setUserInfo', {
                         userCode: res.data.model.usercode,
                         userId: res.data.model.useruuid,
