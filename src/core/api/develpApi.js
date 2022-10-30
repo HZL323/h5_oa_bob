@@ -25,7 +25,6 @@ export function checkUser(data) {
                     "wrapModel": true,
                     "status": "200"
                 }
-
             })
         }, 1000)
     })
