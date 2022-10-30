@@ -53,7 +53,7 @@ router.beforeEach((to, from, next) => {
             api.checkUser({
                 id: user.login_name,
                 uCode: ""
-            }).then(res => {+
+            }).then(res => {
                 if (res.data.status === '200') {
                     if (typeof res.data.model === "string") {
                         Toast.clear()
