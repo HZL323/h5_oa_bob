@@ -32,7 +32,7 @@ export function checkUser(data) {
 
 // 查询待办、已办、待阅接口
 export function queryList(data) {
-    console.log(data)
+    //console.log(data)
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             resolve({
@@ -179,7 +179,7 @@ export function queryList(data) {
 
 // 首页已办
 export function list(data) {
-    console.log(data)
+    //console.log(data)
     return new Promise((resolve, reject) => {
         resolve({
             data: {
@@ -449,7 +449,7 @@ export function queryBackLink(data) {
 
 // 退回
 export function sendBack(data) {
-    console.log(data);
+    //console.log(data);
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             resolve({
@@ -508,7 +508,7 @@ export function queryNextLink() {
 
 // 查询下一环节办理人/办理部门
 export function queryHandlerList(data) {
-    console.log("查询下一环节办理人/办理部门", data);
+    //console.log("查询下一环节办理人/办理部门", data);
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             resolve({
@@ -613,7 +613,7 @@ export function queryHandlerList(data) {
 
 // 提交
 export function completeWorkitem(data) {
-    console.log(data);
+    //console.log(data);
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             resolve({
@@ -1730,5 +1730,40 @@ export function SubmitPermission(data) {
                 }
             })
         })
+    })
+}
+
+// 发送部门权限
+export function getActivityExtendConfigByName(data) {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve({
+                data: {
+                    model: {
+                        senddeptverify: 1,
+                    },
+                    status: '200',
+                }
+            })
+        }, 1000)
+    })
+}
+
+// 获取可发送部门
+export function getSendDept(data) {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve({
+                data: {
+                    model: {
+                        '部门1': '人员',
+                        '部门2': '',
+                        '部门3': '人员',
+                        '部门4': '人员',
+                    },
+                    status: '200'
+                }
+            })
+        }, 1000)
     })
 }

@@ -25,8 +25,7 @@
             <template slot="right-icon">
               <div class="more" @click.stop="getMore(item.type)">
                 more...
-              </div></template
-            >
+              </div></template>
             <wu-feedback v-if="item.loading" />
             <template v-else>
               <div class="empty" v-if="item.list.length === 0">无更多数据</div>
@@ -185,7 +184,7 @@ export default {
           queryKind: "todo",
         })
         .then((res) => {
-          console.log("-------公文待办---------",res.data.model);
+          //console.log("-------公文待办---------",res.data.model);
           this.collapseList[0].list = res.data.model.curPageData;
           if(res.data.model.allDataCount>99){
               this.collapseList[0].title = '公文待办(99+)';
@@ -203,7 +202,7 @@ export default {
           queryKind: "seal",
         })
         .then((res) => {
-          console.log("-------用印待办---------",res.data.model);
+          //console.log("-------用印待办---------",res.data.model);
           this.collapseList[1].list = res.data.model.curPageData;
           if(res.data.model.allDataCount>99){
               this.collapseList[1].title = '用印待办(99+)';
@@ -288,10 +287,13 @@ export default {
     },
     getMore(type) {
       this.$store.commit("setCurrentList", type);
-      this.$store.commit("setCurrentList", type);
       this.$store.commit("setRefresh", true);
+      console.log("more", type)
       this.$router.replace({
         name: "list",
+        query: {
+          queryKind: type,
+        },
       });
     },
     rowClick(type, row) {
@@ -305,6 +307,7 @@ export default {
         },
         query: {
           from: "oa",
+          queryKind: type,
         },
       });
     },

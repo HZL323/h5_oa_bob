@@ -30,8 +30,12 @@ export default new Vuex.Store({
         opinionData: null, // 保存意见内容
         noteRequired: null, // 意见是否必填
         count: 0, // 页面加载数量
+        dataForm: {} //表单详情
     },
     mutations: {
+        setDataForm(state, payload){
+            state.dataForm = payload
+        },
         setUserInfo(state, payload) {
             state.userInfo = { ...state.userInfo, ...payload }
         },

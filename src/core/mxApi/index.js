@@ -28,10 +28,10 @@ function MXApi(callbacks) {
 
 const applyApi = MXApi({
     ready: function () {
-        console.log('device ready!!');
+        // console.log('device ready!!');
     },
     error: function (err) {
-        console.log(err);
+        // console.log(err);
     },
     beforeApply: function (namespace, api, args) {
     }

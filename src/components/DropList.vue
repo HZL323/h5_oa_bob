@@ -143,7 +143,7 @@ export default {
         api
           .queryList({ ...this.params, queryKind: this.currentList })
           .then((res) => {
-            console.log("currentList");
+            //console.log("currentList");
             this.allDataCount = res.data.model.allDataCount;
             res.data.model.curPageData.forEach((item) => {
               this.list.push(item);
@@ -185,6 +185,7 @@ export default {
         },
         query: {
           from: "oa",
+          queryKind: this.$store.state.currentList
         },
       });
     },

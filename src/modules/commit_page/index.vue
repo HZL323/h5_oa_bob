@@ -8,6 +8,7 @@
 -->
 <template>
   <div>
+    <!--选完部门之后会出现这个div，不选部门不会出现-->
     <div v-if="flag">
       <SelectHandler
         @changeCom="changeCom"
@@ -98,7 +99,7 @@ import {
 } from "vant";
 import SelectHandler from "../../components/SelectHandler.vue";
 import { api } from "../../core/api/index";
-import { closeWindow } from "../../core/mxApi";
+import { ajaxPost, closeWindow } from "../../core/mxApi";
 export default {
   name: "selectLink", // 选择环节页
   components: {
@@ -125,6 +126,10 @@ export default {
       selectData: [], // 已选择的数据
       isEnd: false, // 当前选择环节是否为结束节点
       backRoute: this.$route.params.backRoute, // 返回上一个页面
+      selectIsSubProcess: false,//所选的是不是子流程
+      isZhyyjh: false,//当前环节是不是支行用印校核
+      subProcessName: "",//子流程的名称
+      sendDeptVerify: false //是不是需要填写发送部门
     };
   },
   computed: {
@@ -143,12 +148,30 @@ export default {
     opinionConfig() {
       return this.$store.state.opinionData;
     },
+    dataForm() {
+      return this.$store.state.dataForm;
+    },
   },
   created() {
     this.loadData();
   },
   methods: {
     loadData() {
+      console.log("加载完立马打印此刻的currentProcess", this.currentProcess)
+      //判断当前环节是不是需要填写发送部门，比如支行用印校核环节，填写完需要更新表单数据
+      let isSendDeptVerifyParameter = {
+        extendKey: "sendDeptVerify",
+        actDefId: this.currentProcess.actDefId,
+        configId: this.currentProcess.configId,
+        proDirId: this.currentProcess.proDirId,
+      }
+      api.getActivityExtendConfigByName(isSendDeptVerifyParameter).then((res) => {
+        console.log("判断当前环节是不是需要填写发送部门：" + res);
+        if(res.data.model && res.data.model.sendDeptVerify){
+          this.sendDeptVerify = true;
+        };
+      });
+      //查询下一环节
       api
         .queryNextLink({
           wfmData: {
@@ -165,17 +188,18 @@ export default {
         })
         .then((res) => {      
           if (res.data.status === "200") {
-            //console.log("----提交可选资源----",res.data);
+            console.log("----下一环节返回内容----",res.data);
             //console.log("----当前环节资源----",this.currentProcess)
             if(res.data.model.flag==false){
-               this.onMultiCommit();
+              console.log("会签环节直接提交?????")
+              this.onMultiCommit();
             }else{
+              console.log("不是会签环节？？？")
               this.linkList = res.data.model.nextActDefIds.map((item) => ({
                 ...item,
                 ...{ data: [] },
               }));
             }
-            
           }
           this.loading = false;
         });
@@ -202,34 +226,29 @@ export default {
         this.isEnd = true;
         this.selectData = [];
         this.radio = row.actDefId;
-
-        if(this.currentProcess.processName.indexOf("子流程")===-1){
-            Toast("请前往PC端提交!");
-            return;
-        }else{
-            //是子流程的话直接提交
-            console.log("---这个是子流程---");
-            this.onSubCommit();
+        console.log("end_点击某一行的数据rowData=", row)
+        if(this.currentProcess.processName.indexOf("子流程") > 0){
+          console.log("---当前流程是子流程---");
+          this.onSubCommit();
         }
-        
       } else {
-        if (
-          row.actDefName.indexOf("部室经理会签") != -1  
-          || row.actDefName==="部门经理会签" 
-          || row.actDefName.indexOf("排版") != -1  
-          || row.actDefName === "相关业务线办理"  
-          || row.actDefName === "相关部室办理"  
-          || row.actDefName === "辅办部室办理"  
-          // || row.actDefName === "相关人员办理"  
-          // || row.actDefName === "送相关支行"    
-          // || row.actDefName === "收文经办"  
-        ) {
-          Toast("请前往PC端提交!");
-          return;
-        } else {
-          this.linkTitle = row.actDefName;
-          this.flag = true;
+        //不是结束
+        let isSubProcessParameter = {
+          //proInstId: this.currentProcess.proInstId,
+          extendKey: "subProcess",
+          actDefId: this.currentLink.actDefId,
+          configId: this.currentProcess.configId,
+          proDirId: this.currentProcess.proDirId,
         }
+        api.isSubProcess(isSubProcessParameter).then((res) => {
+          console.log("是否是子流程接口返回值res：" + res);
+          if(res.data.model && res.data.model.subProcess){
+            this.selectIsSubProcess = true;
+            this.subProcessName = res.data.model.subProcess;
+          };
+        });
+        this.linkTitle = row.actDefName;
+        this.flag = true;
       }
     },
     checkedLink(val) {
@@ -284,39 +303,33 @@ export default {
           },
         ],
       };
-      //校验是否必填，必填的话调用意见保存方法 20220714
-      if(this.$store.state.noteRequired){
-        this.onSave();
+      // //校验是否支行用印流程
+      if(this.sendDeptVerify == true){
+        //校验是否填写了发送部门
+        if(this.dataForm.sendDept === "" || this.dataForm.sendDeptText === ""){
+          Toast(`请填写发送部门再提交`)
+          return;
+        }else{
+          this.modifySendDeptAndUsers();
+        }
       }
-      setTimeout(() => {
-            api.completeWorkitem(data).then((res) => {
-              Toast.clear();
-              if (res.data.status === "200") {
+      //校验是否必填，必填的话调用意见保存方法 20220714
+      //if(this.$store.state.noteRequired){
+        this.onSave();
+      //}
+      //如果是子流程
+      if(this.selectIsSubProcess){
+        data.isMobile = true;
+        console.log("这里采用设置store中的dataForm中的值")
+        data.dataForm = this.dataForm;
+        console.log("data.dataForm:", data.dataForm)
+        console.log("data.wfmData", data.wfmData)
+        setTimeout(()=>{
+          api.subProcessCompleteWorkItem(data).then((res) => {
+            Toast.clear();
+            if (res.data.status === "200") {
                 this.$store.commit("setRefresh", true);
                 if (this.fromOut) {
-                  //Dialog.confirm({
-                    //title:"提交成功",
-                    //title:"提交成功，请选择是否继续留在OA系统？",
-                    //confirmButtonColor: "#ff4444",
-                    //cancelButtonText: "返回待办",
-                    //width: "300px",
-                    //closeOnClickOverlay: true,
-                  //})
-                    //.then(() => {
-                    //  this.$store.commit("setFromOut", false);
-                    //  this.$router.replace({
-                    //    name: this.backRoute,
-                    //  });
-                   // })
-                    //.catch((action) => {
-                     // if (action !== "overlay") {
-                     //   setTimeout(() => {
-                       //   closeWindow();
-                       // }, 2000);
-                      //}
-                    //});
-                  //return;
-
                   Dialog.alert({
                       message: "提交成功",
                       width: "200px",                  
@@ -329,7 +342,6 @@ export default {
                   });
                   return;
                 }
-
                 Dialog.alert({
                     message: "提交成功",
                     width: "200px",                 
@@ -339,11 +351,49 @@ export default {
                       name: this.backRoute,
                     });
                 });       
-              } else {
-                Toast("提交失败");
+            } else {
+              Toast("提交失败");
+            }
+          })
+       }, 500); 
+      }else{
+        console.log("所选环节不是子流程")
+        setTimeout(() => {
+          console.log("调用完成工作项接口")
+          api.completeWorkitem(data).then((res) => {
+            Toast.clear();
+            if (res.data.status === "200") {
+              console.log("调用完成工作项接口返回值："+res.data)
+              this.$store.commit("setRefresh", true);
+              if (this.fromOut) {
+                Dialog.alert({
+                    message: "提交成功",
+                    width: "200px",                  
+                    confirmButtonColor: "#ff4444",
+                }).then(() => {
+                    this.$store.commit("setFromOut", false);
+                    this.$router.replace({
+                      name: this.backRoute,
+                    });
+                });
+                return;
               }
-            });
-      }, 500);    
+
+              Dialog.alert({
+                  message: "提交成功",
+                  width: "200px",                 
+                  confirmButtonColor: "#ff4444",
+              }).then(() => {
+                  this.$router.replace({
+                    name: this.backRoute,
+                  });
+              });       
+            } else {
+              Toast("提交失败");
+            }
+          });
+        }, 500); 
+      }
     },
 
     onMultiCommit() {
@@ -371,39 +421,6 @@ export default {
               if (res.data.status === "200") {
                 this.$store.commit("setRefresh", true);
                 if (this.fromOut) {
-                  //Dialog.confirm({
-                    //title:"提交成功，请选择是否继续留在OA系统？",
-                    //title:"提交成功",
-                    //confirmButtonColor: "#ff4444",
-                    //cancelButtonText: "返回待办",
-                    //width: "300px",
-                    //closeOnClickOverlay: true,
-                  //})
-                  //  .then(() => {
-                  //    this.$store.commit("setFromOut", false);
-                  //    this.$router.replace({
-                  //      name: this.backRoute,
-                  //    });
-                  //  })
-                  //  .catch((action) => {
-                  //    if (action !== "overlay") {
-                  //      setTimeout(() => {
-                  //        closeWindow();
-                  //      }, 2000);
-                  //    }
-                  //  });
-                  return;
-
-                  Dialog.alert({
-                      message: "提交成功",
-                      width: "200px",
-                      confirmButtonColor: "#ff4444",
-                  }).then(() => {
-                      this.$store.commit("setFromOut", false);
-                      this.$router.replace({
-                        name: this.backRoute,
-                      });
-                  });
                   return;
                 }
                 Dialog.alert({
@@ -421,10 +438,8 @@ export default {
             });
       }, 500);    
     },
-
-
     onSubCommit() {
-      // 子流程结束环节直接提交
+      console.log("子流程结束环节？？？")
       Toast.loading({
         message: "提交中...",
         forbidClick: true,
@@ -456,36 +471,15 @@ export default {
           },
         ],
       };
+      //保存意见
       this.onSave();
+      //移动端完成工作项
       setTimeout(() => {
-            api.completeWorkitem(data).then((res) => {
+          api.completeWorkitem(data).then((res) => {
               Toast.clear();
               if (res.data.status === "200") {
                 this.$store.commit("setRefresh", true);
                 if (this.fromOut) {
-                  //Dialog.confirm({
-                    //title:"提交成功，请选择是否继续留在OA系统？",
-                    //title:"提交成功",
-                    //confirmButtonColor: "#ff4444",
-                    //cancelButtonText: "返回待办",
-                    //width: "300px",
-                    //closeOnClickOverlay: true,
-                  //})
-                   // .then(() => {
-                    //  this.$store.commit("setFromOut", false);
-                    //  this.$router.replace({
-                    //    name: this.backRoute,
-                    //  });
-                    //})
-                    //.catch((action) => {
-                    //  if (action !== "overlay") {
-                     //   setTimeout(() => {
-                     //     closeWindow();
-                     //   }, 2000);
-                     // }
-                    //});
-                  //return;
-
                   Dialog.alert({
                       message: "提交成功",
                       width: "200px",
@@ -514,10 +508,35 @@ export default {
             });
       }, 500);    
     },
-
+    modifySendDeptAndUsers(){
+      //保存发送部门以及对应的人员到业务表中
+      console.log("modifySendDeptAndUsers", this.dataForm)
+      if(this.dataForm.sendDept === null || this.dataForm.sendDept === ""){
+        Toast('sendDept字段为空，请填写发送部门再提交');
+      }
+      if(this.dataForm.sendUserIds === null || this.dataForm.sendUserIds === ""){
+        Toast('sendUserIds字段为空，请填写发送部门再提交');
+      }
+      if(this.dataForm.sendUserIds === null || this.dataForm.sendUserIds === ""){
+        Toast('业务表单id字段为空，请填写发送部门再提交');
+      }
+      let params = {
+        sendDept : this.dataForm.sendDept,
+        sendUserIds : this.dataForm.sendUserIds,
+        id : this.dataForm.id
+      }
+      console.log(params)
+      
+      api.modifySendDeptAndUsers(params).then((res) => {
+         if (res.data.status === "200") {
+           console.log("发送部门以及指定人员更新成功")
+         }
+      });
+    },
     onSave() {
       // 调用保存方法
       this.opinionConfig.forEach((item) => {
+        console.log("调用保存意见的方法")
         this.saveOpinion(item);
       });
     },

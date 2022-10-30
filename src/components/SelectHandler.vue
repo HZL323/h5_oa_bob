@@ -203,10 +203,9 @@ export default {
         .then((res) => {
           if (res.data.status === "200") {
             // 回显
-            console.log("是否有单选选择标志位----",res);
-            console.log("-------选项------",res.data.model.selectPersonType);
+            //console.log("是否有单选选择标志位----",res);
+            //console.log("-------选项------",res.data.model.selectPersonType);
             if (res.data.model.selectPersonType !== "radio") {
-              
               //if(res.data.model.selectPersonType != "all"){
                   this.multiCheck = true;
                   if(res.data.model.selectPersonType !== "all"){

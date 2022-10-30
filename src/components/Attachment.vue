@@ -133,17 +133,17 @@ export default {
     },
     onPreview(file) {
       debugger
-      console.log("未查找之前id",file.attachmentId);
+      //console.log("未查找之前id",file.attachmentId);
       api
         .getSealAttach({
           fileId: file.attachmentId,proInstId: this.currentProcess.proInstId,
         })
         .then((res) => {
-          console.log("查找文件中",res);
+          //console.log("查找文件中",res);
           if (res.data.status === "200" && res.data.model!=false) {            
               file.attachmentId = res.data.model;    
           }
-          console.log("查找之后id",file.attachmentId);
+          //console.log("查找之后id",file.attachmentId);
           api
             .Preview({
               fileid: file.attachmentId,
@@ -152,7 +152,7 @@ export default {
             .then((res) => {
               if (res.data.status === "200") {
                 openUrlPage(res.data.model.url).then((res) => {
-                  console.log(res);
+                  //console.log(res);
                 });
               }
             });

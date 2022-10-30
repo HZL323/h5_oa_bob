@@ -64,7 +64,7 @@
           </div>
         </template>
       </van-collapse>
-      <div class="opinion-field card" v-if="opinionConfig.length > 0">
+      <div class="opinion-field card" v-if="opinionConfig.length > 0 && (currentList === 'todo' || currentList === 'seal')">
         <div id="showNoteText" v-if="showNote">
           <div class="header-wrap">
             <div class="header">
@@ -165,15 +165,17 @@ export default {
       showAdd: true, // 控制多行文本显示
       showNote: true, //控制意见显示
       show: false,
-      columns: ["同意", "已阅"],
+      columns: ["同意", "已阅"],// TODO 这块要去后端获取意见列表
       sealList: [], // 用印申请明细列表
     };
   },
   props: {
+    //noteConfig是所有的意见
     noteConfig: {
       type: Array,
       default: [],
     },
+    //opinionConfig是可编辑的意见
     opinionConfig: {
       type: Array,
       default: [],
@@ -186,6 +188,9 @@ export default {
     userInfo() {
       return this.$store.state.userInfo;
     },
+    currentList(){
+      return this.$store.state.currentList;
+    }
   },
   created() {
     this.init();
@@ -206,7 +211,7 @@ export default {
         .then((res) => {
           if (res.data.status === "200") {
             console.log("意见数据", res.data.model);
-            let obj = {};
+            let obj = {};  
             this.opinionData = res.data.model;
             this.opinionData.forEach((item) => {
               if (obj[item.type]) {
@@ -221,6 +226,7 @@ export default {
                 this.activeNames.push(item.noteCode);
               }
             });
+            console.log("getOpinionData()_this.noteConfig", this.noteConfig)
             this.loading = false;
             this.getEditOpinion();
           }
@@ -241,6 +247,7 @@ export default {
           wfmRoleTypes: "todo,drafter",
         })
         .then((res) => {
+          console.log("getEditOpinion()_res.data.model:", res.data.model)
           if (res.data.status === "200") {
             let eum = {}; // 将意见元转换为枚举数据
             this.noteConfig.forEach((item) => {
@@ -250,7 +257,10 @@ export default {
             });
             let obj = {}; // 提取可编辑意见的回显数据
             this.opinionData.forEach((item) => {
-              //console.log("意见中的详情数据状态", this.currentProcess.state);
+
+              console.log("意见中的详情数据状态", this.currentProcess.state);
+              console.log("this.currentProcess.actDefId:", this.currentProcess.actDefId)
+              console.log('item.isSubmitAfter === "N":', item.isSubmitAfter === "N")
               if (
                 item.actDefId === this.currentProcess.actDefId &&
                 item.isSubmitAfter === "N" &&
@@ -264,11 +274,16 @@ export default {
                 };
               }
             });
+            console.log("可编辑意见的回显数据obj:",obj)
+            console.log("this.opinionConfig", this.opinionConfig)
             this.opinionConfig.forEach((item, i) => {
               this.opinionConfig.splice(i);
             });
+            console.log("this.opinionConfig spliced:", this.opinionConfig)
+            console.log("res.data.model.noteEdit:", res.data.model.noteEdit)
             if (res.data.model.noteEdit) {
               let arr = res.data.model.noteEdit.split(",");
+              console.log("arr", arr)
               arr.forEach((item) => {
                 this.opinionConfig.push({
                   noteId: item,
@@ -278,15 +293,22 @@ export default {
                 });
               });
             }
+            console.log("this.opinionConfig", this.opinionConfig)
           }
           //校验是否需要填写意见
-          var showNote = document.getElementById("showNoteText");
+          //opinionConfig.length>0 -> showNote
+          //判断dom存不存在
+          var showNoteDom = document.getElementById("showNoteText");
+        
+          console.log("showNoteDom", showNoteDom);
+          console.log("this.currentProcess.state",  this.currentProcess.state)
           if (
-            showNote != null &&
+            showNoteDom != null &&
             this.currentProcess.state == "closed.completed"
           ) {
-            showNote.hidden = true;
+            showNoteDom.hidden = true;
           }
+          
           // this.$store.commit("updateCount", 1);
         });
     },
@@ -295,7 +317,7 @@ export default {
       api.sealDetail({
         proInstId: this.currentProcess.proInstId,
       }).then((res) => {
-        console.log({ res });
+        console.log(" 获取用印申请明细列表 res.data.model", res.data.model);
         this.sealList = res.data.model;
         this.sealList.length > 0 && this.activeNames.push("sealDetail");
       });

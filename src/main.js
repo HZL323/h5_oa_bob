@@ -19,6 +19,7 @@ import store from './store/index.js'
 import './core/utils/tools'
 import Components from './components/index'
 import VConsose from 'vconsole'
+import ajax from 'vux/src/plugins/ajax';
 Vue.use(new VConsose())
 Vue.use(Components) // 全局注册组件
 Vue.use(ToastPlugin)
@@ -34,3 +35,4 @@ new Vue({
   components: { App },
   template: '<App/>'
 })
+
