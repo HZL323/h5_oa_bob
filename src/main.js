@@ -20,10 +20,27 @@ import './core/utils/tools'
 import Components from './components/index'
 import VConsose from 'vconsole'
 import ajax from 'vux/src/plugins/ajax';
-Vue.use(new VConsose())
+import axios from "axios";
+import qs from "qs";
+import cors from "cors"
+//axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8';
+axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
+//axios.defaults.headers.common['Access-Control-Allow-Origin'] = true;
+axios.interceptors.request.use((config)=>{
+  if(config.method === "post"){
+    config.data = qs.stringify(config.data);
+  }
+  return config;
+},(error) => {
+  return Promise.reject(error)
+})
+//Vue.use(cors({origin:['http://localhost:8089']}))
+
+//Vue.use(new VConsose())
 Vue.use(Components) // 全局注册组件
 Vue.use(ToastPlugin)
 Vue.use(LoadingPlugin)
+
 
 Vue.config.productionTip = false
 

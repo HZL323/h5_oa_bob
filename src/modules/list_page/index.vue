@@ -16,25 +16,33 @@
       fixed
       placeholder
     />
-    <div class="list-content">
-      <DropList :key="key" />
+    <van-sticky offset-top="46">
+      <van-search v-model="value" placeholder="请输入搜索关键词" @search="onSearch" shape="round"></van-search>
+    </van-sticky>
+
+    <div class="list-content">     
+      <DropList :key="key" ref="dropList" :searchParams="searchParams"/>
     </div>
   </div>
 </template>
 
 <script>
-import { NavBar } from "vant";
+import { NavBar, Search, Sticky } from "vant";
 import DropList from "../../components/DropList.vue";
 export default {
   name: "listPage",
-  components: {
+  components: { 
     [NavBar.name]: NavBar,
+    [Search.name]: Search,
+    [Sticky.name]: Sticky,
     DropList,
   },
   data() {
     return {
       active: 0,
       key: "bj",
+      value:"",
+      //searchParams: {}
     };
   },
   computed: {
@@ -44,6 +52,11 @@ export default {
     refresh() {
       return this.$store.state.refresh;
     },
+    searchParams(){
+      return{
+        title: this.value
+      }
+    }
   },
   activated() {
     if (this.refresh) {
@@ -66,11 +79,15 @@ export default {
       }
     },
     onClickLeft() {
+      this.value = "";
       this.$store.commit("setRefresh", false);
       this.$router.replace({
         name: "home",
       });
     },
+    onSearch(){
+      this.$refs.dropList.onRefresh()
+    }
   },
 };
 </script>

@@ -162,6 +162,7 @@ export default {
       //fromOut: true, // 是否从外部跳转进OA
       selectIsSubProcess: false,//是不是子流程
       subProcessName: "",//子流程名称
+      dropListCurrentList: ""
     };
   },
   computed: {
@@ -171,6 +172,7 @@ export default {
     currentProcess() {
       return this.$store.state.currentProcess;
     },
+    
     showTabbar() {
       if (this.$store.state.currentList !== "doing"  
       &&  this.$store.state.currentProcess.workitemName.indexOf("行领导传阅")===-1) {
@@ -206,10 +208,25 @@ export default {
     },
     currentList(){
       return this.$store.state.currentList;
+    },
+    sendDeptVerify(){
+      return this.$store.state.sendDeptVerify
+    },
+    sendDeptText(){
+      return this.$store.state.sendDeptText
+    },
+    businessTypeVerify(){
+      return this.$store.state.businessTypeVerify
+    },
+    businessTypeText(){
+      return this.$store.state.businessTypeText
     }
   },
   created() {
-     if (this.$route.query.from !== "oa") {
+    this.$store.commit("setCurrentList", this.$route.query.queryKind);
+    this.dropListCurrentList = this.$route.query.queryKind;
+    console.log("this.$route.query.queryKind:", this.$route.query.queryKind)
+    if (this.$route.query.from !== "oa") {
       if(this.$store.state.userInfo.userCode !== this.$route.query.userCode){
         api.checkUser({
             uCode: this.$route.query.userCode,
@@ -235,13 +252,15 @@ export default {
                       this.getFromConfig();
                       this.isSubmmit();
                       this.updateProcessState(); 
+                      if(this.currentList === "todo" || this.currentList === "seal"){
+                        this.isSubProcess();
+                      }
                     });
                 } 
             }
         })
       }else{
           this.$store.commit("setFromOut", true);
-          //this.$store.commit("setCurrentList", this.$route.query.queryKind);
           const queryKind = this.$route.query.queryKind;
           const workItemId = this.$route.query.workItemId;
           const pubFormDataId = this.$route.query.pubFormDataId;
@@ -252,10 +271,12 @@ export default {
             this.getBackLink();
             this.getFromConfig();
             this.isSubmmit();
-            this.updateProcessState(); 
+            this.updateProcessState();
+            if(this.currentList === "todo" || this.currentList === "seal"){
+              this.isSubProcess();
+            } 
           });
       } 
-
     } else {
       if (this.$store.state.currentList !== "doing") { 
           this.updateProcessState();
@@ -263,6 +284,9 @@ export default {
       this.getBackLink();
       this.getFromConfig();
       this.isSubmmit();
+      if(this.currentList === "todo" || this.currentList === "seal"){
+        this.isSubProcess();
+      }
     }
 
     setTimeout(() => {
@@ -271,9 +295,7 @@ export default {
         showText.hidden = true;
       }
     }, 1500);
-    if(this.currentList === "todo" || this.currentList === "seal"){
-      this.isSubProcess();
-    }
+    
   },
   methods: {
     isSubProcess(){
@@ -289,20 +311,23 @@ export default {
       }
      
       api.isSubProcess(isSubProcessParameter).then((res) => {
-        console.log("detail_page里面是否是子流程，接口返回值res：" + res);
-        console.log("res.data.model:"+res.data.model); 
-        console.log("res.data.model.subProcess:"+res.data.model.subProcess)
-        if(res.data.model && res.data.model.subProcess){
-          this.selectIsSubProcess = true;
-          this.subProcessName = res.data.model.subProcess;
-        };
-        if(this.selectIsSubProcess){
-          console.log("detail_page里面是子流程，设置为已办，控制提交按钮的显示")
-          this.$store.commit("setCurrentList", "doing");
-        }else{
-          console.log("this.selectIsSubProcess = false"); 
-          console.log("this.$route.query.queryKind", this.$route.query.queryKind)
-          this.$store.commit("setCurrentList", this.$route.query.queryKind);
+        if (res.data.status === "200") {
+          console.log("detail_page里面是否是子流程，接口返回值res：" + res);
+          console.log("res.data.model:"+res.data.model); 
+          //console.log("res.data.model.subProcess:"+res.data.model.subProcess)
+          if(res.data.model && res.data.model.subProcess){
+            this.selectIsSubProcess = true;
+            this.subProcessName = res.data.model.subProcess;
+          };
+          if(this.selectIsSubProcess){
+            console.log("detail_page里面是子流程，设置为已办，控制提交按钮的显示")
+            this.$store.commit("setCurrentList", "doing");
+            console.log("设置完doing之后this.$route.query.queryKind: ", this.$route.query.queryKind)
+          }else{
+            console.log("this.selectIsSubProcess = false"); 
+            console.log("this.$route.query.queryKind", this.$route.query.queryKind)
+            this.$store.commit("setCurrentList", this.$route.query.queryKind);
+          }
         }
       });
     },
@@ -353,19 +378,18 @@ export default {
               //console.log("itemContent",item)
               if (
                 item.extendKey === "isMustEditField" ||
-                item.extendKey === "wordNoEdit" ||
+                //item.extendKey === "wordNoEdit" ||
                 //item.extendKey === "subProcess" ||
-                item.actDefId === "pb" ||
-                item.extendKey === "isFjSeal"
-                // || item.extendKey === "deptCount"
+                item.extendKey === "isMustSealField" || //填写申请
+                item.actDefId === "pb" || //排版
+                item.extendKey === "isFjSeal" //商务用印申请 具体说明查询explainExtendAttrDialog
               ) {
                 this.SubmitPermission = false;
               }
               //处理下，判断意见是否必填   20220714
               if(item.extendKey ==="noteIsRequired" && item.extendValue==="0"){
+                console.log("this.noteRequired = false")
                 this.noteRequired = false;
-              }else{
-                this.noteRequired = true;
               }
               //判断是否有发送部门字段
               if(item.extendKey === "isMustEditField" && item.extendValue === "sendDept"){
@@ -376,7 +400,6 @@ export default {
         });
     },
     getFromConfig() {
-
       // 获取表单字段和意见字段（修改逻辑，加入子流程验证环节）
       //console.log("-----currentProcess------",this.currentProcess)
       api
@@ -466,6 +489,7 @@ export default {
     onClickLeft() {
       //处理行领导传阅，关闭即签收，结束流程问题
       //console.log("---看看是不是行领导传阅环节----",this.currentProcess.workitemName)
+      
       if(this.currentProcess.workitemName.indexOf("行领导传阅") !=-1){
         api
         .finishCy({
@@ -517,25 +541,28 @@ export default {
                 closeOnClickOverlay: true,
               })
                 .then(() => {
+                  this.$store.commit("setCurrentList", this.dropListCurrentList);
                   this.$store.commit("setFromOut", false);
                   this.$router.replace({
                     name: this.preRoute,
                   });
                 })
                 .catch((action) => {
-                  //console.log("action", action);
+                  console.log("action", action);
+                  //点击蒙层action为overlay
                   if (action !== "overlay") {
-                    setTimeout(() => {
-                      closeWindow();
-                    }, 2000);
+                    closeWindow()
                   }
                 });
               return;
+            }else{
+                this.$store.commit("setCurrentList", this.dropListCurrentList);
             }
-
+            
             this.$router.replace({
               name: this.preRoute,
             });
+            console.log("点击左箭头：", this.$route.query.queryKind)
       }
     },
     onClickRight() {
@@ -545,6 +572,20 @@ export default {
       });
     },
     onCommit() {
+      
+      if(this.sendDeptVerify && (this.$store.state.currentList === 'todo' || this.$store.state.currentList === 'seal')){
+        if (this.sendDeptText == null || this.sendDeptText == "") {
+            Toast("请选择发送部门");
+            return;
+        } 
+      }
+      if(this.businessTypeVerify && (this.$store.state.currentList === 'todo' || this.$store.state.currentList === 'seal')){
+        if(this.businessTypeText == null || this.businessTypeVerify == ""){
+          Toast("请选择业务类型");
+          return;
+        }
+      }
+
       // 提交
       if (!this.SubmitPermission) {
         Toast("请前往PC端提交!");
@@ -555,6 +596,7 @@ export default {
       //console.log("isiOS", isiOS);
       for (let i = 0; i < this.opinionConfig.length; i++) {
         //意见必填时再进行意见填写  20220714
+        console.log(this.noteRequired)
         if(this.noteRequired){
           //如果输入框内容是空的
           if (!this.opinionConfig[i].noteContent) {

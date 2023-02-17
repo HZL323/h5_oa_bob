@@ -140,6 +140,7 @@ import {
   Skeleton,
   Button,
   Popup,
+  Toast,
 } from "vant";
 import { api } from "../core/api/index";
 import SealList from "./SealList.vue";
@@ -198,21 +199,34 @@ export default {
   },
   methods: {
     init() {
+      
       this.getOpinion();
       // this.getEditOpinion();
+      this.getCollectedOpinion();
+    },
+    getCollectedOpinion(){
+      api.getCollectedOpinion({
+        userId: this.$store.state.userInfo.userId,
+      }).then((res) => {
+        if (res.data.status === "200") {
+          for(let i = 0; i < res.data.model.noteList.length; i++){
+            this.columns.push(res.data.model.noteList[i].note)
+          }  
+        }
+      })
     },
     getOpinion() {
       // 获取意见数据
       api
         .getOpinionData({
           proInstId: this.currentProcess.proInstId,
-          configCode: this.currentProcess.configCode,
+          configCode: this.currentProcess.configCode,   
         })
         .then((res) => {
           if (res.data.status === "200") {
-            console.log("意见数据", res.data.model);
             let obj = {};  
             this.opinionData = res.data.model;
+            console.log("opinionData是后端返回的全部意见数据，包括必填和非必填", this.opinionData)
             this.opinionData.forEach((item) => {
               if (obj[item.type]) {
                 obj[item.type].push(item);
@@ -220,19 +234,28 @@ export default {
                 obj[item.type] = new Array(item);
               }
             });
+            console.log("obj是对type相同的归到同一类", obj);
+            
             this.noteConfig.forEach((item) => {
+              //console.log("noteConfig_item", item)
               item.noteData = obj[item.noteCode] || [];
               if (item.noteData.length > 0) {
                 this.activeNames.push(item.noteCode);
               }
             });
-            console.log("getOpinionData()_this.noteConfig", this.noteConfig)
+            console.log("noteConfig表示所有意见框，空白的或者有意见的意见框总和", this.noteConfig)
+            console.log("activeNames表示所有已经填写意见的意见框名称", this.activeNames)
             this.loading = false;
             this.getEditOpinion();
           }
         });
     },
     getEditOpinion() {
+      Toast.loading({
+        message: "加载中...",
+        forbidClick: true,
+        duration: 0,
+      });
       // 获取可编辑意见
       api
         .getOpinionConfig({
@@ -247,20 +270,17 @@ export default {
           wfmRoleTypes: "todo,drafter",
         })
         .then((res) => {
+          Toast.clear();
           console.log("getEditOpinion()_res.data.model:", res.data.model)
           if (res.data.status === "200") {
             let eum = {}; // 将意见元转换为枚举数据
             this.noteConfig.forEach((item) => {
-              eum[item.noteCode] = {
-                noteName: item.noteName,
+              eum[item.noteCode] = {//noteCode：意见框的字母名称比如"fhbmhqyj"
+                noteName: item.noteName,//noteName：意见框的中文名称比如“分行部门会签意见”
               };
             });
-            let obj = {}; // 提取可编辑意见的回显数据
+            let obj = {}; // 提取可编辑意见的回显数据?? 这里的obj是什么
             this.opinionData.forEach((item) => {
-
-              console.log("意见中的详情数据状态", this.currentProcess.state);
-              console.log("this.currentProcess.actDefId:", this.currentProcess.actDefId)
-              console.log('item.isSubmitAfter === "N":', item.isSubmitAfter === "N")
               if (
                 item.actDefId === this.currentProcess.actDefId &&
                 item.isSubmitAfter === "N" &&
@@ -274,34 +294,35 @@ export default {
                 };
               }
             });
-            console.log("可编辑意见的回显数据obj:",obj)
-            console.log("this.opinionConfig", this.opinionConfig)
+            const copy = Object.assign({}, obj);
+            console.log("可编辑意见的回显数据obj:",copy)
+            console.log("可编辑意见opinionConfig", this.opinionConfig)
             this.opinionConfig.forEach((item, i) => {
               this.opinionConfig.splice(i);
             });
-            console.log("this.opinionConfig spliced:", this.opinionConfig)
-            console.log("res.data.model.noteEdit:", res.data.model.noteEdit)
+            console.log("可编辑意见opinionConfig_slice", this.opinionConfig)
+            console.log("可编辑意见opinionConfig_长度", this.opinionConfig.length)
+            console.log("res.data.model.noteEdit", res.data.model.noteEdit) //比如yydbyj
             if (res.data.model.noteEdit) {
               let arr = res.data.model.noteEdit.split(",");
-              console.log("arr", arr)
               arr.forEach((item) => {
                 this.opinionConfig.push({
-                  noteId: item,
-                  noteName: eum[item].noteName,
+                  noteId: item,//比如yydbyj
+                  noteName: eum[item].noteName, //比如"用印督办意见"
                   noteContent: obj[item] ? obj[item].value : "",
                   id: obj[item] ? obj[item].id : "",
                 });
               });
+              console.log("currentList" , this.currentList)
+              
             }
-            console.log("this.opinionConfig", this.opinionConfig)
+            console.log("可编辑意见opinionConfig_push", this.opinionConfig)
+            console.log("可编辑意见opinionConfig_push_length", this.opinionConfig.length)
           }
           //校验是否需要填写意见
           //opinionConfig.length>0 -> showNote
           //判断dom存不存在
           var showNoteDom = document.getElementById("showNoteText");
-        
-          console.log("showNoteDom", showNoteDom);
-          console.log("this.currentProcess.state",  this.currentProcess.state)
           if (
             showNoteDom != null &&
             this.currentProcess.state == "closed.completed"
@@ -317,7 +338,6 @@ export default {
       api.sealDetail({
         proInstId: this.currentProcess.proInstId,
       }).then((res) => {
-        console.log(" 获取用印申请明细列表 res.data.model", res.data.model);
         this.sealList = res.data.model;
         this.sealList.length > 0 && this.activeNames.push("sealDetail");
       });

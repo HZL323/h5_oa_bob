@@ -5,8 +5,20 @@
         <img class="logo" src ="../../assets/img/logo.png" alt="" srcset=""/>
         <img class="word" src ="../../assets/img/word.png" alt="" srcset=""/>
       </div>
-      <div class="user-info van-ellipsis" @click="show = true">
+      <div style="display: flex; align-items: center;">
+        <div class="user-info van-ellipsis" >
         {{ welcome + "：" + userInfo.userName + "_" + userInfo.ou }}
+        </div>
+        <div>
+          <van-button
+            class="change-dept"
+            color="#ff4444"
+            round
+            @click="show = true"
+            size="small"
+            >切换部门
+          </van-button>
+        </div>
       </div>
     </van-sticky>
     <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
@@ -36,14 +48,25 @@
                   :key="item_.id"
                   @click="rowClick(item.type, item_)"
                 >
-                  <div v-if="item.title !='已办' && item_.priority === '001'">
+                  <div v-if="item.type !='doing' && item_.priority === '001'">
                   <img style="height:40px;" src ="../../assets/img/icon_flag_blue.png"></div>
-                  <div v-if="item.title !='已办' && item_.priority === '002'">
+                  <div v-if="item.type !='doing' && item_.priority === '002'">
                   <img style="height:40px;" src ="../../assets/img/icon_flag_yellow.png"></div>
-                  <div v-if="item.title !='已办' && item_.priority === '003'">
+                  <div v-if="item.type !='doing' && item_.priority === '003'">
                   <img style="height:40px;" src ="../../assets/img/icon_flag_red.png"></div>
-                  <div v-if="item_.priority ===null || item_.priority ===''">
+                  <div v-if="item.type !='doing' && (item_.priority ===null || item_.priority ==='')">
                   <img style="height:40px;" src ="../../assets/img/icon_flag_white.png"></div>
+
+                  <!-- 已办 -->
+                  <div v-if="item.type == 'doing' && item_.priorityCode === '001'">
+                  <img style="height:40px;" src ="../../assets/img/icon_flag_blue.png"></div>
+                  <div v-if="item.type =='doing' && item_.priorityCode === '002'">
+                  <img style="height:40px;" src ="../../assets/img/icon_flag_yellow.png"></div>
+                  <div v-if="item.type =='doing' && item_.priorityCode === '003'">
+                  <img style="height:40px;" src ="../../assets/img/icon_flag_red.png"></div>
+                  <div v-if="item.type =='doing' && (item_.priorityCode ===null || item_.priorityCode ==='')">
+                  <img style="height:40px;" src ="../../assets/img/icon_flag_white.png"></div>
+
                   <div class="wu-list-content">
                     <div class="title">
                     {{ item_.title }}</div>          
@@ -85,15 +108,7 @@
 
 <script>
 import { api } from "../../core/api/index";
-import {
-  PullRefresh,
-  Sticky,
-  Collapse,
-  CollapseItem,
-  Icon,
-  Picker,
-  Popup,
-} from "vant";
+import {PullRefresh, Sticky, Collapse, CollapseItem, Icon, Picker, Popup, Button} from "vant";
 export default {
   name: "homePage",
   components: {
@@ -104,6 +119,7 @@ export default {
     [Icon.name]: Icon,
     [Picker.name]: Picker,
     [Popup.name]: Popup,
+    [Button.name]: Button
   },
   data() {
     return {
@@ -163,6 +179,7 @@ export default {
   },
   activated() {
     if (this.refresh) {
+      console.log("refres被调用")
       this.loadData();
     }
   },
@@ -274,6 +291,7 @@ export default {
       api.loadUserDeptList({ userCode: this.userInfo.userCode }).then((res) => {
         if (res.data.status === "200") {
           this.columns = res.data.model;
+          console.log("this.columns", this.columns)
         }
       });
     },
@@ -335,6 +353,8 @@ export default {
 
 .home-wrap {
   height: 100%;
+  
+  
   .banner {
     height: 120px;
     background-color: #ffffff;
@@ -383,6 +403,11 @@ export default {
     padding: 5px;
     border-top: 1px solid rgba(255, 68, 68, 0.3);
     border-bottom: 1px solid rgba(255, 68, 68, 0.3);
+    flex: 1;
+    .change-dept {
+      width: 100px;
+      height: 32px;
+    }
   }
 
   .empty {

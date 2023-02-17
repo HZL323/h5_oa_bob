@@ -15,7 +15,7 @@
       <div class="title">
         <div class="vertical-divider"></div>
         <div class="process-title">{{ processTitle }}</div>
-        <div v-if="!!senddeptverify && ifSendDept">
+        <div v-if="!!sendDeptverify && ifSendDept">
           <van-button
             class="send-dept"
             color="#ff4444"
@@ -23,6 +23,16 @@
             size="small"
             @click="senDept"
             >发送部门</van-button
+          >
+        </div>
+        <div v-if="!!businessTypeVerify && ifBusinessType">
+          <van-button
+            class="business-type"
+            color="#ff4444"
+            round
+            size="small"
+            @click="businessType"
+            >业务类型</van-button
           >
         </div>
       </div>
@@ -48,11 +58,26 @@
           title="选择部门"
           show-toolbar
           :columns="columns"
-          @confirm="onConfirm"
-          @cancel="onCancel"
+          @confirm="onConfirm1"
+          @cancel="onCancel1"
           swipe-duration="500"
           value-key="deptName"
-          default-index="0"
+        />
+      </van-popup>
+      <van-popup
+        v-model="showBusinessType"
+        round
+        :style="{ height: '70%' }"
+        position="bottom"
+      >
+        <van-picker
+          title="选择业务类型"
+          show-toolbar
+          :columns="businessTypeColumns"
+          @confirm="onConfirm2"
+          @cancel="onCancel2"
+          swipe-duration="500"
+          value-key="value"
         />
       </van-popup>
     </div>
@@ -76,8 +101,11 @@ export default {
       formData: {}, // 表单数据
       processTitle: "", // 流程标题
       show: false,
-      senddeptverify: null,
+      showBusinessType: false,
+      sendDeptverify: null,
+      businessTypeVerify: null,
       columns: [],
+      businessTypeColumns: [],
       gwCode: "",
     };
   },
@@ -96,6 +124,9 @@ export default {
     },
     userInfo() {
       return this.$store.state.userInfo;
+    },
+    ifBusinessType() {
+      return this.$store.state.currentList === 'todo' || this.$store.state.currentList === 'seal';
     },
     ifSendDept() {
       return this.$store.state.currentList === 'todo' || this.$store.state.currentList === 'seal';
@@ -117,6 +148,11 @@ export default {
       });
     },
     getFormData() {
+      Toast.loading({
+        message: "加载中...",
+        forbidClick: true,
+        duration: 0,
+      });
       // 获取表单数据
       api
         .getFormData({
@@ -132,6 +168,7 @@ export default {
           wfmRoleTypes: "todo,drafter",
         })
         .then((res) => {
+          Toast.clear();
           console.log("获取dataForm", res.data.model.dataForm);
           if (res.data.status === "200") {
             this.formData = res.data.model.dataForm
@@ -208,6 +245,8 @@ export default {
           return reg("PRINT_WAY", "printWay");
         case "textSourceText":
           return reg("TEXT_SOURCE", "textSource");
+        case "businessType":
+          return reg("BUSINESS_TYPE", "businessType");
         case "sysFilePositionText":
           return formatArr("sysFilePosition");
         default:
@@ -221,12 +260,19 @@ export default {
         configId: this.currentProcess.configId,
         proDirId: this.currentProcess.proDirId,
       }
+      let isBusinessType = {
+        extendKey: "isCanEditField",
+        actDefId: this.currentProcess.actDefId,
+        configId: this.currentProcess.configId,
+        proDirId: this.currentProcess.proDirId
+      }
       api.getActivityExtendConfigByName(isSendDeptVerifyParameter).then((res) => {
         if (res.data.status === '200') {
           if(res.data.model && res.data.model.sendDeptVerify){
-            this.senddeptverify = true;
+            this.sendDeptverify = true;
+            this.$store.commit("setSendDeptVerify", this.sendDeptverify);
           };
-          if(this.senddeptverify === true){
+          if(this.sendDeptverify === true){
             let assignGwParameter = {
               extendKey: "assignGw",
               actDefId: this.currentProcess.actDefId,
@@ -255,17 +301,6 @@ export default {
                         })
                       }
                       console.log('发送部门',res);
-              
-                      // for(let key in res.data.model){
-                      //   console.log(key)
-                      //   let left = key.split("|")[0];//|左边是部门中文名称
-                      //   let right = key.split("|")[1]//右边是部门id
-                      //   this.columns.push({
-                      //     deptName: left,
-                      //     deptId: right,
-                      //     users: res.data.model[key]
-                      //   })
-                      // }
                     }
                   })
                 }
@@ -274,17 +309,59 @@ export default {
           }
         }
       });
+      api.getActivityExtendConfigByName(isBusinessType).then((res)=>{
+        if (res.data.status === '200') {
+          if(res.data.model && res.data.model.isCanEditField == "businessTypeText"){
+            this.businessTypeVerify = true;
+            this.$store.commit("setBusinessTypeVerify", this.businessTypeVerify);
+            this.businessTypeColumns = []
+            // this.businessTypeColumns.push({
+            //   key:888,
+            //   value:"hhh",
+            //   sortNum: 888
+            // })
+            // this.businessTypeColumns.push({
+            //   key:777,
+            //   value:"rrr",
+            //   sortNum: 777
+            // })
+            function compare(property){
+              return function(a, b){
+                var value1 = a[property];
+                var value2 = b[property];
+                return value1 - value2;
+              }
+            }
+            // console.log("this.enumerationData[BUSINESS_TYPE]:", this.enumerationData["BUSINESS_TYPE"]);
+            
+            for(let key in this.enumerationData["BUSINESS_TYPE"]){
+                this.businessTypeColumns.push({
+                  key: key,
+                  value: this.enumerationData["BUSINESS_TYPE"][key].value,
+                  sort: this.enumerationData["BUSINESS_TYPE"][key].sortNum
+                })
+            }
+            this.businessTypeColumns.sort(compare("sortNum"))
+          };
+        }
+      })
     },
     formClick(item) {
       console.log(item);
       if (item.colCode === "sendDeptText") {
         this.show = true;
       }
+      if (item.colCode === "businessTypeText") {
+        this.showBusinessType = true;
+      }
     },
     senDept() {
       this.show = true
     },
-    onConfirm(data, index) {
+    businessType(){
+      this.showBusinessType = true
+    },
+    onConfirm1(data, index) {
       // 切换部门确定
       if (!data.users) {
         Toast('您选择的发送部门下没有指定岗位的人员，请联系管理员')
@@ -294,16 +371,29 @@ export default {
       this.$set(this.formData, 'sendDept', data.deptId)
       this.$set(this.formData, 'sendUserIds', data.users)
       this.$store.commit('setDataForm', this.formData);
+      this.$store.commit('setSendDeptText', data.deptName);
       console.log("this.formData",this.formData)
       console.log("data.dept", data.dept)
       console.log("data.users", data.users)
       this.show = false;
       Toast(`当前发送部门为：${data.deptName}`)
     },
-    onCancel() {
+     onConfirm2(data, index) {
+      this.$set(this.formData, 'businessTypeText', data.value)
+      this.$set(this.formData, 'businessType', data.key)
+      this.$store.commit('setDataForm', this.formData);
+      this.$store.commit("setBusinessTypeText", data.value);
+      console.log("this.formData",this.formData)
+      this.showBusinessType = false;
+      Toast(`当前业务类型为：${data.value}`)
+    },
+    onCancel1() {
       // 切换部门取消
       this.show = false;
     },
+    onCancel2(){
+      this.showBusinessType = false;
+    }
   },
 };
 </script>
@@ -388,6 +478,10 @@ export default {
   }
 
   .send-dept {
+    width: 100px;
+    height: 32px;
+  }
+  .business-type {
     width: 100px;
     height: 32px;
   }

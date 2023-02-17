@@ -129,7 +129,8 @@ export default {
       selectIsSubProcess: false,//所选的是不是子流程
       isZhyyjh: false,//当前环节是不是支行用印校核
       subProcessName: "",//子流程的名称
-      sendDeptVerify: false //是不是需要填写发送部门
+      //sendDeptVerify: false, //是不是需要填写发送部门
+      //businesssTypeVerify: false //是不是需要填写业务类型
     };
   },
   computed: {
@@ -138,6 +139,9 @@ export default {
     },
     currentProcess() {
       return this.$store.state.currentProcess;
+    },
+    noteRequired(){
+      return this.$store.state.noteRequired;
     },
     reg() {
       return new RegExp(`(.*${this.value}.*)$`);
@@ -151,26 +155,43 @@ export default {
     dataForm() {
       return this.$store.state.dataForm;
     },
+    businesssTypeVerify(){
+      return this.$store.state.businessTypeVerify;
+    },
+    sendDeptVerify(){
+      return this.$store.state.sendDeptVerify;
+    }
   },
   created() {
     this.loadData();
   },
   methods: {
     loadData() {
-      console.log("加载完立马打印此刻的currentProcess", this.currentProcess)
-      //判断当前环节是不是需要填写发送部门，比如支行用印校核环节，填写完需要更新表单数据
-      let isSendDeptVerifyParameter = {
-        extendKey: "sendDeptVerify",
-        actDefId: this.currentProcess.actDefId,
-        configId: this.currentProcess.configId,
-        proDirId: this.currentProcess.proDirId,
-      }
-      api.getActivityExtendConfigByName(isSendDeptVerifyParameter).then((res) => {
-        console.log("判断当前环节是不是需要填写发送部门：" + res);
-        if(res.data.model && res.data.model.sendDeptVerify){
-          this.sendDeptVerify = true;
-        };
-      });
+      // //判断当前环节是不是需要填写发送部门，比如支行用印校核环节，填写完需要更新表单数据
+      // let isSendDeptVerifyParameter = {
+      //   extendKey: "sendDeptVerify",
+      //   actDefId: this.currentProcess.actDefId,
+      //   configId: this.currentProcess.configId,
+      //   proDirId: this.currentProcess.proDirId,
+      // }
+      // api.getActivityExtendConfigByName(isSendDeptVerifyParameter).then((res) => {
+      //   console.log("判断当前环节是不是需要填写发送部门：" + res);
+      //   if(res.data.model && res.data.model.sendDeptVerify){
+      //     this.sendDeptVerify = true;
+      //   };
+      // });
+      // let isBusinessTypeVerifyParameter = {
+      //   extendKey: "isCanEditField",
+      //   actDefId: this.currentProcess.actDefId,
+      //   configId: this.currentProcess.configId,
+      //   proDirId: this.currentProcess.proDirId,
+      // }
+      // api.getActivityExtendConfigByName(isBusinessTypeVerifyParameter).then((res) => {
+      //   console.log("判断当前环节是不是需要填写业务类型：" + res);
+      //   if(res.data.model && res.data.model.isCanEditField == "businessTypeText"){
+      //     this.businesssTypeVerify = true;
+      //   };
+      // });
       //查询下一环节
       api
         .queryNextLink({
@@ -241,9 +262,10 @@ export default {
           proDirId: this.currentProcess.proDirId,
         }
         api.isSubProcess(isSubProcessParameter).then((res) => {
-          console.log("是否是子流程接口返回值res：" + res);
+          console.log("是否是子流程接口返回值res：" + res.data.model.subProcess);
           if(res.data.model && res.data.model.subProcess){
             this.selectIsSubProcess = true;
+            console.log("结果:", this.selectIsSubProcess)
             this.subProcessName = res.data.model.subProcess;
           };
         });
@@ -303,14 +325,34 @@ export default {
           },
         ],
       };
-      // //校验是否支行用印流程
+      console.log("this.noteRequired", this.noteRequired)
+      if(this.noteRequired){
+          //如果输入框内容是空的
+          if (!this.opinionConfig[0].noteContent) {
+            Toast("请填写审批意见");
+            return;
+          }
+      }
+      //校验是否支行用印流程
       if(this.sendDeptVerify == true){
         //校验是否填写了发送部门
         if(this.dataForm.sendDept === "" || this.dataForm.sendDeptText === ""){
           Toast(`请填写发送部门再提交`)
           return;
         }else{
-          this.modifySendDeptAndUsers();
+          this.modifySendDeptAndUsers()
+        }
+      }
+      //校验是否是支行用印副中心流程
+      console.log("this.businesssTypeVerify", this.businesssTypeVerify);
+      console.log("this.dataForm.businessTyp", this.dataForm.businessType)
+      if(this.businesssTypeVerify == true){
+        //校验是否填写了业务类型
+        if(this.dataForm.businessType === "" || this.dataForm.businessTypeText === ""){
+          Toast(`请填写业务类型再提交`)
+          return;
+        }else{
+          this.addBusinessType()
         }
       }
       //校验是否必填，必填的话调用意见保存方法 20220714
@@ -511,6 +553,7 @@ export default {
     modifySendDeptAndUsers(){
       //保存发送部门以及对应的人员到业务表中
       console.log("modifySendDeptAndUsers", this.dataForm)
+      
       if(this.dataForm.sendDept === null || this.dataForm.sendDept === ""){
         Toast('sendDept字段为空，请填写发送部门再提交');
       }
@@ -525,12 +568,66 @@ export default {
         sendUserIds : this.dataForm.sendUserIds,
         id : this.dataForm.id
       }
-      console.log(params)
+      let distinguishFhbmYyzhiParameter = {
+        extendKey: "distinguishFhbmYyzhi",
+        actDefId: this.currentProcess.actDefId,
+        configId: this.currentProcess.configId,
+        proDirId: this.currentProcess.proDirId,
+      }
+      console.log("--------0----------")
+      api.getActivityExtendConfigByName(distinguishFhbmYyzhiParameter).then((res) => {
+        console.log("-------1-----------")
+        if(res.data.model && res.data.model.distinguishFhbmYyzhi && res.data.model.distinguishFhbmYyzhi == "fhbm"){
+            console.log("---------2---------")
+            api.yyfhbmModifySendDeptAndUsers(params).then((res) => {
+              console.log(res.data.model.distinguishFhbmYyzhi)
+              if (res.data.status === "200") {
+                console.log("分行部门发送部门以及指定人员更新成功")
+              }
+            });
+        };
+        if(res.data.model && res.data.model.distinguishFhbmYyzhi && res.data.model.distinguishFhbmYyzhi == "yyzhi"){
+            console.log("----------3--------")
+            console.log(res.data.model.distinguishFhbmYyzhi);
+            console.log(params)
+            // api.getActivityExtendConfigByName(distinguishFhbmYyzhiParameter).then((res) => {
+              
+            //   })
+            api.yyzhiModifySendDeptAndUsers(params).then((res) => {
+              if (res.data.status === "200") {
+                console.log("支行发送部门以及指定人员更新成功")
+              }
+            });
+        }
+        if(res.data.model && res.data.model.distinguishFhbmYyzhi && res.data.model.distinguishFhbmYyzhi == "yyfzxzhi"){
+            console.log("----------3--------")
+            console.log(res.data.model.distinguishFhbmYyzhi);
+            console.log(params)
+            // api.getActivityExtendConfigByName(distinguishFhbmYyzhiParameter).then((res) => {
+              
+            //   })
+            api.yyfzxzhiModifySendDeptAndUsers(params).then((res) => {
+              if (res.data.status === "200") {
+                console.log("支行副中心发送部门以及指定人员更新成功")
+              }
+            });
+        }
+      });
       
-      api.modifySendDeptAndUsers(params).then((res) => {
-         if (res.data.status === "200") {
-           console.log("发送部门以及指定人员更新成功")
-         }
+    },
+    addBusinessType(){
+      if(this.dataForm.businessType === null || this.dataForm.businessTypeText === ""){
+        Toast('businessType或businessTypeText字段为空，请填写发送部门再提交');
+      }
+      let params = {
+        businessType : this.dataForm.businessType,
+        businessTypeText : this.dataForm.businessTypeText,
+        id : this.dataForm.id
+      }
+      api.addBusinessType(params).then((res) => {
+        if (res.data.status === "200") {
+          console.log("业务类型更新成功")
+        }
       });
     },
     onSave() {

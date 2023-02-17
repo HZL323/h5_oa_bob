@@ -1767,3 +1767,25 @@ export function getSendDept(data) {
         }, 1000)
     })
 }
+// 获取可发送部门
+export function getCollectedOpinion(data) {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve({
+                data: {
+                    model: {
+                        noteList:[
+                            {
+                                note: '批准1'
+                            },
+                            {
+                                note: "批准2"
+                            }
+                        ]
+                    },
+                    status: '200'
+                }
+            })
+        }, 1000)
+    })
+}
