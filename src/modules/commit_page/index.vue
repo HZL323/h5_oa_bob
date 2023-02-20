@@ -129,8 +129,6 @@ export default {
       selectIsSubProcess: false,//所选的是不是子流程
       isZhyyjh: false,//当前环节是不是支行用印校核
       subProcessName: "",//子流程的名称
-      //sendDeptVerify: false, //是不是需要填写发送部门
-      //businesssTypeVerify: false //是不是需要填写业务类型
     };
   },
   computed: {
@@ -167,31 +165,6 @@ export default {
   },
   methods: {
     loadData() {
-      // //判断当前环节是不是需要填写发送部门，比如支行用印校核环节，填写完需要更新表单数据
-      // let isSendDeptVerifyParameter = {
-      //   extendKey: "sendDeptVerify",
-      //   actDefId: this.currentProcess.actDefId,
-      //   configId: this.currentProcess.configId,
-      //   proDirId: this.currentProcess.proDirId,
-      // }
-      // api.getActivityExtendConfigByName(isSendDeptVerifyParameter).then((res) => {
-      //   console.log("判断当前环节是不是需要填写发送部门：" + res);
-      //   if(res.data.model && res.data.model.sendDeptVerify){
-      //     this.sendDeptVerify = true;
-      //   };
-      // });
-      // let isBusinessTypeVerifyParameter = {
-      //   extendKey: "isCanEditField",
-      //   actDefId: this.currentProcess.actDefId,
-      //   configId: this.currentProcess.configId,
-      //   proDirId: this.currentProcess.proDirId,
-      // }
-      // api.getActivityExtendConfigByName(isBusinessTypeVerifyParameter).then((res) => {
-      //   console.log("判断当前环节是不是需要填写业务类型：" + res);
-      //   if(res.data.model && res.data.model.isCanEditField == "businessTypeText"){
-      //     this.businesssTypeVerify = true;
-      //   };
-      // });
       //查询下一环节
       api
         .queryNextLink({

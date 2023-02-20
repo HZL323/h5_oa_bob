@@ -338,7 +338,7 @@ export default {
                 this.businessTypeColumns.push({
                   key: key,
                   value: this.enumerationData["BUSINESS_TYPE"][key].value,
-                  sort: this.enumerationData["BUSINESS_TYPE"][key].sortNum
+                  sortNum: this.enumerationData["BUSINESS_TYPE"][key].sortNum
                 })
             }
             this.businessTypeColumns.sort(compare("sortNum"))

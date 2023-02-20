@@ -172,7 +172,9 @@ export default {
     currentProcess() {
       return this.$store.state.currentProcess;
     },
-    
+    dataForm(){
+      return this.$store.state.dataForm;
+    },
     showTabbar() {
       if (this.$store.state.currentList !== "doing"  
       &&  this.$store.state.currentProcess.workitemName.indexOf("行领导传阅")===-1) {
@@ -574,13 +576,13 @@ export default {
     onCommit() {
       
       if(this.sendDeptVerify && (this.$store.state.currentList === 'todo' || this.$store.state.currentList === 'seal')){
-        if (this.sendDeptText == null || this.sendDeptText == "") {
+        if(this.dataForm.sendDeptText == null || this.dataForm.sendDeptText == ""){
             Toast("请选择发送部门");
             return;
         } 
       }
       if(this.businessTypeVerify && (this.$store.state.currentList === 'todo' || this.$store.state.currentList === 'seal')){
-        if(this.businessTypeText == null || this.businessTypeVerify == ""){
+        if(this.dataForm.businessTypeText == null || this.this.dataForm.businessTypeText == ""){
           Toast("请选择业务类型");
           return;
         }
