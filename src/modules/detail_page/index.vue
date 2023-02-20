@@ -582,7 +582,7 @@ export default {
         } 
       }
       if(this.businessTypeVerify && (this.$store.state.currentList === 'todo' || this.$store.state.currentList === 'seal')){
-        if(this.dataForm.businessTypeText == null || this.this.dataForm.businessTypeText == ""){
+        if(this.dataForm.businessType == null || this.dataForm.businessType == ""){
           Toast("请选择业务类型");
           return;
         }
