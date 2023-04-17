@@ -17,6 +17,7 @@
         :linkTitle="linkTitle"
         :currentRadio="radio"
         :currentSelectData="selectData"
+        :selectIsSubProcess="selectIsSubProcess"
       />
     </div>
     <div class="selet-ling-wrap" v-else>
@@ -69,7 +70,6 @@
         </div>
       </div>
       <div class="footer-wrap">
-        <!-- <van-tabbar :safe-area-inset-bottom="true" :placeholder="true"> -->
         <div class="btn-wrap">
           <van-button
             color="#ff4444"
@@ -80,7 +80,6 @@
             >确定</van-button
           >
         </div>
-        <!-- </van-tabbar> -->
       </div>
     </div>
   </div>
@@ -184,22 +183,20 @@ export default {
           },
         })
         .then((res) => {
-          if (res.data.status === "200") {
-            console.log("----下一环节返回内容----", res.data);
-            //console.log("----当前环节资源----",this.currentProcess)
-            if (res.data.model.flag == false) {
-              console.log("会签环节直接提交?????");
-              this.onMultiCommit();
-            } else {
-              console.log("不是会签环节？？？");
-              this.linkList = res.data.model.nextActDefIds.map((item) => ({
-                ...item,
-                ...{ data: [] },
-              }));
+            console.log("报错了")
+            if (res.data.status === "200") {
+                console.log("----下一环节返回内容----", res.data);
+                if (res.data.model.flag == false) {
+                    this.onMultiCommit();
+                } else {
+                    this.linkList = res.data.model.nextActDefIds.map((item) => ({
+                        ...item,
+                        ...{ data: [] },
+                    }));
+                }
             }
-          }
-          this.loading = false;
-        });
+            this.loading = false;
+         });
     },
     onClickLeft() {
       this.$router.replace({
@@ -270,6 +267,7 @@ export default {
       this.flag = false;
     },
     onCommit() {
+        console.log("所选环节为结束环节才走这个onCommit")
       // 提交
       if (this.currentProcess.processName.indexOf("子流程") > 0) {
         console.log("---当前流程是子流程---");
@@ -351,11 +349,11 @@ export default {
       //如果是子流程
       if (this.selectIsSubProcess) {
         data.isMobile = true;
-        console.log("这里采用设置store中的dataForm中的值");
         data.dataForm = this.dataForm;
         console.log("data.dataForm:", data.dataForm);
         console.log("data.wfmData", data.wfmData);
         setTimeout(() => {
+          console.log("-----------所选环节是部室经理会签选择，调用subProcessCompleteWorkItem---------------")
           api.subProcessCompleteWorkItem(data).then((res) => {
             Toast.clear();
             if (res.data.status === "200") {
@@ -388,9 +386,9 @@ export default {
           });
         }, 500);
       } else {
-        console.log("所选环节不是子流程");
+        console.log("-------所选环节不是子流程---------");
         setTimeout(() => {
-          console.log("调用完成工作项接口");
+          console.log("-------------所选环节不是子流程，调用completeWorkitem--------------");
           api.completeWorkitem(data).then((res) => {
             Toast.clear();
             if (res.data.status === "200") {
@@ -429,11 +427,6 @@ export default {
 
     onMultiCommit() {
       // 会签环节直接提交
-      Toast.loading({
-        message: "提交中...",
-        forbidClick: true,
-        duration: 0,
-      });
       let data = {};
       data.wfmData = {
         actInstId: this.currentProcess.actInstId,
@@ -470,7 +463,6 @@ export default {
       }, 500);
     },
     onSubCommit() {
-      console.log("子流程结束环节？？？");
       Toast.loading({
         message: "提交中...",
         forbidClick: true,

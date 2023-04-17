@@ -48,14 +48,14 @@ router.beforeEach((to, from, next) => {
             forbidClick: true,
             loadingType: 'spinner',
         });
-        // getCurrentUser().then(user => {
-        //     console.log("获取当前用户信息", user);
+        getCurrentUser().then(user => {
+            console.log("获取当前用户信息", user);
             api.checkUser({
-                //  id: user.login_name,//生产 - 新oa测试 - 新oa
-                //  uCode: ""//生产 - 新oa测试 - 新oa
+                 id: user.login_name,//生产 - 新oa测试 - 新oa
+                 uCode: ""//生产 - 新oa测试 - 新oa
                 //戴伟
-                id: "009185",
-                uCode: "daiwei"
+                // id: "009185",
+                // uCode: "daiwei"
                 //赵建彰
                 // id: "008922",//平时测试
                 // uCode: "zhaojianzhang"//平时测试
@@ -121,6 +121,12 @@ router.beforeEach((to, from, next) => {
                     // uCode:"houxueyanfzx"
                      //id: "028379",
                  //uCode: "yexiaozhaobf"
+                //       id: "004219",
+                //  uCode: "caoxiaojingzgc"
+                //       id: "009279",
+                //  uCode: "chendandanzgc"
+                //       id: "001763",
+                //  uCode: "wuyihongzgc"
             }).then(res => {
                 console.log("checkUser status", res)
                 if (res.data.status === '200') {
@@ -145,7 +151,7 @@ router.beforeEach((to, from, next) => {
                     }
                 }
             })
-        //})
+        })
     }
 })
 

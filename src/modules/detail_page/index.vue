@@ -251,78 +251,88 @@ export default {
     this.dropListCurrentList = this.$route.query.queryKind;
     console.log("this.$route.query.queryKind:", this.$route.query.queryKind);
     if (this.$route.query.from !== "oa") {
-      if (this.$store.state.userInfo.userCode !== this.$route.query.userCode) {
-        api
-          .checkUser({
-            uCode: this.$route.query.userCode,
-            id: "",
-          })
-          .then((res) => {
-            if (res.data.status === "200") {
-              if (res.data.model.usercode !== "") {
-                this.$store.commit("setUserInfo", {
-                  userCode: res.data.model.usercode,
-                  userId: res.data.model.useruuid,
-                  userName: res.data.model.username,
-                  ou: res.data.model.ou,
-                });
-                this.$store.commit("setFromOut", true);
-                const queryKind = this.$route.query.queryKind;
-                const workItemId = this.$route.query.workItemId;
-                const pubFormDataId = this.$route.query.pubFormDataId;
-                // 此处需调用接口获取数据
-                this.getData(queryKind, workItemId, pubFormDataId).then((res) => {
-                    let data = res.data.model.curPageData[0];
-                    console.log("&&&&&", this.data)
-                    this.$store.commit("setCurrentProcess", data);
-                    this.getBackLink();
-                    this.getFromConfig();
-                    this.isSubmmit();
-                    if (this.$store.state.currentList !== "doing") {
-                        this.recordOperationLog()
+        if (this.$store.state.userInfo.userCode !== this.$route.query.userCode) {
+            console.log("-------------!=oa this.$store.state.userInfo.userCode !== this.$route.query.userCode-------------");
+            api
+            .checkUser({
+                uCode: this.$route.query.userCode,
+                id: "",
+            })
+            .then((res) => {
+                if (res.data.status === "200") {
+                if (res.data.model.usercode !== "") {
+                    this.$store.commit("setUserInfo", {
+                    userCode: res.data.model.usercode,
+                    userId: res.data.model.useruuid,
+                    userName: res.data.model.username,
+                    ou: res.data.model.ou,
+                    });
+                    this.$store.commit("setFromOut", true);
+                    const queryKind = this.$route.query.queryKind;
+                    const workItemId = this.$route.query.workItemId;
+                    const pubFormDataId = this.$route.query.pubFormDataId;
+                    // 此处需调用接口获取数据
+                    this.getData(queryKind, workItemId, pubFormDataId).then((res) => {
+                        let data = res.data.model.curPageData[0];
+                        this.$store.commit("setCurrentProcess", data);
+                        this.getBackLink();
+                        this.getFromConfig();
+                        this.isSubmmit();
+                        if (this.$store.state.currentList !== "doing") {
+                            this.recordOperationLog()
+                        }
+                        // if (this.$store.state.currentList !== "doing") {
+                        //     this.updateProcessState()
+                        // }
+                        if (
+                        this.currentList === "todo" ||
+                        this.currentList === "seal"
+                        ) {
+                        this.isSubProcess();
+                        }
                     }
-                    if (
-                      this.currentList === "todo" ||
-                      this.currentList === "seal"
-                    ) {
-                      this.isSubProcess();
-                    }
-                  }
-                );
-              }
+                    );
+                }
+                }
+            });
+        } else {
+            console.log("---------------!=oa this.$store.state.userInfo.userCode == this.$route.query.userCode---------------");
+            this.$store.commit("setFromOut", true);
+            const queryKind = this.$route.query.queryKind;
+            const workItemId = this.$route.query.workItemId;
+            const pubFormDataId = this.$route.query.pubFormDataId;
+            // 此处需调用接口获取数据
+            this.getData(queryKind, workItemId, pubFormDataId).then((res) => {
+            let data = res.data.model.curPageData[0];
+            this.$store.commit("setCurrentProcess", data);
+            this.getBackLink();
+            this.getFromConfig();
+            this.isSubmmit();
+            if (this.$store.state.currentList !== "doing") {
+                this.recordOperationLog()
             }
-          });
-      } else {
-        this.$store.commit("setFromOut", true);
-        const queryKind = this.$route.query.queryKind;
-        const workItemId = this.$route.query.workItemId;
-        const pubFormDataId = this.$route.query.pubFormDataId;
-        // 此处需调用接口获取数据
-        this.getData(queryKind, workItemId, pubFormDataId).then((res) => {
-          let data = res.data.model.curPageData[0];
-          this.$store.commit("setCurrentProcess", data);
-          //console.log("&&&&&", this.data)
-          this.getBackLink();
-          this.getFromConfig();
-          this.isSubmmit();
-          if (this.$store.state.currentList !== "doing") {
-            this.recordOperationLog()
-          }
-          if (this.currentList === "todo" || this.currentList === "seal") {
-            this.isSubProcess();
-          }
-        });
-      }
+            //   if (this.$store.state.currentList !== "doing") {
+            //     this.updateProcessState()
+            //   }
+            if (this.currentList === "todo" || this.currentList === "seal") {
+                this.isSubProcess();
+            }
+            });
+        }
     } else {
-      if (this.$store.state.currentList !== "doing") {
-        this.recordOperationLog()
-      }
-      this.getBackLink();
-      this.getFromConfig();
-      this.isSubmmit();
-      if (this.currentList === "todo" || this.currentList === "seal") {
-        this.isSubProcess();
-      }
+        console.log("-----------------------=oa------------------------")
+        if (this.$store.state.currentList !== "doing") {
+            this.recordOperationLog()
+        }
+        //   if (this.$store.state.currentList !== "doing") {
+        //     this.updateProcessState()
+        //   }
+        this.getBackLink();
+        this.getFromConfig();
+        this.isSubmmit();
+        if (this.currentList === "todo" || this.currentList === "seal") {
+            this.isSubProcess();
+        }
     }
 
     setTimeout(() => {
@@ -362,10 +372,9 @@ export default {
 
       api.isSubProcess(isSubProcessParameter).then((res) => {
         if (res.data.status === "200") {
-          console.log("detail_page里面是否是子流程，接口返回值res：" + res);
-          console.log("res.data.model:" + res.data.model);
-          //console.log("res.data.model.subProcess:"+res.data.model.subProcess)
+          console.log("-------------此待办是否是子流程------------");
           if (res.data.model && res.data.model.subProcess) {
+            console.log("--------------此待办是子流程------------")
             this.selectIsSubProcess = true;
             this.subProcessName = res.data.model.subProcess;
           }

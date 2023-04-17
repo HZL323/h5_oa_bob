@@ -3,7 +3,7 @@
  * @Date: 2021-09-08 09:50:51
  * @LastEditTime: 2021-12-10 10:27:15
  * @LastEditors: Joker
- * @Description: main.js 
+ * @Description: main.js
  * @FilePath: \bjbank-xcoa\src\main.js
  */
 // The Vue build version to load with the `import` command
@@ -36,7 +36,7 @@ axios.interceptors.request.use((config)=>{
 })
 //Vue.use(cors({origin:['http://localhost:8089']}))
 
-// Vue.use(new VConsose())
+Vue.use(new VConsose())
 Vue.use(Components) // 全局注册组件
 Vue.use(ToastPlugin)
 Vue.use(LoadingPlugin)

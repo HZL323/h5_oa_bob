@@ -145,6 +145,7 @@ export default {
       loading: true, // 加载数据
       count: 0,
       selectData: [], // 已选择的数据
+      subProcessName: "", //子流程的名称
     };
   },
   props: {
@@ -152,6 +153,11 @@ export default {
       // navbar标题
       type: String,
       default: "",
+    },
+    selectIsSubProcess:{
+     // 所选环节是不是部室经理会签环节
+      type: Boolean,
+      required: true
     },
     currentRadio: {
       // navbar标题
@@ -322,6 +328,7 @@ export default {
     },
     completeWork() {
       // 提交
+
       this.$toast.loading({
         message: "提交中...",
         forbidClick: true,
@@ -397,11 +404,11 @@ export default {
       //如果是子流程
       if (this.selectIsSubProcess) {
         data.isMobile = true;
-        console.log("这里采用设置store中的dataForm中的值");
         data.dataForm = this.dataForm;
         console.log("data.dataForm:", data.dataForm);
         console.log("data.wfmData", data.wfmData);
         setTimeout(() => {
+          console.log("-----------所选环节是部室经理会签选择，调用subProcessCompleteWorkItem---------------")
           api.subProcessCompleteWorkItem(data).then((res) => {
             this.$toast.clear();
             if (res.data.status === "200") {
@@ -429,7 +436,7 @@ export default {
                 })
                 .then(() => {
                   this.$router.replace({
-                    name: this.backRoute,
+                    name: this.$route.params.backRoute,
                   });
                 });
             } else {
@@ -438,9 +445,9 @@ export default {
           });
         }, 500);
       } else {
-        console.log("所选环节不是子流程");
+        console.log("-------所选环节不是部室经理会签环节---------");
         setTimeout(() => {
-          console.log("调用完成工作项接口");
+          console.log("-------------所选环节不是部室经理会签环节，调用completeWorkitem--------------");
           api.completeWorkitem(data).then((res) => {
             this.$toast.clear();
             if (res.data.status === "200") {
