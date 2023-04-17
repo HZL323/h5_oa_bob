@@ -8,18 +8,20 @@
 -->
 <template>
   <div class="handler-wrap">
-    <van-nav-bar :title="linkTitle" @click-left="onClickLeft" fixed placeholder>
-      <template slot="left">
-        <van-icon name="cross" />
-      </template>
-    </van-nav-bar>
-    <van-sticky offset-top="46">
+    <div class="header-wrap">
+      <van-nav-bar :title="linkTitle" @click-left="onClickLeft" placeholder>
+        <template slot="left">
+          <van-icon name="cross" />
+        </template>
+      </van-nav-bar>
+      <!-- <van-sticky offset-top="46"> -->
       <van-search
         shape="round"
         v-model="value"
         placeholder="请输入搜索关键词"
       />
-    </van-sticky>
+      <!-- </van-sticky> -->
+    </div>
     <div class="cell-wrap">
       <wu-feedback v-if="loading" />
       <div v-else>
@@ -34,14 +36,14 @@
                 v-for="(item, index) in handlerList"
                 clickable
                 :key="index"
-                :title="item.orgName"             
+                :title="item.orgName"
                 @click="toggle(index)"
                 v-show="reg.test(item.orgName)"
               >
                 <template slot="right-icon">
                   <van-checkbox
                     :name="formatName(item)"
-                    :disabled="!showMulti"              
+                    :disabled="!showMulti"
                     ref="checkboxes"
                     icon-size="16"
                     checked-color="#ff4444"
@@ -51,7 +53,7 @@
               </van-cell>
             </van-cell-group>
           </van-checkbox-group>
-          <van-radio-group v-model="radio"  v-else>
+          <van-radio-group v-model="radio" v-else>
             <van-cell-group>
               <template v-for="(item, index) in handlerList">
                 <van-cell
@@ -62,7 +64,7 @@
                   v-show="reg.test(item.orgName)"
                 >
                   <template slot="right-icon">
-                    <van-radio                 
+                    <van-radio
                       :name="item.orgId"
                       icon-size="16"
                       ref="celles"
@@ -77,7 +79,8 @@
         <wu-feedback v-else types="empty" />
       </div>
     </div>
-    <van-tabbar safe-area-inset-bottom placeholder>
+    <div class="footer-wrap">
+      <!-- <van-tabbar :safe-area-inset-bottom="true" :placeholder="true"> -->
       <div class="btn-wrap">
         <van-button
           class="check-all"
@@ -90,10 +93,11 @@
           >全选</van-button
         >
         <van-button color="#ff4444" block round @click="onCommit"
-          >确定</van-button
-        >
+          >确定 {{ count > 0 ? `(${count})` : "" }}
+        </van-button>
       </div>
-    </van-tabbar>
+      <!-- </van-tabbar> -->
+    </div>
   </div>
 </template>
 
@@ -135,10 +139,12 @@ export default {
       radio: "", // 单选办理人
       result: [], // 选择的多选办理人/部门
       multiCheck: false, // 是否可以多选
-      showMulti:false, //是否显示全选按钮
+      showMulti: false, //是否显示全选按钮
       handlerList: [], // 办理人或办理部门list
-      multiFlag:false,//多选flag
+      multiFlag: false, //多选flag
       loading: true, // 加载数据
+      count: 0,
+      selectData: [], // 已选择的数据
     };
   },
   props: {
@@ -173,6 +179,26 @@ export default {
     reg() {
       return new RegExp(`.*${this.value}.*$`);
     },
+    opinionConfig() {
+      return this.$store.state.opinionData;
+    },
+    dataForm() {
+      return this.$store.state.dataForm;
+    },
+    businesssTypeVerify() {
+      return this.$store.state.businessTypeVerify;
+    },
+    sendDeptVerify() {
+      return this.$store.state.sendDeptVerify;
+    },
+    noteRequired() {
+      return this.$store.state.noteRequired;
+    },
+  },
+  watch: {
+    result(newVal, oldVal) {
+      this.count = newVal.length;
+    },
   },
   created() {
     this.loadData();
@@ -187,9 +213,11 @@ export default {
             workitemId: this.currentProcess.workitemId,
             configId: this.currentProcess.configId,
             proDirId: this.currentLink.proDirId,
-            actDefId: this.currentProcess.actDefId, 
+            actDefId: this.currentProcess.actDefId,
             userId: this.userInfo.userId,
-            sendUserIds: this.currentProcess.sendUserIds ? this.currentProcess.sendUserIds:"",
+            sendUserIds: this.currentProcess.sendUserIds
+              ? this.currentProcess.sendUserIds
+              : "",
             activity: {
               actDefId: this.currentLink.actDefId,
               actDefName: this.currentLink.actDefName,
@@ -207,41 +235,44 @@ export default {
             //console.log("-------选项------",res.data.model.selectPersonType);
             if (res.data.model.selectPersonType !== "radio") {
               //if(res.data.model.selectPersonType != "all"){
-                  this.multiCheck = true;
-                  if(res.data.model.selectPersonType !== "all"){
-                     this.showMulti = true;
-                  }       
-              //}    
+              this.multiCheck = true;
+              if (res.data.model.selectPersonType !== "all") {
+                this.showMulti = true;
+              }
+              //}
               this.result = this.currentSelectData.map((item) =>
                 JSON.stringify(item)
               );
             } else {
-              this.currentSelectData.length > 0 &&
-                (this.radio = this.currentSelectData[0].orgId);
+              if (this.currentSelectData.length > 0) {
+                this.radio = this.currentSelectData[0].orgId;
+                this.count = 1;
+              }
             }
 
             // 数据赋值
             this.handlerList = res.data.model.resourceIds;
 
-            if(res.data.model.selectPersonType === "radio" && 
-              this.handlerList.length>0 && res.data.model.isCheckFirst==="true"){
-                this.radio=this.handlerList[0].orgId; 
+            if (
+              res.data.model.selectPersonType === "radio" &&
+              this.handlerList.length > 0 &&
+              res.data.model.isCheckFirst === "true"
+            ) {
+              this.radio = this.handlerList[0].orgId;
             }
-
           }
           this.loading = false;
-          if(res.data.model.selectPersonType === "all"){
-            setTimeout(() => {    
-                this.$refs.checkboxGroup.toggleAll(true);             
-            }, 600)
+          if (res.data.model.selectPersonType === "all") {
+            setTimeout(() => {
+              this.$refs.checkboxGroup.toggleAll(true);
+            }, 600);
           }
           // if(res.data.model.selectPersonType === "radio"){
-          //   setTimeout(() => {    
-          //     this.radio=this.handlerList[0].orgId; 
+          //   setTimeout(() => {
+          //     this.radio=this.handlerList[0].orgId;
           //   }, 600)
           // }
         });
-        
     },
     formatName(name) {
       // 返回json串作为标识符
@@ -254,10 +285,11 @@ export default {
     onCellClick(row) {
       // 单选状态下点击选中办理人或办理部门
       this.radio = row.orgId;
+      this.count = 1;
     },
     toggle(index) {
       // 多选点击cell
-      if(this.multiFlag){
+      if (this.multiFlag) {
         this.$refs.checkboxes[index].toggle();
       }
     },
@@ -278,8 +310,304 @@ export default {
           }
         });
       }
-      this.$emit("checkedLink", data); // 确定选择的环节，传递选中的数据
-      this.$emit("changeCom");
+      console.log(data);
+      this.selectData = data;
+      // this.$emit("checkedLink", data); // 确定选择的环节，传递选中的数据
+      // this.$emit("changeCom");
+      if (data.length === 0) {
+        this.$toast("请选择数据");
+        return;
+      }
+      this.completeWork();
+    },
+    completeWork() {
+      // 提交
+      this.$toast.loading({
+        message: "提交中...",
+        forbidClick: true,
+        duration: 0,
+      });
+      let data = {};
+      let participants = [];
+      this.selectData.forEach((item) => {
+        participants.push(`${item.orgType}:${item.orgId}`);
+      });
+      data.wfmData = {
+        actInstId: this.currentProcess.actInstId,
+        proInstId: this.currentProcess.proInstId,
+        workitemId: this.currentProcess.workitemId,
+        configId: this.currentProcess.configId,
+        proDirId: this.currentProcess.proDirId,
+        actDefId: this.currentLink.actDefId,
+        processName: this.currentProcess.processName || "",
+        userId: this.userInfo.userId,
+        nextActivities: [
+          {
+            actDefId: this.currentLink.actDefId || "",
+            actDefName: this.currentLink.actDefName || "",
+            proDefId: this.currentLink.proDefId || "",
+            actDefPath: this.currentLink.actDefPath || "",
+            proDirId: this.currentLink.proDirId || "",
+            actInstId: this.currentLink.actInstId || "",
+            participants: participants.join(","),
+            returnSelect: false,
+          },
+        ],
+      };
+      console.log("this.noteRequired", this.noteRequired);
+      if (this.noteRequired) {
+        //如果输入框内容是空的
+        if (this.opinionConfig[0] && !this.opinionConfig[0].noteContent) {
+          this.$toast("请填写审批意见");
+          return;
+        }
+      }
+      //校验是否支行用印流程
+      if (this.sendDeptVerify == true) {
+        //校验是否填写了发送部门
+        if (
+          this.dataForm.sendDept === "" ||
+          this.dataForm.sendDeptText === ""
+        ) {
+          this.$toast(`请填写发送部门再提交`);
+          return;
+        } else {
+          this.modifySendDeptAndUsers();
+        }
+      }
+      //校验是否是支行用印副中心流程
+      console.log("this.businesssTypeVerify", this.businesssTypeVerify);
+      console.log("this.dataForm.businessTyp", this.dataForm.businessType);
+      if (this.businesssTypeVerify == true) {
+        //校验是否填写了业务类型
+        if (
+          this.dataForm.businessType === "" ||
+          this.dataForm.businessTypeText === ""
+        ) {
+          this.$toast(`请填写业务类型再提交`);
+          return;
+        } else {
+          this.addBusinessType();
+        }
+      }
+      //校验是否必填，必填的话调用意见保存方法 20220714
+      //if(this.$store.state.noteRequired){
+      this.onSave();
+      //}
+      //如果是子流程
+      if (this.selectIsSubProcess) {
+        data.isMobile = true;
+        console.log("这里采用设置store中的dataForm中的值");
+        data.dataForm = this.dataForm;
+        console.log("data.dataForm:", data.dataForm);
+        console.log("data.wfmData", data.wfmData);
+        setTimeout(() => {
+          api.subProcessCompleteWorkItem(data).then((res) => {
+            this.$toast.clear();
+            if (res.data.status === "200") {
+              this.$store.commit("setRefresh", true);
+              if (this.fromOut) {
+                this.$dialog
+                  .alert({
+                    message: "提交成功",
+                    width: "200px",
+                    confirmButtonColor: "#ff4444",
+                  })
+                  .then(() => {
+                    this.$store.commit("setFromOut", false);
+                    this.$router.replace({
+                      name: this.backRoute,
+                    });
+                  });
+                return;
+              }
+              this.$dialog
+                .alert({
+                  message: "提交成功",
+                  width: "200px",
+                  confirmButtonColor: "#ff4444",
+                })
+                .then(() => {
+                  this.$router.replace({
+                    name: this.backRoute,
+                  });
+                });
+            } else {
+              this.$toast("提交失败");
+            }
+          });
+        }, 500);
+      } else {
+        console.log("所选环节不是子流程");
+        setTimeout(() => {
+          console.log("调用完成工作项接口");
+          api.completeWorkitem(data).then((res) => {
+            this.$toast.clear();
+            if (res.data.status === "200") {
+              console.log("调用完成工作项接口返回值：" + res.data);
+              this.$store.commit("setRefresh", true);
+              if (this.fromOut) {
+                this.$dialog
+                  .alert({
+                    message: "提交成功",
+                    width: "200px",
+                    confirmButtonColor: "#ff4444",
+                  })
+                  .then(() => {
+                    this.$store.commit("setFromOut", false);
+                    this.$router.replace({
+                      name: this.backRoute,
+                    });
+                  });
+                return;
+              }
+
+              this.$dialog
+                .alert({
+                  message: "提交成功",
+                  width: "200px",
+                  confirmButtonColor: "#ff4444",
+                })
+                .then(() => {
+                  this.$router.replace({
+                    name: this.$route.params.backRoute,
+                  });
+                });
+            } else {
+              this.$toast("提交失败");
+            }
+          });
+        }, 500);
+      }
+    },
+    addBusinessType() {
+      if (
+        this.dataForm.businessType === null ||
+        this.dataForm.businessTypeText === ""
+      ) {
+        Toast("businessType或businessTypeText字段为空，请填写发送部门再提交");
+      }
+      let params = {
+        businessType: this.dataForm.businessType,
+        businessTypeText: this.dataForm.businessTypeText,
+        id: this.dataForm.id,
+      };
+      api.addBusinessType(params).then((res) => {
+        if (res.data.status === "200") {
+          console.log("业务类型更新成功");
+        }
+      });
+    },
+    onSave() {
+      // 调用保存方法
+      this.opinionConfig.forEach((item) => {
+        console.log("调用保存意见的方法");
+        this.saveOpinion(item);
+      });
+    },
+    saveOpinion(item) {
+      //console.log("----意见内容-----",item.noteContent);
+      item.noteContent = item.noteContent.replace(/&#13;/g, "<br/>");
+      item.noteContent = item.noteContent.replace(/\n/g, "<br/>");
+      //item.noteContent = item.noteContent.replace(/\\r\\n/g,'<br/>');
+      // 保存意见内容
+      let data = {
+        id: item.id || "",
+        type: item.noteId,
+        noteContent: item.noteContent,
+        proInstId: this.currentProcess.proInstId,
+        createUser: this.userInfo.userId,
+        createUserName: this.userInfo.userName,
+        workitemId: this.currentProcess.workitemId,
+        actDefId: this.currentProcess.actDefId,
+      };
+      api.saveOpinion(data).then((res) => {
+        item.id = res.data.model.id;
+      });
+    },
+    modifySendDeptAndUsers() {
+      //保存发送部门以及对应的人员到业务表中
+      console.log("modifySendDeptAndUsers", this.dataForm);
+
+      if (this.dataForm.sendDept === null || this.dataForm.sendDept === "") {
+        Toast("sendDept字段为空，请填写发送部门再提交");
+      }
+      if (
+        this.dataForm.sendUserIds === null ||
+        this.dataForm.sendUserIds === ""
+      ) {
+        Toast("sendUserIds字段为空，请填写发送部门再提交");
+      }
+      if (
+        this.dataForm.sendUserIds === null ||
+        this.dataForm.sendUserIds === ""
+      ) {
+        Toast("业务表单id字段为空，请填写发送部门再提交");
+      }
+      let params = {
+        sendDept: this.dataForm.sendDept,
+        sendUserIds: this.dataForm.sendUserIds,
+        id: this.dataForm.id,
+      };
+      let distinguishFhbmYyzhiParameter = {
+        extendKey: "distinguishFhbmYyzhi",
+        actDefId: this.currentProcess.actDefId,
+        configId: this.currentProcess.configId,
+        proDirId: this.currentProcess.proDirId,
+      };
+      console.log("--------0----------");
+      api
+        .getActivityExtendConfigByName(distinguishFhbmYyzhiParameter)
+        .then((res) => {
+          console.log("-------1-----------");
+          if (
+            res.data.model &&
+            res.data.model.distinguishFhbmYyzhi &&
+            res.data.model.distinguishFhbmYyzhi == "fhbm"
+          ) {
+            console.log("---------2---------");
+            api.yyfhbmModifySendDeptAndUsers(params).then((res) => {
+              console.log(res.data.model.distinguishFhbmYyzhi);
+              if (res.data.status === "200") {
+                console.log("分行部门发送部门以及指定人员更新成功");
+              }
+            });
+          }
+          if (
+            res.data.model &&
+            res.data.model.distinguishFhbmYyzhi &&
+            res.data.model.distinguishFhbmYyzhi == "yyzhi"
+          ) {
+            console.log("----------3--------");
+            console.log(res.data.model.distinguishFhbmYyzhi);
+            console.log(params);
+            // api.getActivityExtendConfigByName(distinguishFhbmYyzhiParameter).then((res) => {
+
+            //   })
+            api.yyzhiModifySendDeptAndUsers(params).then((res) => {
+              if (res.data.status === "200") {
+                console.log("支行发送部门以及指定人员更新成功");
+              }
+            });
+          }
+          if (
+            res.data.model &&
+            res.data.model.distinguishFhbmYyzhi &&
+            res.data.model.distinguishFhbmYyzhi == "yyfzxzhi"
+          ) {
+            console.log("----------3--------");
+            console.log(res.data.model.distinguishFhbmYyzhi);
+            console.log(params);
+            // api.getActivityExtendConfigByName(distinguishFhbmYyzhiParameter).then((res) => {
+
+            //   })
+            api.yyfzxzhiModifySendDeptAndUsers(params).then((res) => {
+              if (res.data.status === "200") {
+                console.log("支行副中心发送部门以及指定人员更新成功");
+              }
+            });
+          }
+        });
     },
   },
 };
@@ -290,8 +618,25 @@ export default {
 
 .handler-wrap {
   height: 100%;
+  // position: relative;
+  // -webkit-overflow-scrolling: touch;
+
+  .header-wrap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
 
   .cell-wrap {
+    position: absolute;
+    top: 100px;
+    bottom: 60px;
+    margin: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
+    width: 100%;
+
     padding-top: 10px;
     padding-bottom: 30px;
     background-color: #fafafa;
@@ -302,6 +647,15 @@ export default {
         font-size: 16px;
       }
     }
+  }
+
+  .footer-wrap {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 60px;
+    background-color: #fff;
   }
 
   .btn-wrap {
@@ -319,6 +673,8 @@ export default {
 
   /deep/.van-tabbar {
     height: 60px;
+    position: absolute;
+    bottom: 0;
   }
 
   /deep/.van-button {

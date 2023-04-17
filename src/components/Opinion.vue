@@ -64,7 +64,15 @@
           </div>
         </template>
       </van-collapse>
-      <div class="opinion-field card" v-if="opinionConfig.length > 0 && (currentList === 'todo' || currentList === 'seal')">
+      <div
+        class="opinion-field card"
+        v-if="
+          opinionConfig.length > 0 &&
+          (currentList === 'todo' ||
+            currentList === 'seal' ||
+            currentList === 'toread')
+        "
+      >
         <div id="showNoteText" v-if="showNote">
           <div class="header-wrap">
             <div class="header">
@@ -97,6 +105,7 @@
               :placeholder="item.noteName"
               @click-input="onClickInput"
               show-word-limit
+              ref="textarea"
             />
           </div>
         </div>
@@ -111,22 +120,11 @@
     >
       <van-field class="bgc-f" v-model="message" type="input" />
     </div>
-    <van-popup
-      v-model="show"
-      round
-      :style="{ height: '70%' }"
-      position="bottom"
-    >
-      <van-picker
-        title="选择意见"
-        show-toolbar
-        :columns="columns"
-        @confirm="onConfirm"
-        @cancel="onCancel"
-        swipe-duration="500"
-        default-index="0"
-      />
-    </van-popup>
+    <CommonOpinions
+      ref="CommonOpinions"
+      :columns="columns"
+      @onConfirm="onConfirm"
+    />
   </div>
 </template>
 
@@ -144,10 +142,12 @@ import {
 } from "vant";
 import { api } from "../core/api/index";
 import SealList from "./SealList.vue";
+import CommonOpinions from "./CommonOpinions.vue";
 export default {
   name: "opinion",
   components: {
     SealList,
+    CommonOpinions,
     [Collapse.name]: Collapse,
     [CollapseItem.name]: CollapseItem,
     [Divider.name]: Divider,
@@ -166,7 +166,7 @@ export default {
       showAdd: true, // 控制多行文本显示
       showNote: true, //控制意见显示
       show: false,
-      columns: ["同意", "已阅"],// TODO 这块要去后端获取意见列表
+      columns: ["同意", "已阅"], // TODO 这块要去后端获取意见列表
       sealList: [], // 用印申请明细列表
     };
   },
@@ -189,9 +189,9 @@ export default {
     userInfo() {
       return this.$store.state.userInfo;
     },
-    currentList(){
+    currentList() {
       return this.$store.state.currentList;
-    }
+    },
   },
   created() {
     this.init();
@@ -199,34 +199,38 @@ export default {
   },
   methods: {
     init() {
-      
       this.getOpinion();
       // this.getEditOpinion();
       this.getCollectedOpinion();
     },
-    getCollectedOpinion(){
-      api.getCollectedOpinion({
-        userId: this.$store.state.userInfo.userId,
-      }).then((res) => {
-        if (res.data.status === "200") {
-          for(let i = 0; i < res.data.model.noteList.length; i++){
-            this.columns.push(res.data.model.noteList[i].note)
-          }  
-        }
-      })
+    getCollectedOpinion() {
+      api
+        .getCollectedOpinion({
+          userId: this.$store.state.userInfo.userId,
+        })
+        .then((res) => {
+          if (res.data.status === "200") {
+            for (let i = 0; i < res.data.model.noteList.length; i++) {
+              this.columns.push(res.data.model.noteList[i].note);
+            }
+          }
+        });
     },
     getOpinion() {
       // 获取意见数据
       api
         .getOpinionData({
           proInstId: this.currentProcess.proInstId,
-          configCode: this.currentProcess.configCode,   
+          configCode: this.currentProcess.configCode,
         })
         .then((res) => {
           if (res.data.status === "200") {
-            let obj = {};  
+            let obj = {};
             this.opinionData = res.data.model;
-            console.log("opinionData是后端返回的全部意见数据，包括必填和非必填", this.opinionData)
+            console.log(
+              "opinionData是后端返回的全部意见数据，包括必填和非必填",
+              this.opinionData
+            );
             this.opinionData.forEach((item) => {
               if (obj[item.type]) {
                 obj[item.type].push(item);
@@ -235,7 +239,7 @@ export default {
               }
             });
             console.log("obj是对type相同的归到同一类", obj);
-            
+
             this.noteConfig.forEach((item) => {
               //console.log("noteConfig_item", item)
               item.noteData = obj[item.noteCode] || [];
@@ -243,8 +247,14 @@ export default {
                 this.activeNames.push(item.noteCode);
               }
             });
-            console.log("noteConfig表示所有意见框，空白的或者有意见的意见框总和", this.noteConfig)
-            console.log("activeNames表示所有已经填写意见的意见框名称", this.activeNames)
+            console.log(
+              "noteConfig表示所有意见框，空白的或者有意见的意见框总和",
+              this.noteConfig
+            );
+            console.log(
+              "activeNames表示所有已经填写意见的意见框名称",
+              this.activeNames
+            );
             this.loading = false;
             this.getEditOpinion();
           }
@@ -271,12 +281,13 @@ export default {
         })
         .then((res) => {
           Toast.clear();
-          console.log("getEditOpinion()_res.data.model:", res.data.model)
+          console.log("getEditOpinion()_res.data.model:", res.data.model);
           if (res.data.status === "200") {
             let eum = {}; // 将意见元转换为枚举数据
             this.noteConfig.forEach((item) => {
-              eum[item.noteCode] = {//noteCode：意见框的字母名称比如"fhbmhqyj"
-                noteName: item.noteName,//noteName：意见框的中文名称比如“分行部门会签意见”
+              eum[item.noteCode] = {
+                //noteCode：意见框的字母名称比如"fhbmhqyj"
+                noteName: item.noteName, //noteName：意见框的中文名称比如“分行部门会签意见”
               };
             });
             let obj = {}; // 提取可编辑意见的回显数据?? 这里的obj是什么
@@ -295,29 +306,34 @@ export default {
               }
             });
             const copy = Object.assign({}, obj);
-            console.log("可编辑意见的回显数据obj:",copy)
-            console.log("可编辑意见opinionConfig", this.opinionConfig)
+            console.log("可编辑意见的回显数据obj:", copy);
+            console.log("可编辑意见opinionConfig", this.opinionConfig);
             this.opinionConfig.forEach((item, i) => {
               this.opinionConfig.splice(i);
             });
-            console.log("可编辑意见opinionConfig_slice", this.opinionConfig)
-            console.log("可编辑意见opinionConfig_长度", this.opinionConfig.length)
-            console.log("res.data.model.noteEdit", res.data.model.noteEdit) //比如yydbyj
+            console.log("可编辑意见opinionConfig_slice", this.opinionConfig);
+            console.log(
+              "可编辑意见opinionConfig_长度",
+              this.opinionConfig.length
+            );
+            console.log("res.data.model.noteEdit", res.data.model.noteEdit); //比如yydbyj
             if (res.data.model.noteEdit) {
               let arr = res.data.model.noteEdit.split(",");
               arr.forEach((item) => {
                 this.opinionConfig.push({
-                  noteId: item,//比如yydbyj
+                  noteId: item, //比如yydbyj
                   noteName: eum[item].noteName, //比如"用印督办意见"
                   noteContent: obj[item] ? obj[item].value : "",
                   id: obj[item] ? obj[item].id : "",
                 });
               });
-              console.log("currentList" , this.currentList)
-              
+              console.log("currentList", this.currentList);
             }
-            console.log("可编辑意见opinionConfig_push", this.opinionConfig)
-            console.log("可编辑意见opinionConfig_push_length", this.opinionConfig.length)
+            console.log("可编辑意见opinionConfig_push", this.opinionConfig);
+            console.log(
+              "可编辑意见opinionConfig_push_length",
+              this.opinionConfig.length
+            );
           }
           //校验是否需要填写意见
           //opinionConfig.length>0 -> showNote
@@ -329,18 +345,20 @@ export default {
           ) {
             showNoteDom.hidden = true;
           }
-          
+
           // this.$store.commit("updateCount", 1);
         });
     },
     getSealList() {
       // 获取用印申请明细列表
-      api.sealDetail({
-        proInstId: this.currentProcess.proInstId,
-      }).then((res) => {
-        this.sealList = res.data.model;
-        this.sealList.length > 0 && this.activeNames.push("sealDetail");
-      });
+      api
+        .sealDetail({
+          proInstId: this.currentProcess.proInstId,
+        })
+        .then((res) => {
+          this.sealList = res.data.model;
+          this.sealList.length > 0 && this.activeNames.push("sealDetail");
+        });
     },
     autoFill() {
       // this.opinionConfig.forEach((item) => {
@@ -348,15 +366,16 @@ export default {
       //     item.noteContent = "同意";
       //   }
       // });
-      this.show = true;
+      // this.show = true;
+      this.$refs.CommonOpinions.show = true;
     },
-    onConfirm(value, index) {
+    onConfirm(value) {
       this.opinionConfig.forEach((item) => {
         if (item.noteId !== "bz") {
           item.noteContent = value;
         }
       });
-      this.show = false;
+      this.$refs.CommonOpinions.show = false;
     },
     onCancel() {
       this.show = false;
@@ -461,24 +480,6 @@ export default {
     /deep/.van-field {
       background-color: #fafafa;
     }
-  }
-  /deep/.van-picker__toolbar {
-    .van-picker__title {
-      font-size: 18px;
-    }
-
-    .van-picker__cancel,
-    .van-picker__confirm {
-      font-size: 16px;
-    }
-
-    .van-picker__confirm {
-      color: #ff4444;
-    }
-  }
-
-  /deep/.van-picker-column__item--selected {
-    color: #ff4444;
   }
 }
 </style>

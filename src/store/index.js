@@ -14,7 +14,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
     state: {
         userInfo: {
-            userCode: '',
+            // userCode: '111111',
             userId: '',
             userName: '',
             ou: ''

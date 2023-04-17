@@ -7,7 +7,9 @@
  * @FilePath: \vue_demo\src\components\index.js
  */
 import FeedBack from './Feedback.vue'
+import DetailForm from './DetailForm.vue'
 
 export default (Vue) => {
-    Vue.component('wu-feedback', FeedBack)
+    Vue.component('wu-feedback', FeedBack),
+    Vue.component('DetailForm', DetailForm)
 }

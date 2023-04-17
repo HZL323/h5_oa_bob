@@ -22,8 +22,7 @@
             round
             size="small"
             @click="senDept"
-            >发送部门</van-button
-          >
+            >发送部门</van-button>
         </div>
         <div v-if="!!businessTypeVerify && ifBusinessType">
           <van-button
@@ -32,21 +31,21 @@
             round
             size="small"
             @click="businessType"
-            >业务类型</van-button
-          >
+            >业务类型</van-button>
         </div>
       </div>
       <van-divider />
-      <div class="form-wrap">     
+      <div class="form-wrap">
         <template v-for="(item,index) in formConfig">
           <div :class="{'form-item':true,'yyxx-row':item.colCode==='yyxx'}"  :key="index">
              <div class="form-key">{{item.colName}}</div>
              <div style="margin-top:6px;" v-if="item.colCode==='yyxx' && formMatData(item)!='' "></div>
              <div class="formRemark-value" ref="formValue" v-if="item.colCode==='yyxx' && formMatData(item)!='' ">{{ formMatData(item)}}</div>
-             <div class="form-value" ref="formValue" v-if="item.colCode!='yyxx' " @click="formClick(item)">{{ formMatData(item)}}</div>
-          </div>   
+             <div class="form-value" ref="formValue" v-if="item.colCode!='yyxx' "
+                @click="formClick(item)">{{ formMatData(item)}}</div>
+          </div>
         </template>
-        </div>
+      </div>
       </div>
       <van-popup
         v-model="show"
@@ -80,6 +79,23 @@
           value-key="value"
         />
       </van-popup>
+
+      <van-popup
+        v-model="showDocumentBasis"
+        round
+        :style="{ height: '70%' }"
+        position="bottom"
+      >
+        <van-picker
+          title="办文依据"
+          show-toolbar
+          :columns="documentBasisColumns"
+          @confirm="onConfirmDocBa"
+          @cancel="onCancelDocBa"
+          swipe-duration="500"
+          value-key="title"
+        />
+      </van-popup>
     </div>
 </template>
 
@@ -87,6 +103,8 @@
 import { Divider, Skeleton, Picker, Popup, Button, Toast } from "vant";
 import { api } from "../core/api/index";
 export default {
+  //yinyanhong
+  inject: ['reload'],
   name: "detailForm",
   components: {
     [Divider.name]: Divider,
@@ -107,6 +125,9 @@ export default {
       columns: [],
       businessTypeColumns: [],
       gwCode: "",
+      //yinyanhong
+      showDocumentBasis: false,//办文依据
+      documentBasisColumns:[],//办文依据列表
     };
   },
   props: {
@@ -137,6 +158,10 @@ export default {
     this.getActivityExtendConfigByName();
   },
   methods: {
+    //yinyanhong
+    refresh(){
+      this.reload();
+    },
     initHeight() {
       // 表单字段长度超过一行左对齐
       let refs = this.$refs.formValue;
@@ -181,7 +206,21 @@ export default {
             if(res.data.model.dataForm.sendUserIds!=null){
               this.currentProcess.sendUserIds=res.data.model.dataForm.sendUserIds;
               //console.log("------sendUserIds这个字段有值--------")
-            }   
+            }
+            //yinyanhong  办文依据
+            this.documentBasisColumns = [];
+            if(res.data.model.dataForm.basisList && res.data.model.dataForm.basisList.length>0) {
+              for(let key in res.data.model.dataForm.basisList){
+                this.documentBasisColumns.push({
+                  proInstId: res.data.model.dataForm.basisList[key].proInstId,
+                  title: res.data.model.dataForm.basisList[key].title,
+                  processInfo:res.data.model.dataForm.basisList[key]
+                })
+              }
+            }else{
+              this.showDocumentBasis = false;
+            }
+
             this.loading = false;
             this.$nextTick(() => {
               this.initHeight();
@@ -190,6 +229,27 @@ export default {
         });
     },
     formMatData(item) {
+      /*const formatDate = (item) => {
+        if(/日期|时间/g.test(item.colName)){
+          return this.formData[item.colCode] ? this.$dateFormat("YYYY-mm-dd",this.formData[item.colCode]):"";
+        }
+        return this.formData[item.colCode] || "--";
+      };
+
+      const mapDictKey = (item) =>{
+        switch (item.colCode) {
+          case "fwType":
+            return "fileType";
+          case "secretLevel":
+            return "secret_level";
+          default:
+            return item.colCode;
+        }
+      };
+      if(){
+
+      }*/
+
       // 用来格式化表单数据值
       const reg = (dict, type) => {
         if (
@@ -305,7 +365,7 @@ export default {
                   })
                 }
               }
-            }) 
+            })
           }
         }
       });
@@ -333,7 +393,7 @@ export default {
               }
             }
             // console.log("this.enumerationData[BUSINESS_TYPE]:", this.enumerationData["BUSINESS_TYPE"]);
-            
+
             for(let key in this.enumerationData["BUSINESS_TYPE"]){
                 this.businessTypeColumns.push({
                   key: key,
@@ -354,12 +414,18 @@ export default {
       if (item.colCode === "businessTypeText") {
         this.showBusinessType = true;
       }
+    //   if(item.colCode === "documentBasis"){
+    //     this.showDocumentBasis = true;
+    //   }
     },
     senDept() {
       this.show = true
     },
     businessType(){
       this.showBusinessType = true
+    },
+    documentBasis(){
+      this.showDocumentBasis = true;
     },
     onConfirm1(data, index) {
       // 切换部门确定
@@ -387,13 +453,39 @@ export default {
       this.showBusinessType = false;
       Toast(`当前业务类型为：${data.value}`)
     },
+    onConfirmDocBa(data, index) {
+      data.processInfo.processFrom = "documentBasis";
+      console.log("onConfirmDocBa",data);
+      this.rowClick("toread",data.processInfo);
+    },
     onCancel1() {
       // 切换部门取消
       this.show = false;
     },
     onCancel2(){
       this.showBusinessType = false;
-    }
+    },
+    onCancelDocBa(){
+      this.showDocumentBasis = false;
+    },
+    rowClick(type, row) {
+      // 点击查看详情
+      this.$store.commit("setCurrentProcess", row);
+      this.$store.commit("setRefresh", true);
+      this.$store.commit("setCurrentList", type);
+      this.reload();
+      this.$router.replace({
+        name: "docDetail",
+        params: {
+          preRoute: "detailForm",//DetailForm  detailForm
+        },
+        query: {
+          from: "oa",
+          queryKind: type,
+        },
+      });
+      this.reload();
+    },
   },
 };
 </script>
@@ -455,7 +547,7 @@ export default {
     .form-value{
       width:100%  !important;
       text-align:left !important;
-      padding: 8px 0 0 12px; 
+      padding: 8px 0 0 12px;
     }
   }
   /deep/.van-picker__toolbar {

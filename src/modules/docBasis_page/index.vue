@@ -1,69 +1,66 @@
 <template>
   <div class="detail-wrap">
-    <!-- yinyanhong -->
-    <!-- <router-view v-if="isRouterAlive"/> -->
+    <van-nav-bar
+      title="OA详情"
+      left-arrow
+      @click-left="onClickLeft"
+      @click-right="onClickRight"
+      fixed
+      placeholder
+    >
+      <template slot="right">
+        <i class="iconfont icon-liucheng"></i>
+      </template>
+    </van-nav-bar>
+    <van-tabs
+      v-model="activeName"
+      title-active-color="#ff4444"
+      swipeable
+    >
+      <van-tab title="表单详情" name="a">
+        <div class="tab-wrap" ref="detailWrap">
+          <wu-feedback v-if="loading" />
+          <template v-else>
+            <DetailForm :formConfig="formConfig" />
+            <Opinion
+              :noteConfig="noteConfig"
+              :opinionConfig.sync="opinionConfig"
+              @onClickInput="onClickInput"
+              ref="opinion"
+            />
+          </template>
+        </div>
+      </van-tab>
+      <van-tab title="附件" name="b">
+        <div class="tab-wrap-attachment">
+          <Attachment />
+        </div>
+      </van-tab>
+    </van-tabs>
 
-    <div class="header">
-      <van-nav-bar
-        title="OA详情"
-        left-arrow
-        @click-left="onClickLeft"
-        @click-right="onClickRight"
-        placeholder
-      >
-        <template slot="right">
-          <i class="iconfont icon-liucheng"></i>
-        </template>
-      </van-nav-bar>
-    </div>
-    <div class="tabs-wrap" ref="tabsWrap">
-      <van-tabs v-model="activeName" title-active-color="#ff4444" swipeable>
-        <van-tab title="表单详情" name="a">
-          <div class="tab-wrap" id="tabWrap" ref="detailWrap">
-            <wu-feedback v-if="loading" />
-            <template v-else>
-              <DetailForm :formConfig="formConfig" />
-              <Opinion
-                :noteConfig="noteConfig"
-                :opinionConfig.sync="opinionConfig"
-                @onClickInput="onClickInput"
-                ref="opinion"
-              />
-            </template>
-          </div>
-        </van-tab>
-        <van-tab title="附件" name="b">
-          <div class="tab-wrap-attachment">
-            <Attachment />
-          </div>
-        </van-tab>
-      </van-tabs>
-    </div>
-    <!-- <div style="position:relative;bottom:0;left:0;height:60px;width:100%" v-if="showTabbar"> -->
-    <!-- <van-tabbar :safe-area-inset-bottom="true" :placeholder="true" v-if="showTabbar"> -->
-    <div class="footer btn-wrap" ref="footer" v-if="showTabbar">
-      <van-button
-        class="send-back"
-        color="#ff4444"
-        plain
-        block
-        round
-        @click="show = true"
-        :disabled="loading"
-        v-if="showBackbar"
-        >退回</van-button
-      >
-      <van-button
-        color="#ff4444"
-        block
-        round
-        @click="onCommit"
-        :disabled="loading"
-        >提交</van-button
-      >
-    </div>
-    <!-- </van-tabbar> -->
-    <!-- </div> -->
+    <van-tabbar placeholder v-if="showTabbar">
+      <div class="btn-wrap">
+        <van-button
+          class="send-back"
+          color="#ff4444"
+          plain
+          block
+          round
+          @click="show = true"
+          :disabled="loading"
+          v-if="showBackbar"
+          >退回</van-button
+        >
+        <van-button
+          color="#ff4444"
+          block
+          round
+          @click="onCommit"
+          :disabled="loading"
+          >提交</van-button
+        >
+      </div>
+    </van-tabbar>
     <van-popup
       v-model="show"
       round
@@ -130,7 +127,7 @@ import Attachment from "../../components/Attachment.vue";
 import { api } from "../../core/api/index";
 import { closeWindow } from "../../core/mxApi";
 export default {
-  name: "detail",
+  name: "docDetail",
   components: {
     [NavBar.name]: NavBar,
     [Tab.name]: Tab,
@@ -146,12 +143,6 @@ export default {
     Opinion,
     Attachment,
   },
-  //yinyanhong
-  provide() {
-    return {
-      reload: this.reload,
-    };
-  },
   data() {
     return {
       activeName: 0,
@@ -165,13 +156,11 @@ export default {
       preRoute: this.$route.params.preRoute || "home",
       loading: true, // 等待加载
       SubmitPermission: true, // 提交权限 true: 可提交，false: 不可提交
-      noteRequired: true, //意见必填  true: 必填, false: 非必填   20220714
+      noteRequired: true,  //意见必填  true: 必填, false: 非必填   20220714
       //fromOut: true, // 是否从外部跳转进OA
-      selectIsSubProcess: false, //是不是子流程
-      subProcessName: "", //子流程名称
-      dropListCurrentList: "",
-      //yinyanhong
-      isRouterAlive: true,
+      selectIsSubProcess: false,//是不是子流程
+      subProcessName: "",//子流程名称
+      dropListCurrentList: ""
     };
   },
   computed: {
@@ -181,31 +170,23 @@ export default {
     currentProcess() {
       return this.$store.state.currentProcess;
     },
-    dataForm() {
+    dataForm(){
       return this.$store.state.dataForm;
     },
     showTabbar() {
-      if (
-        this.$store.state.currentList !== "doing" &&
-        this.$store.state.currentProcess.workitemName &&
-        this.$store.state.currentProcess.workitemName.indexOf("行领导传阅") ===
-          -1
-      ) {
+      if (this.$store.state.currentList !== "doing"
+      && this.$store.state.currentProcess.workitemName
+      && this.$store.state.currentProcess.workitemName.indexOf("行领导传阅")===-1) {
         return true;
-      } else if (
-        this.$store.state.currentProcess.processFrom &&
-        this.$store.state.currentProcess.processFrom === "documentBasis"
-      ) {
-        return false;
-      } else {
+      } else if(this.$store.state.currentProcess.processFrom &&
+         this.$store.state.currentProcess.processFrom === "documentBasis"){
+         return false;
+      }else{
         return false;
       }
     },
     showNote() {
-      console.log(
-        "this.$store.state.currentList",
-        this.$store.state.currentList
-      );
+      console.log("this.$store.state.currentList", this.$store.state.currentList)
       if (this.$store.state.currentList !== "doing") {
         return true;
       } else {
@@ -214,12 +195,11 @@ export default {
     },
     showBackbar() {
       //console.log("----显示退回与否---",this.$store.state.currentProcess.workitemName)
-      if (
-        this.$store.state.currentProcess.editFlag !== "1" &&
-        this.$store.state.currentProcess.workitemName.indexOf("会签") === -1 &&
-        this.$store.state.currentProcess.workitemName !== "相关人员办理" &&
-        this.$store.state.currentProcess.workitemName !== "收文经办" &&
-        this.$store.state.currentProcess.workitemName !== "送相关支行"
+      if (this.$store.state.currentProcess.editFlag !== "1"
+        &&  this.$store.state.currentProcess.workitemName.indexOf("会签")===-1
+        &&  this.$store.state.currentProcess.workitemName !=="相关人员办理"
+        &&  this.$store.state.currentProcess.workitemName !=="收文经办"
+        &&  this.$store.state.currentProcess.workitemName !=="送相关支行"
       ) {
         return true;
       } else {
@@ -230,97 +210,85 @@ export default {
       // 是否从外部跳转进OA
       return this.$store.state.fromOut;
     },
-    currentList() {
+    currentList(){
       return this.$store.state.currentList;
     },
-    sendDeptVerify() {
-      return this.$store.state.sendDeptVerify;
+    sendDeptVerify(){
+      return this.$store.state.sendDeptVerify
     },
-    sendDeptText() {
-      return this.$store.state.sendDeptText;
+    sendDeptText(){
+      return this.$store.state.sendDeptText
     },
-    businessTypeVerify() {
-      return this.$store.state.businessTypeVerify;
+    businessTypeVerify(){
+      return this.$store.state.businessTypeVerify
     },
-    businessTypeText() {
-      return this.$store.state.businessTypeText;
-    },
+    businessTypeText(){
+      return this.$store.state.businessTypeText
+    }
   },
   created() {
     this.$store.commit("setCurrentList", this.$route.query.queryKind);
     this.dropListCurrentList = this.$route.query.queryKind;
-    console.log("this.$route.query.queryKind:", this.$route.query.queryKind);
+    console.log("this.$route.query.queryKind:", this.$route.query.queryKind)
     if (this.$route.query.from !== "oa") {
-      if (this.$store.state.userInfo.userCode !== this.$route.query.userCode) {
-        api
-          .checkUser({
+      if(this.$store.state.userInfo.userCode !== this.$route.query.userCode){
+        api.checkUser({
             uCode: this.$route.query.userCode,
-            id: "",
-          })
-          .then((res) => {
-            if (res.data.status === "200") {
-              if (res.data.model.usercode !== "") {
-                this.$store.commit("setUserInfo", {
-                  userCode: res.data.model.usercode,
-                  userId: res.data.model.useruuid,
-                  userName: res.data.model.username,
-                  ou: res.data.model.ou,
-                });
-                this.$store.commit("setFromOut", true);
-                const queryKind = this.$route.query.queryKind;
-                const workItemId = this.$route.query.workItemId;
-                const pubFormDataId = this.$route.query.pubFormDataId;
-                // 此处需调用接口获取数据
-                this.getData(queryKind, workItemId, pubFormDataId).then((res) => {
-                    let data = res.data.model.curPageData[0];
-                    console.log("&&&&&", this.data)
-                    this.$store.commit("setCurrentProcess", data);
-                    this.getBackLink();
-                    this.getFromConfig();
-                    this.isSubmmit();
-                    if (this.$store.state.currentList !== "doing") {
-                        this.recordOperationLog()
-                    }
-                    if (
-                      this.currentList === "todo" ||
-                      this.currentList === "seal"
-                    ) {
-                      this.isSubProcess();
-                    }
-                  }
-                );
-              }
+            id: ""
+        }).then(res => {
+            if (res.data.status === '200') {
+                if (res.data.model.usercode !== "") {
+                    this.$store.commit('setUserInfo', {
+                        userCode: res.data.model.usercode,
+                        userId: res.data.model.useruuid,
+                        userName: res.data.model.username,
+                        ou: res.data.model.ou
+                    })
+                    this.$store.commit("setFromOut", true);
+                    const queryKind = this.$route.query.queryKind;
+                    const workItemId = this.$route.query.workItemId;
+                    const pubFormDataId = this.$route.query.pubFormDataId;
+                    // 此处需调用接口获取数据
+                    this.getData(queryKind, workItemId, pubFormDataId).then((res) => {
+                      let data = res.data.model.curPageData[0];
+                      this.$store.commit("setCurrentProcess", data);
+                      this.getBackLink();
+                      this.getFromConfig();
+                      this.isSubmmit();
+                      this.updateProcessState();
+                      if(this.currentList === "todo" || this.currentList === "seal"){
+                        this.isSubProcess();
+                      }
+                    });
+                }
+            }
+        })
+      }else{
+          this.$store.commit("setFromOut", true);
+          const queryKind = this.$route.query.queryKind;
+          const workItemId = this.$route.query.workItemId;
+          const pubFormDataId = this.$route.query.pubFormDataId;
+          // 此处需调用接口获取数据
+          this.getData(queryKind, workItemId, pubFormDataId).then((res) => {
+            let data = res.data.model.curPageData[0];
+            this.$store.commit("setCurrentProcess", data);
+            this.getBackLink();
+            this.getFromConfig();
+            this.isSubmmit();
+            this.updateProcessState();
+            if(this.currentList === "todo" || this.currentList === "seal"){
+              this.isSubProcess();
             }
           });
-      } else {
-        this.$store.commit("setFromOut", true);
-        const queryKind = this.$route.query.queryKind;
-        const workItemId = this.$route.query.workItemId;
-        const pubFormDataId = this.$route.query.pubFormDataId;
-        // 此处需调用接口获取数据
-        this.getData(queryKind, workItemId, pubFormDataId).then((res) => {
-          let data = res.data.model.curPageData[0];
-          this.$store.commit("setCurrentProcess", data);
-          //console.log("&&&&&", this.data)
-          this.getBackLink();
-          this.getFromConfig();
-          this.isSubmmit();
-          if (this.$store.state.currentList !== "doing") {
-            this.recordOperationLog()
-          }
-          if (this.currentList === "todo" || this.currentList === "seal") {
-            this.isSubProcess();
-          }
-        });
       }
     } else {
       if (this.$store.state.currentList !== "doing") {
-        this.recordOperationLog()
+          this.updateProcessState();
       }
       this.getBackLink();
       this.getFromConfig();
       this.isSubmmit();
-      if (this.currentList === "todo" || this.currentList === "seal") {
+      if(this.currentList === "todo" || this.currentList === "seal"){
         this.isSubProcess();
       }
     }
@@ -331,59 +299,37 @@ export default {
         showText.hidden = true;
       }
     }, 1500);
-  },
-  mounted() {
-    this.$nextTick(() => {
-      console.log(this.showTabbar);
-      if (!this.showTabbar) {
-        this.$refs.tabsWrap.style.bottom = 0;
-      }
-    });
+
   },
   methods: {
-    //yinyanhong
-    reload() {
-      this.isRouterAlive = false;
-      this.$nextTick(function () {
-        this.isRouterAlive = true;
-      });
-    },
-    isSubProcess() {
-      console.log("isSubProcess被调用");
-      console.log(this.currentProcess.actDefId);
-      console.log(this.currentProcess.configId);
-      console.log(this.currentProcess.proDirId);
+    isSubProcess(){
+      console.log("isSubProcess被调用")
+      console.log(this.currentProcess.actDefId)
+      console.log(this.currentProcess.configId)
+      console.log(this.currentProcess.proDirId)
       let isSubProcessParameter = {
         extendKey: "subProcess",
         actDefId: this.currentProcess.actDefId,
         configId: this.currentProcess.configId,
         proDirId: this.currentProcess.proDirId,
-      };
+      }
 
       api.isSubProcess(isSubProcessParameter).then((res) => {
         if (res.data.status === "200") {
           console.log("detail_page里面是否是子流程，接口返回值res：" + res);
-          console.log("res.data.model:" + res.data.model);
+          console.log("res.data.model:"+res.data.model);
           //console.log("res.data.model.subProcess:"+res.data.model.subProcess)
-          if (res.data.model && res.data.model.subProcess) {
+          if(res.data.model && res.data.model.subProcess){
             this.selectIsSubProcess = true;
             this.subProcessName = res.data.model.subProcess;
-          }
-          if (this.selectIsSubProcess) {
-            console.log(
-              "detail_page里面是子流程，设置为已办，控制提交按钮的显示"
-            );
+          };
+          if(this.selectIsSubProcess){
+            console.log("detail_page里面是子流程，设置为已办，控制提交按钮的显示")
             this.$store.commit("setCurrentList", "doing");
-            console.log(
-              "设置完doing之后this.$route.query.queryKind: ",
-              this.$route.query.queryKind
-            );
-          } else {
+            console.log("设置完doing之后this.$route.query.queryKind: ", this.$route.query.queryKind)
+          }else{
             console.log("this.selectIsSubProcess = false");
-            console.log(
-              "this.$route.query.queryKind",
-              this.$route.query.queryKind
-            );
+            console.log("this.$route.query.queryKind", this.$route.query.queryKind)
             this.$store.commit("setCurrentList", this.$route.query.queryKind);
           }
         }
@@ -408,8 +354,9 @@ export default {
       });
     },
 
-    updateProcessState() {
-      api
+    updateProcessState(){
+      // console.log("-----------workitemId------------",this.currentProcess.workitemId)
+       api
         .updateProcessState({
           configId: this.currentProcess.configId,
           proDirId: this.currentProcess.proDirId,
@@ -424,29 +371,10 @@ export default {
         })
         .then((res) => {
           if (res.data.status === "200") {
-            // console.log("更新待办流程状态成功");
+              // console.log("更新待办流程状态成功");
           }
         });
     },
-    recordOperationLog(){
-        console.log("-----------执行移动端保存签收日志的方法开始------------")
-        api
-        .recordOperationLog({
-          configId: this.currentProcess.configId,
-          proDirId: this.currentProcess.proDirId,
-          userId: this.$store.state.userInfo.userId,
-          actDefId: this.currentProcess.actDefId,
-          proInstId: this.currentProcess.proInstId,
-          actInstId: this.currentProcess.actInstId,
-          workItemId: this.currentProcess.workitemId,
-          wfmRoleTypes: "todo",
-        })
-        .then((res) => {
-          if (res.data.status === "200") {
-            console.log("-----------执行移动端保存签收日志的方法结束------------")
-          }
-        });
-    } ,
     isSubmmit() {
       api
         .SubmitPermission({
@@ -469,24 +397,15 @@ export default {
                 this.SubmitPermission = false;
               }
               //处理下，判断意见是否必填   20220714
-              if (
-                item.extendKey === "noteIsRequired" &&
-                item.extendValue === "0"
-              ) {
-                console.log("this.noteRequired = false");
+              if(item.extendKey ==="noteIsRequired" && item.extendValue==="0"){
+                console.log("this.noteRequired = false")
                 this.noteRequired = false;
               }
               //判断是否有发送部门字段
-              if (
-                item.extendKey === "isMustEditField" &&
-                item.extendValue === "sendDept"
-              ) {
+              if(item.extendKey === "isMustEditField" && item.extendValue === "sendDept"){
                 this.SubmitPermission = true;
               }
-              if (
-                item.extendKey === "isPCHandle" &&
-                (item.extendValue == true || item.extendValue == "true")
-              ) {
+              if(item.extendKey === "isPCHandle" && (item.extendValue == true || item.extendValue == "true")){
                 this.SubmitPermission = false;
               }
             });
@@ -583,18 +502,16 @@ export default {
     onClickLeft() {
       //处理行领导传阅，关闭即签收，结束流程问题
       //console.log("---看看是不是行领导传阅环节----",this.currentProcess.workitemName)
-      if (
-        this.currentProcess.workitemName &&
-        this.currentProcess.workitemName.indexOf("行领导传阅") != -1
-      ) {
+      if(this.currentProcess.workitemName &&
+        this.currentProcess.workitemName.indexOf("行领导传阅") !=-1){
         api
-          .finishCy({
-            proInstId: this.currentProcess.proInstId,
-            userId: this.userInfo.userId,
-          })
-          .then((res) => {
-            if (res.data.status === "200") {
-              //console.log("----行领导传阅结束----");
+        .finishCy({
+          proInstId: this.currentProcess.proInstId,
+          userId: this.userInfo.userId,
+        })
+        .then((res) => {
+          if (res.data.status === "200") {
+            //console.log("----行领导传阅结束----");
               // 退出详情页
               if (this.fromOut) {
                 Dialog.confirm({
@@ -624,41 +541,41 @@ export default {
               this.$router.replace({
                 name: this.preRoute,
               });
-            }
-          });
-      } else {
-        // 退出详情页
-        if (this.fromOut) {
-          Dialog.confirm({
-            title: "是否留在OA系统？",
-            confirmButtonColor: "#ff4444",
-            cancelButtonText: "返回待办",
-            width: "300px",
-            closeOnClickOverlay: true,
-          })
-            .then(() => {
-              this.$store.commit("setCurrentList", this.dropListCurrentList);
-              this.$store.commit("setFromOut", false);
-              this.$router.replace({
-                name: this.preRoute,
-              });
-            })
-            .catch((action) => {
-              console.log("action", action);
-              //点击蒙层action为overlay
-              if (action !== "overlay") {
-                closeWindow();
-              }
-            });
-          return;
-        } else {
-          this.$store.commit("setCurrentList", this.dropListCurrentList);
-        }
-
-        this.$router.replace({
-          name: this.preRoute,
+          }
         });
-        console.log("点击左箭头：", this.$route.query.queryKind);
+      }else{
+            // 退出详情页
+            if (this.fromOut) {
+              Dialog.confirm({
+                title: "是否留在OA系统？",
+                confirmButtonColor: "#ff4444",
+                cancelButtonText: "返回待办",
+                width: "300px",
+                closeOnClickOverlay: true,
+              })
+                .then(() => {
+                  this.$store.commit("setCurrentList", this.dropListCurrentList);
+                  this.$store.commit("setFromOut", false);
+                  this.$router.replace({
+                    name: this.preRoute,
+                  });
+                })
+                .catch((action) => {
+                  console.log("action", action);
+                  //点击蒙层action为overlay
+                  if (action !== "overlay") {
+                    closeWindow()
+                  }
+                });
+              return;
+            }else{
+                this.$store.commit("setCurrentList", this.dropListCurrentList);
+            }
+
+            this.$router.replace({
+              name: this.preRoute,
+            });
+            console.log("点击左箭头：", this.$route.query.queryKind)
       }
     },
     onClickRight() {
@@ -668,28 +585,15 @@ export default {
       });
     },
     onCommit() {
-      if (
-        this.sendDeptVerify &&
-        (this.$store.state.currentList === "todo" ||
-          this.$store.state.currentList === "seal")
-      ) {
-        if (
-          this.dataForm.sendDeptText == null ||
-          this.dataForm.sendDeptText == ""
-        ) {
-          Toast("请选择发送部门");
-          return;
+
+      if(this.sendDeptVerify && (this.$store.state.currentList === 'todo' || this.$store.state.currentList === 'seal')){
+        if(this.dataForm.sendDeptText == null || this.dataForm.sendDeptText == ""){
+            Toast("请选择发送部门");
+            return;
         }
       }
-      if (
-        this.businessTypeVerify &&
-        (this.$store.state.currentList === "todo" ||
-          this.$store.state.currentList === "seal")
-      ) {
-        if (
-          this.dataForm.businessType == null ||
-          this.dataForm.businessType == ""
-        ) {
+      if(this.businessTypeVerify && (this.$store.state.currentList === 'todo' || this.$store.state.currentList === 'seal')){
+        if(this.dataForm.businessType == null || this.dataForm.businessType == ""){
           Toast("请选择业务类型");
           return;
         }
@@ -700,26 +604,20 @@ export default {
         Toast("请前往PC端提交!");
         return;
       }
-      var u = navigator.userAgent,
-        app = navigator.appVersion;
+      var u = navigator.userAgent,app = navigator.appVersion;
       var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
       //console.log("isiOS", isiOS);
       for (let i = 0; i < this.opinionConfig.length; i++) {
         //意见必填时再进行意见填写  20220714
-        console.log(this.noteRequired);
-        if (this.noteRequired) {
+        console.log(this.noteRequired)
+        if(this.noteRequired){
           //如果输入框内容是空的
           if (!this.opinionConfig[i].noteContent) {
-            // if (isiOS) {
-            //   document.documentElement.scrollTop =
-            //     this.$refs.detailWrap.clientHeight - 255;
-            // } else {
-            //   window.scrollTo(0, 9999);
-            // }
-            let scrollEle = document.querySelector(".van-tabs__content");
-            let elH = document.querySelector("#tabWrap").clientHeight;
-            let scrollH = elH - scrollEle.clientHeight;
-            scrollEle.scrollTop = scrollH;
+            if (isiOS) {
+              document.documentElement.scrollTop = this.$refs.detailWrap.clientHeight - 255;
+            } else {
+              window.scrollTo(0, 9999);
+            }
             Toast("请填写审批意见");
             return;
           } else {
@@ -731,7 +629,7 @@ export default {
         }
       }
       //保存意见是否必填  20220714
-      this.$store.commit("setNoteRequired", this.noteRequired);
+      this.$store.commit("setNoteRequired",this.noteRequired);
       this.$store.commit("setOpinionData", this.opinionConfig);
       //进入选择环节页面
       this.$router.replace({
@@ -755,14 +653,13 @@ export default {
         Toast("请选择回退环节");
         return;
       }
-      if (
-        this.activity.name.indexOf("会签") != -1 ||
-        this.activity.name === "相关业务线办理" ||
-        this.activity.name === "相关人员办理" ||
-        this.activity.name === "相关部室办理" ||
-        this.activity.name === "辅办部室办理" ||
-        this.activity.name === "收文经办" ||
-        this.activity.name === "送相关支行"
+      if (this.activity.name.indexOf("会签") != -1
+        || this.activity.name === "相关业务线办理"
+        || this.activity.name === "相关人员办理"
+        || this.activity.name === "相关部室办理"
+        || this.activity.name === "辅办部室办理"
+        || this.activity.name === "收文经办"
+        || this.activity.name === "送相关支行"
       ) {
         Toast("请前往PC端退回该环节");
         return;
@@ -797,62 +694,39 @@ export default {
             //如果从统一待办进入选择退回的，应在退回后可选择是否返回统一待办  (安卓返回待办请下拉刷新列表)
             if (this.fromOut) {
               Dialog.alert({
+                  message: "退回成功",
+                  width: "200px",
+                  confirmButtonColor: "#ff4444",
+              }).then(() => {
+                  this.$store.commit("setFromOut", false);
+                  this.$router.replace({
+                    name: this.preRoute,
+                  });
+              });
+              return;
+
+            }
+            Dialog.alert({
                 message: "退回成功",
                 width: "200px",
                 confirmButtonColor: "#ff4444",
-              }).then(() => {
-                this.$store.commit("setFromOut", false);
+            }).then(() => {
+                this.$store.commit("setRefresh", true);
                 this.$router.replace({
+                  //name: this.backRoute,
                   name: this.preRoute,
                 });
-              });
-              return;
-            }
-            Dialog.alert({
-              message: "退回成功",
-              width: "200px",
-              confirmButtonColor: "#ff4444",
-            }).then(() => {
-              this.$store.commit("setRefresh", true);
-              this.$router.replace({
-                //name: this.backRoute,
-                name: this.preRoute,
-              });
             });
+
           } else {
             Toast("退回失败");
           }
         });
     },
-    // onSave() {
-    //   // 调用保存方法
-    //   this.opinionConfig.forEach((item) => {
-    //     this.saveOpinion(item);
-    //   });
-    // },
-    // saveOpinion(item) {
-    //   // 保存意见内容
-    //   console.log(1234);
-    //   let data = {
-    //     id: item.id || "",
-    //     type: item.noteId,
-    //     noteContent: item.noteContent,
-    //     proInstId: this.currentProcess.proInstId,
-    //     createUser: this.userInfo.userId,
-    //     createUserName: this.userInfo.userName,
-    //     workitemId: this.currentProcess.workitemId,
-    //     actDefId: this.currentProcess.actDefId,
-    //   };
-    //   api.saveOpinion(data).then((res) => {
-    //     item.id = res.data.model.id;
-    //   });
-    // },
     onClickInput() {
-      //console.log("input");
       var u = navigator.userAgent,
         app = navigator.appVersion;
       var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
-      //console.log(isiOS);
 
       if (isiOS) {
         const input = document.getElementsByTagName("textarea")[0];
@@ -872,8 +746,6 @@ export default {
           showFlag.hidden = true;
         });
       } else {
-        //console.log("scrollTop", document.documentElement.scrollTop);
-        //console.log("clientHeight", this.$refs.detailWrap.clientHeight);
         if (
           document.documentElement.scrollTop ===
           this.$refs.detailWrap.clientHeight
@@ -890,83 +762,29 @@ export default {
 <style lang="less" scoped>
 @import "../../assets/common/css/common.less";
 
-/deep/.van-tabs.van-tabs--line {
-  position: relative;
-  height: 100%;
-}
 
-/deep/.van-tabs__wrap {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-}
-
-/deep/.van-tabs__content {
-  position: absolute;
-  top: 44px;
-  bottom: 0px;
-  left: 0;
-  width: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
-}
 
 .detail-wrap {
-  height: 100vh;
-  //   position:relative;
-  // overflow: scroll;
-  // display: flex;
-  // flex-direction: column;
-  // padding-bottom: 10px;
+  min-height: 100%;
 
-  .van-tabs__wrap {
-    background-color: red;
-  }
-
-  .header {
-    position: absolute;
-    height: 46px;
-    width: 100%;
-    left: 0;
-    top: 0;
-  }
-  .tabs-wrap {
-    // height: calc(~"100vh - 106px");
-    // overflow: scroll;
-    // -webkit-overflow-scrolling: touch;
-    position: absolute;
-    top: 46px;
-    bottom: 60px;
-    width: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
-    margin: auto;
-  }
-  .footer {
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    height: 60px;
-  }
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 
   .tab-wrap {
-    flex: 1;
+    flex:1;
     padding: 16px;
-    white-space: pre-line;
+    white-space:pre-line;
   }
 
   .tab-wrap-attachment {
-    flex: 1;
+    flex:1;
     padding: 16px 0;
   }
 
   .btn-wrap {
     width: 100%;
-    // height: 100%;
-    background-color: #fff;
-    height: 60px;
+    height: 100%;
     display: flex;
     align-items: center;
     padding: 0 16px;
@@ -1033,9 +851,9 @@ export default {
         color: #ff4444;
       }
     }
-    .sendback-content {
-      flex: 1;
-      overflow-y: auto;
+    .sendback-content{
+      flex:1;
+      overflow-y:auto;
     }
   }
 }

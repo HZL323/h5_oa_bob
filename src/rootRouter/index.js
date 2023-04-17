@@ -11,6 +11,7 @@ import Router from 'vue-router'
 import homePageRouter from '@/modules/home_page/route' // 首页路由
 import listPageRouter from '@/modules/list_page/route' // 列表页路由
 import detailPageRouter from '@/modules/detail_page/route' // 详情页路由
+import docDetailPageRouter from '@/modules/docBasis_page/route' // 详情页路由
 import processTrackingRouter from '@/modules/process_tracking/route' // 流程跟踪路由
 import selectLinkRouter from '@/modules/commit_page/route' // 选择下一环节路由
 // import previewRouter from '@/modules/preview_page/route'
@@ -30,6 +31,7 @@ const router = new Router({
     processTrackingRouter,
     selectLinkRouter,
     // previewRouter
+    docDetailPageRouter,
   ]
 })
 

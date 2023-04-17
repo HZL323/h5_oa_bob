@@ -33,143 +33,59 @@ export function checkUser(data) {
 // 查询待办、已办、待阅接口
 export function queryList(data) {
     //console.log(data)
+    let arr = []
+    for (let i = 0; i < 4; i++) {
+        arr.push({
+            actDefId: "ng",
+            actInstId: "4ffe3c69b1a54d9c85d3f51e81ce3361",
+            archState: "0",
+            bold: false,
+            configCode: "huiyijiyao_zhhyjj_process",
+            configId: "b5c988ec42c4432c9bec85378d638859",
+            createDate: "2021-08-25 11:18:34",
+            createTime: "2021-08-25",
+            actCreateTime: "2021-08-25",
+            createUser: "d9d0c2ea74ec4c7593731c329bd47302",
+            deleteFlag: "0",
+            draftDate: "2021-08-25 11:20:23",
+            draftDept: "310200004",
+            draftDeptname: "北京银行",
+            drafter: "d9d0c2ea74ec4c7593731c329bd47302",
+            drafterName: "刘昱程",
+            editFlag: "1",
+            invalid: "N",
+            isMerge: "0",
+            jygNode: false,
+            lastModifyTime: "2021-08-25 11:20:23",
+            lastModifyUser: "d9d0c2ea74ec4c7593731c329bd47302",
+            operStatus: "I",
+            priority: "003",
+            proDirId: "af2558b99d264fd6a5d52e98e7d454ff" + i,
+            proInstId: "9d7befc87dea459aab1b26b5935cacd8" + i,
+            proInstIdReal: "9d7befc87dea459aab1b26b5935cacd8",
+            processName: "总行会议决议",
+            processState: "running",
+            pubFormDataId: "b098679a87874ebbbf2248c19004cd56",
+            recTime: "2021-08-25 11:18:34",
+            resourceId: "d9d0c2ea74ec4c7593731c329bd47302",
+            secretLevel: "2",
+            state: "open.running",
+            title: "关于进一步加强211工程管理的通知" + i,
+            tmFlag: "0",
+            txFlag: "0",
+            type: "normal",
+            wordNo: "",
+            workitemId: "a7ab00718dd040beac3e91cecaa6835d",
+            workitemName: "主办部门负责人审核主办部门负责人审核"
+        })
+    }
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             resolve({
                 data: {
                     model: {
-                        curPageData: [
-                            {
-                                actDefId: "ng",
-                                actInstId: "4ffe3c69b1a54d9c85d3f51e81ce3361",
-                                archState: "0",
-                                bold: false,
-                                configCode: "huiyijiyao_zhhyjj_process",
-                                configId: "b5c988ec42c4432c9bec85378d638859",
-                                createDate: "2021-08-25 11:18:34",
-                                createTime: "2021-08-25",
-                                actCreateTime: "2021-08-25",
-                                createUser: "d9d0c2ea74ec4c7593731c329bd47302",
-                                deleteFlag: "0",
-                                draftDate: "2021-08-25 11:20:23",
-                                draftDept: "310200004",
-                                draftDeptname: "北京银行",
-                                drafter: "d9d0c2ea74ec4c7593731c329bd47302",
-                                drafterName: "刘昱程",
-                                editFlag: "1",
-                                invalid: "N",
-                                isMerge: "0",
-                                jygNode: false,
-                                lastModifyTime: "2021-08-25 11:20:23",
-                                lastModifyUser: "d9d0c2ea74ec4c7593731c329bd47302",
-                                operStatus: "I",
-                                priority: "003",
-                                proDirId: "af2558b99d264fd6a5d52e98e7d454ff",
-                                proInstId: "9d7befc87dea459aab1b26b5935cacd8",
-                                proInstIdReal: "9d7befc87dea459aab1b26b5935cacd8",
-                                processName: "总行会议决议",
-                                processState: "running",
-                                pubFormDataId: "b098679a87874ebbbf2248c19004cd56",
-                                recTime: "2021-08-25 11:18:34",
-                                resourceId: "d9d0c2ea74ec4c7593731c329bd47302",
-                                secretLevel: "2",
-                                state: "open.running",
-                                title: "关于进一步加强211工程管理的通知",
-                                tmFlag: "0",
-                                txFlag: "0",
-                                type: "normal",
-                                wordNo: "",
-                                workitemId: "a7ab00718dd040beac3e91cecaa6835d",
-                                workitemName: "主办部门负责人审核主办部门负责人审核"
-                            },
-                            {
-                                actDefId: "ng",
-                                actInstId: "4ffe3c69b1a54d9c85d3f51e81ce3361",
-                                archState: "0",
-                                bold: false,
-                                configCode: "huiyijiyao_zhhyjj_process",
-                                configId: "b5c988ec42c4432c9bec85378d638859",
-                                createDate: "2021-08-25 11:18:34",
-                                createTime: "2021-08-25",
-                                actCreateTime: "2021-08-25",
-                                createUser: "d9d0c2ea74ec4c7593731c329bd47302",
-                                deleteFlag: "0",
-                                draftDate: "2021-08-25 11:20:23",
-                                draftDept: "310200004",
-                                draftDeptname: "文档部",
-                                drafter: "d9d0c2ea74ec4c7593731c329bd47302",
-                                drafterName: "刘昱程",
-                                editFlag: "0",
-                                invalid: "N",
-                                isMerge: "0",
-                                jygNode: false,
-                                lastModifyTime: "2021-08-25 11:20:23",
-                                lastModifyUser: "d9d0c2ea74ec4c7593731c329bd47302",
-                                operStatus: "I",
-                                priority: "002",
-                                proDirId: "af2558b99d264fd6a5d52e98e7d454ff",
-                                proInstId: "9d7befc87dea459aab1b26b5935cacd8",
-                                proInstIdReal: "9d7befc87dea459aab1b26b5935cacd8",
-                                processName: "总行会议决议",
-                                processState: "running",
-                                pubFormDataId: "b098679a87874ebbbf2248c19004cd56",
-                                recTime: "2021-08-25 11:18:34",
-                                resourceId: "d9d0c2ea74ec4c7593731c329bd47302",
-                                secretLevel: "2",
-                                state: "open.running",
-                                title: "天津分行会议移动端兼容性测",
-                                tmFlag: "0",
-                                txFlag: "0",
-                                type: "normal",
-                                wordNo: "",
-                                workitemId: "a7ab00718dd040beac3e91cecaa6835d",
-                                workitemName: "分行主办部门负责人审核主办部门负责人审核"
-                            },
-                            {
-                                actDefId: "ng",
-                                actInstId: "4ffe3c69b1a54d9c85d3f51e81ce3361",
-                                archState: "0",
-                                bold: false,
-                                configCode: "huiyijiyao_zhhyjj_process",
-                                configId: "b5c988ec42c4432c9bec85378d638859",
-                                createDate: "2021-08-25 11:18:34",
-                                createTime: "2021-08-25",
-                                actCreateTime: "2021-08-25",
-                                createUser: "d9d0c2ea74ec4c7593731c329bd47302",
-                                deleteFlag: "0",
-                                draftDate: "2021-08-25 11:20:23",
-                                draftDept: "310200004",
-                                draftDeptname: "文档部",
-                                drafter: "d9d0c2ea74ec4c7593731c329bd47302",
-                                drafterName: "刘昱程",
-                                editFlag: "0",
-                                invalid: "N",
-                                isMerge: "0",
-                                jygNode: false,
-                                lastModifyTime: "2021-08-25 11:20:23",
-                                lastModifyUser: "d9d0c2ea74ec4c7593731c329bd47302",
-                                operStatus: "I",
-                                priority: "001",
-                                proDirId: "af2558b99d264fd6a5d52e98e7d454ff",
-                                proInstId: "9d7befc87dea459aab1b26b5935cacd8",
-                                proInstIdReal: "9d7befc87dea459aab1b26b5935cacd8",
-                                processName: "总行会议决议",
-                                processState: "running",
-                                pubFormDataId: "b098679a87874ebbbf2248c19004cd56",
-                                recTime: "2021-08-25 11:18:34",
-                                resourceId: "d9d0c2ea74ec4c7593731c329bd47302",
-                                secretLevel: "2",
-                                state: "open.running",
-                                title: "关于废止部分交易银行制度文件通知",
-                                tmFlag: "0",
-                                txFlag: "0",
-                                type: "normal",
-                                wordNo: "",
-                                workitemId: "a7ab00718dd040beac3e91cecaa6835d",
-                                workitemName: "分行主办部门负责人审核主办部门负责人审核"
-                            }
-                        ],
-                        allDataCount: 3,
+                        curPageData: arr,
+                        allDataCount: 4,
                     }
                 }
             })
@@ -475,7 +391,6 @@ export function queryNextLink() {
                         isAllowParallel: "",
                         isSkiped: false,
                         nextActDefIds: [
-                            
                             {
                                 aSync: false,
                                 actDefId: "d_process_wp1_act11",
@@ -483,6 +398,20 @@ export function queryNextLink() {
                                 actDefPath: "hnhd_process_wp1,d_process_wp1_act11",
                                 actInstId: null,
                                 actType: "next",
+                                parentProDefId: null,
+                                participants: null,
+                                proDefId: "hnhd_process_wp1",
+                                proDirId: "accc5a28326d4e0cbc4780a4a30a565f",
+                                sort: null,
+                                transActName: ""
+                            },
+                            {
+                                aSync: false,
+                                actDefId: "end",
+                                actDefName: "结束",
+                                actDefPath: "hnhd_process_wp1,d_process_wp1_act11",
+                                actInstId: null,
+                                actType: "end",
                                 parentProDefId: null,
                                 participants: null,
                                 proDefId: "hnhd_process_wp1",
@@ -600,7 +529,7 @@ export function queryHandlerList(data) {
                             }
                         ],
                         returnSelect: "false",
-                        selectPersonType: "radio"
+                        selectPersonType: "checkbox"
                     },
                     msg: "",
                     status: "200",
@@ -1438,13 +1367,13 @@ export function getFormData(data) {
                             proInstId: "7c9d64514b294c47afa5478b8ab8be09",
                             publishedUnit: "",
                             secretLevel: null,
-                            sendUserIds:"user:123456789",
+                            sendUserIds: "user:123456789",
                             sendMethod: "BGSJH",
                             sysFilePosition: '[{"dictCode":"GRYWNQ","value":"个人业务内勤"},{"dictCode":"GSKHJL","value":"公司客户经理"}]',
                             telephone: "17640214817",
                             title: "测试总行发文流程要点",
                             wordNo: "",
-                            remark:"",
+                            remark: "",
                             //remark:"文件名称：123（未盖章）.pdf\n用印事项：正式环境中，哪有那么多事情呢\n 用印枚数：4\n打印份数：2\n用印类型及页码：董事长手签:骑缝章;北京银行:骑缝章\n发往单位：大理寺审夺"
                         },
                         processTitle: "乱七八糟流程"
@@ -1691,19 +1620,19 @@ export function sealDetail() {
             resolve({
                 data: {
                     "model": [{
-                        '文件名称':"类型.pdf",
-                        '用印事项':"章类",
-                        '用印类型及页码':'北京银行股份有限公司：3,5,6',
-                        '用印枚数':'3',
-                        '打印份数':'2',
-                        '发往单位':'北京银行'
-                    },{
-                        '文件名称':"就实际用途进行分析.pdf",
-                        '用印事项':"因事关重大，特此慎重批复，今研究决定，可以进行试点推广",
-                        '用印类型及页码':'北京银行上海分行：3,5,6',
-                        '用印枚数':'12',
-                        '打印份数':'11',
-                        '发往单位':'北京银行'
+                        '文件名称': "类型.pdf",
+                        '用印事项': "章类",
+                        '用印类型及页码': '北京银行股份有限公司：3,5,6',
+                        '用印枚数': '3',
+                        '打印份数': '2',
+                        '发往单位': '北京银行'
+                    }, {
+                        '文件名称': "就实际用途进行分析.pdf",
+                        '用印事项': "因事关重大，特此慎重批复，今研究决定，可以进行试点推广",
+                        '用印类型及页码': '北京银行上海分行：3,5,6',
+                        '用印枚数': '12',
+                        '打印份数': '11',
+                        '发往单位': '北京银行'
                     }
                     ],
                     "msg": "",
@@ -1722,7 +1651,7 @@ export function SubmitPermission(data) {
             resolve({
                 data: {
                     "model": [
-                        
+
                     ],
                     "msg": "",
                     "status": "200",
@@ -1774,7 +1703,7 @@ export function getCollectedOpinion(data) {
             resolve({
                 data: {
                     model: {
-                        noteList:[
+                        noteList: [
                             {
                                 note: '批准1'
                             },
@@ -1787,5 +1716,20 @@ export function getCollectedOpinion(data) {
                 }
             })
         }, 1000)
+    })
+}
+
+// isSubProcess
+
+export function isSubProcess(data) {
+    return new Promise((resolve, reject) => {
+        resolve({
+            data: {
+                model: {
+                    subProcess: false
+                },
+                status: '200'
+            }
+        })
     })
 }

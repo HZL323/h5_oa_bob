@@ -7,10 +7,9 @@
  * @FilePath: \bjbank-xcoa\src\core\api\query.js
  */
 import { ajaxGet, ajaxPost } from '../mxApi'
-
 //const URL = `http://oa.bj.bob` // 生产
-//const URL = `http://10.51.228.84:8080` // 新oa测试
-const URL = `http://app.xcoa.bj.bob.test` // 新oa/准生产
+const URL = `http://10.51.228.84:8080` // 新oa测试
+// const URL = `http://app.xcoa.bj.bob.test` // 新oa/准生产
 
 export function queryMessage(data) {
     //return ajaxGet('/api/v1/users?limit=1') //测试接口
@@ -73,7 +72,7 @@ export function getFormData(data) {
 export function getOpinionData(data) {
     // console.log(`OA详情 意见数据`,URL+`/mob/note/NoteServiceContainer/listNote`)
     // console.log(`参数`,data)
-    return ajaxPost(`${URL}/mob/note/NoteServiceContainer/listNote`, data)  
+    return ajaxPost(`${URL}/mob/note/NoteServiceContainer/listNote`, data)
 }
 
 // OA详情 可编辑意见
@@ -188,7 +187,7 @@ export function sealDetail(data) {
     return ajaxPost(`${URL}/mob/taskDetailService/getPrintAttachInfo`, data)
 }
 //判断该活动环节是否有配置发送部门的扩展字段
-//   
+//
 //   let hasSendDeptFlag = {
 //     extendKey: "sendDeptVerify",
 //     actDefId: this.currentLink.actDefId,
@@ -198,7 +197,7 @@ export function sealDetail(data) {
 //   api.getActivityExtendConfigByName(hasSendDeptFlag).then((res) => {
 //     console.log("是否有配置发送部门res：" + res);
 //     if(res.data.model && res.data.model.sendDeptVerify){
-//       
+//
 //     };
 //   });
 //获取扩展字段的值
@@ -228,4 +227,7 @@ export function addBusinessType(data){
 //获取收藏的意见
 export function getCollectedOpinion(data){
     return ajaxPost(`${URL}/mob/note/NoteServiceContainer/getNoteCollection`, data)
+}
+export function recordOperationLog(data){
+    return ajaxPost(`${URL}/mob/wfm/ApplicationServiceContainer/MobRecordOperationLog`, data)
 }

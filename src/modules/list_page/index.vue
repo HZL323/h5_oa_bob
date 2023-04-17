@@ -8,20 +8,26 @@
 -->
 <template>
   <div class="home-wrap">
-    <van-nav-bar
-      :title="navTitle"
-      left-text=""
-      left-arrow
-      @click-left="onClickLeft"
-      fixed
-      placeholder
-    />
-    <van-sticky offset-top="46">
-      <van-search v-model="value" placeholder="请输入搜索关键词" @search="onSearch" shape="round"></van-search>
-    </van-sticky>
+    <div class="header-wrap">
+      <van-nav-bar
+        :title="navTitle"
+        left-text=""
+        left-arrow
+        @click-left="onClickLeft"
+        placeholder
+      />
+      <!-- <van-sticky offset-top="46"> -->
+      <van-search
+        v-model="value"
+        placeholder="请输入搜索关键词"
+        @search="onSearch"
+        shape="round"
+      ></van-search>
+      <!-- </van-sticky> -->
+    </div>
 
-    <div class="list-content">     
-      <DropList :key="key" ref="dropList" :searchParams="searchParams"/>
+    <div class="list-content content-wrap">
+      <DropList :key="key" ref="dropList" :searchParams="searchParams" />
     </div>
   </div>
 </template>
@@ -31,7 +37,7 @@ import { NavBar, Search, Sticky } from "vant";
 import DropList from "../../components/DropList.vue";
 export default {
   name: "listPage",
-  components: { 
+  components: {
     [NavBar.name]: NavBar,
     [Search.name]: Search,
     [Sticky.name]: Sticky,
@@ -41,7 +47,7 @@ export default {
     return {
       active: 0,
       key: "bj",
-      value:"",
+      value: "",
       //searchParams: {}
     };
   },
@@ -52,11 +58,11 @@ export default {
     refresh() {
       return this.$store.state.refresh;
     },
-    searchParams(){
-      return{
-        title: this.value
-      }
-    }
+    searchParams() {
+      return {
+        title: this.value,
+      };
+    },
   },
   activated() {
     if (this.refresh) {
@@ -85,9 +91,9 @@ export default {
         name: "home",
       });
     },
-    onSearch(){
-      this.$refs.dropList.onRefresh()
-    }
+    onSearch() {
+      this.$refs.dropList.onRefresh();
+    },
   },
 };
 </script>
@@ -97,5 +103,23 @@ export default {
 
 .home-wrap {
   height: 100%;
+
+  .header-wrap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
+
+  .content-wrap {
+    position: absolute;
+    top: 100px;
+    left: 0;
+    margin: auto;
+    bottom: 0;
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
 }
 </style>

@@ -10,17 +10,12 @@
 import Axios from 'axios'
 import qs from 'qs'
 import { ajaxGet, ajaxPost } from '../mxApi'
-
-//const URL = `http://10.116.71.25` // 生产
-//const URL = `http://10.51.228.84:8080` // UAT
-//const URL = `http://10.51.252.190:8088` // 测试
-
 const URL = `http://localhost:8088`//本地
 
 export function queryMessage(data) {
     //return ajaxGet('/api/v1/users?limit=1') //测试接口
     return Axios.get('/api/resoftCtrl/OFDController') //测试接口
-    
+
 }
 
 // 校验用户信息
@@ -100,7 +95,8 @@ export function queryAttachment(data) {
 export function Preview(data) {
     // console.log(`附件预览`,URL+`/mob/bob/PreviewToZt/preview`)
     // console.log(`参数`,data)
-    return Axios.post(`${URL}/mob/bob/PreviewToZt/preview`, data)
+    return Axios.post(`${URL}/mob/bob/PreviewToZt/preview`, data)//V5
+    //return Axios.post(`${URL}/mob/bob/PreviewToZtV6/preview`, data)
 }
 
 // 查询未盖章附件是否有对应的已盖章附件
@@ -181,6 +177,7 @@ export function finishCy(data) {
 }
 
 // 更新待办流程状态
+
 export function updateProcessState(data) {
     // console.log(`更新待办流程状态`,URL+`/mob/taskDetailService/updateProcessState`)
     // console.log(`参数`,data)
@@ -194,7 +191,7 @@ export function sealDetail(data) {
     return Axios.post(`${URL}/mob/taskDetailService/getPrintAttachInfo`, data)
 }
 //判断该活动环节是否有配置发送部门的扩展字段
-//   
+//
 //   let hasSendDeptFlag = {
 //     extendKey: "sendDeptVerify",
 //     actDefId: this.currentLink.actDefId,
@@ -204,7 +201,7 @@ export function sealDetail(data) {
 //   api.getActivityExtendConfigByName(hasSendDeptFlag).then((res) => {
 //     console.log("是否有配置发送部门res：" + res);
 //     if(res.data.model && res.data.model.sendDeptVerify){
-//       
+//
 //     };
 //   });
 //获取扩展字段的值
@@ -220,7 +217,7 @@ export function getSendDept(data){
 //     return Axios.post(`${URL}/mob/yyzhi/saveFormDataForOperation`, data);
 // }
 export function yyzhiModifySendDeptAndUsers(data){
-    
+
     return Axios.post(`${URL}/mob/yyzhi/modifySendDeptAndUsers`, data);
 }
 export function yyfhbmModifySendDeptAndUsers(data){
@@ -235,4 +232,8 @@ export function addBusinessType(data){
 //获取收藏的意见
 export function getCollectedOpinion(data){
     return Axios.post(`${URL}/mob/note/NoteServiceContainer/getNoteCollection`, data)
+}
+//执行签收方法
+export function recordOperationLog(data){
+    return Axios.post(`${URL}/mob/wfm/ApplicationServiceContainer/MobRecordOperationLog`, data)
 }

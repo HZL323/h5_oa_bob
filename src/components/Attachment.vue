@@ -89,6 +89,7 @@ export default {
         .then((res) => {
           if (res.data.status === "200") {
             this.list = res.data.model;
+            console.log(this.list)
             this.list.forEach((item) => {
               if (item.fileData.length > 0) {
                 this.activeNames.push(item.type);

@@ -36,7 +36,7 @@ axios.interceptors.request.use((config)=>{
 })
 //Vue.use(cors({origin:['http://localhost:8089']}))
 
-//Vue.use(new VConsose())
+// Vue.use(new VConsose())
 Vue.use(Components) // 全局注册组件
 Vue.use(ToastPlugin)
 Vue.use(LoadingPlugin)

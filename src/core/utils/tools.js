@@ -22,18 +22,18 @@ router.beforeEach((to, from, next) => {
         Store.commit('setCacheList', ['homePage', 'listPage'])
     }
     // console.log("----路由位置----",Store.state.currentProcess);
-    // if(to.name === 'detail' && Store.state.currentProcess.workitemName !=undefined  && ( 
+    // if(to.name === 'detail' && Store.state.currentProcess.workitemName !=undefined  && (
     // Store.state.currentProcess.workitemName==='会签' ||
-    // Store.state.currentProcess.workitemName.indexOf('部室经理会签')!=-1  || 
-    // Store.state.currentProcess.workitemName==='部室经理会签' || 
-    // Store.state.currentProcess.workitemName==='部门经理会签' || 
-    // Store.state.currentProcess.workitemName==='相关业务线办理' || 
-    // Store.state.currentProcess.workitemName==='相关部室办理' || 
-    // Store.state.currentProcess.workitemName==='辅办部室办理' 
+    // Store.state.currentProcess.workitemName.indexOf('部室经理会签')!=-1  ||
+    // Store.state.currentProcess.workitemName==='部室经理会签' ||
+    // Store.state.currentProcess.workitemName==='部门经理会签' ||
+    // Store.state.currentProcess.workitemName==='相关业务线办理' ||
+    // Store.state.currentProcess.workitemName==='相关部室办理' ||
+    // Store.state.currentProcess.workitemName==='辅办部室办理'
     // //Store.state.currentProcess.workitemName==='相关人员办理' ||
-    // //Store.state.currentProcess.workitemName==='送相关支行' || 
-    // //Store.state.currentProcess.workitemName==='收文经办' || 
-    // // || Store.state.currentProcess.actDefId.indexOf('sub_process')!=-1 
+    // //Store.state.currentProcess.workitemName==='送相关支行' ||
+    // //Store.state.currentProcess.workitemName==='收文经办' ||
+    // // || Store.state.currentProcess.actDefId.indexOf('sub_process')!=-1
     // )) {
     //     Toast("请前往PC端处理!!")
     //     console.log("Store.state.currentProcess.workitemName", Store.state.currentProcess.workitemName)
@@ -48,22 +48,25 @@ router.beforeEach((to, from, next) => {
             forbidClick: true,
             loadingType: 'spinner',
         });
-        getCurrentUser().then(user => {
-            console.log("获取当前用户信息", user);
+        // getCurrentUser().then(user => {
+        //     console.log("获取当前用户信息", user);
             api.checkUser({
-                id: user.login_name,//生产 - 新oa测试 - 新oa 
-                uCode: ""//生产 - 新oa测试 - 新oa 
+                //  id: user.login_name,//生产 - 新oa测试 - 新oa
+                //  uCode: ""//生产 - 新oa测试 - 新oa
                 //戴伟
-                // id: "009185",
-                // uCode: "daiwei"
+                id: "009185",
+                uCode: "daiwei"
                 //赵建彰
                 // id: "008922",//平时测试
                 // uCode: "zhaojianzhang"//平时测试
-                // id: "055639",
-                // uCode: "huoxuewen"
+                //id: "055639",
+                //uCode: "huoxuewen"
                 //李嫣然
-                // id: "009234",
-                // uCode:"liyanran"
+                //   id: "009234",
+                //   uCode:"liyanran"
+                 //孙雪霏
+                 //id: "018866",
+                 //uCode:"sunxuefeibf"
                 //郭建涛
                 // id: "005470",//平时测试
                 // uCode: "guozhentaocs"//平时测试
@@ -116,6 +119,8 @@ router.beforeEach((to, from, next) => {
                 // uCode: "liuhaimeifzx"
                     // id: "017260",
                     // uCode:"houxueyanfzx"
+                     //id: "028379",
+                 //uCode: "yexiaozhaobf"
             }).then(res => {
                 console.log("checkUser status", res)
                 if (res.data.status === '200') {
@@ -140,7 +145,7 @@ router.beforeEach((to, from, next) => {
                     }
                 }
             })
-        })
+        //})
     }
 })
 
