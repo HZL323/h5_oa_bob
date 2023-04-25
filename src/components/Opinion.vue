@@ -3,7 +3,7 @@
  * @Date: 2021-09-16 10:17:49
  * @LastEditTime: 2022-03-14 13:55:08
  * @LastEditors: Joker
- * @Description: 意见显示与编辑组件   
+ * @Description: 意见显示与编辑组件
  * @FilePath: /20211216/src/components/Opinion.vue
 -->
 <template>

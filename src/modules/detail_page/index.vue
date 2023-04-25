@@ -20,8 +20,7 @@
       <van-tabs v-model="activeName" title-active-color="#ff4444" swipeable>
         <van-tab title="表单详情" name="a">
           <div class="tab-wrap" id="tabWrap" ref="detailWrap">
-            <wu-feedback v-if="loading" />
-            <template v-else>
+            <template>
               <DetailForm :formConfig="formConfig" />
               <Opinion
                 :noteConfig="noteConfig"
@@ -188,14 +187,11 @@ export default {
       if (
         this.$store.state.currentList !== "doing" &&
         this.$store.state.currentProcess.workitemName &&
-        this.$store.state.currentProcess.workitemName.indexOf("行领导传阅") ===
-          -1
-      ) {
+        this.$store.state.currentProcess.workitemName.indexOf("行领导传阅") === -1) {
         return true;
       } else if (
         this.$store.state.currentProcess.processFrom &&
-        this.$store.state.currentProcess.processFrom === "documentBasis"
-      ) {
+        this.$store.state.currentProcess.processFrom === "documentBasis") {
         return false;
       } else {
         return false;
@@ -247,10 +243,14 @@ export default {
     },
   },
   created() {
+    console.log("生产版本号--1.3.5")
+    console.log("准生产版本号--3.0.0")
     this.$store.commit("setCurrentList", this.$route.query.queryKind);
     this.dropListCurrentList = this.$route.query.queryKind;
     console.log("this.$route.query.queryKind:", this.$route.query.queryKind);
+
     if (this.$route.query.from !== "oa") {
+        this.recordEnterOaLog()
         if (this.$store.state.userInfo.userCode !== this.$route.query.userCode) {
             console.log("-------------!=oa this.$store.state.userInfo.userCode !== this.$route.query.userCode-------------");
             api
@@ -260,39 +260,91 @@ export default {
             })
             .then((res) => {
                 if (res.data.status === "200") {
-                if (res.data.model.usercode !== "") {
-                    this.$store.commit("setUserInfo", {
-                    userCode: res.data.model.usercode,
-                    userId: res.data.model.useruuid,
-                    userName: res.data.model.username,
-                    ou: res.data.model.ou,
-                    });
-                    this.$store.commit("setFromOut", true);
-                    const queryKind = this.$route.query.queryKind;
-                    const workItemId = this.$route.query.workItemId;
-                    const pubFormDataId = this.$route.query.pubFormDataId;
-                    // 此处需调用接口获取数据
-                    this.getData(queryKind, workItemId, pubFormDataId).then((res) => {
-                        let data = res.data.model.curPageData[0];
-                        this.$store.commit("setCurrentProcess", data);
-                        this.getBackLink();
-                        this.getFromConfig();
-                        this.isSubmmit();
-                        if (this.$store.state.currentList !== "doing") {
-                            this.recordOperationLog()
-                        }
-                        // if (this.$store.state.currentList !== "doing") {
-                        //     this.updateProcessState()
-                        // }
-                        if (
-                        this.currentList === "todo" ||
-                        this.currentList === "seal"
-                        ) {
-                        this.isSubProcess();
-                        }
+                    console.log("-------------!=oa this.$store.state.userInfo.userCode !== this.$route.query.userCode  checkUser 200-------------");
+                    if (res.data.model.code == 0) {
+                        this.$store.commit("setUserInfo", {
+                            userCode: res.data.model.data.usercode,
+                            userId: res.data.model.data.useruuid,
+                            userName: res.data.model.data.username,
+                            ou: res.data.model.data.ou,
+                        });
+                        console.log("res.data.model.usercode:",res.data.model.data.usercode);
+                        console.log("res.data.model.userId:",res.data.model.data.useruuid);
+                        console.log("res.data.model.userName:",res.data.model.data.username);
+                        console.log("res.data.model.ou:",res.data.model.data.ou);
+
+                        this.$store.commit("setFromOut", true);
+                        const queryKind = this.$route.query.queryKind;
+                        const workItemId = this.$route.query.workItemId;
+                        const pubFormDataId = this.$route.query.pubFormDataId;
+                        // 此处需调用接口获取数据
+                        this.getData(queryKind, workItemId, pubFormDataId).then((res) => {
+                            console.log("-------------!=oa this.$store.state.userInfo.userCode !== this.$route.query.userCode  checkUser 200 getData 200-------------");
+                            console.log("getData--res,", res);
+                            if(res.data.model == null){
+                                Dialog.confirm({
+                                    title: "未查询到该待办详情，有可能该待办已经失效，请刷新列表，检查该流程的待办是否已经办理完成，您是否留在OA系统？",
+                                    confirmButtonColor: "#ff4444",
+                                    cancelButtonText: "返回待办",
+                                    width: "300px",
+                                    closeOnClickOverlay: true,
+                                })
+                                .then(() => {
+                                    this.$store.commit("setFromOut", false);
+                                    this.$router.replace({
+                                        name: this.preRoute,
+                                    });
+                                })
+                                .catch((action) => {
+                                    //console.log("action", action);
+                                    if (action !== "overlay") {
+                                        setTimeout(() => {
+                                            closeWindow();
+                                        }, 2000);
+                                    }
+                                });
+
+                                return;
+                            }
+                            let data = res.data.model.curPageData[0];
+                            this.$store.commit("setCurrentProcess", data);
+                            this.getBackLink();
+                            this.getFromConfig();
+                            this.isSubmmit();
+                            if (this.$store.state.currentList !== "doing") {
+                                this.updateProcessState()
+                            }
+                            if (
+                                this.currentList === "todo" ||
+                                this.currentList === "seal") {
+                                this.isSubProcess();
+                            }
+                        });
+                    }else if(res.data.model.code == -1){
+                        //兼职已删除提示“对不起，你没有访问权限，请检查该待办所属兼职是否已删除”
+                        Dialog.confirm({
+                            title: res.data.model.msg+"，您是否留在OA系统？",
+                            confirmButtonColor: "#ff4444",
+                            cancelButtonText: "返回待办",
+                            width: "300px",
+                            closeOnClickOverlay: true,
+                        })
+                        .then(() => {
+                            this.$store.commit("setFromOut", false);
+                            this.$router.replace({
+                                name: this.preRoute,
+                            });
+                        })
+                        .catch((action) => {
+                            //console.log("action", action);
+                            if (action !== "overlay") {
+                                setTimeout(() => {
+                                    closeWindow();
+                                }, 2000);
+                            }
+                        });
+                        return;
                     }
-                    );
-                }
                 }
             });
         } else {
@@ -303,36 +355,36 @@ export default {
             const pubFormDataId = this.$route.query.pubFormDataId;
             // 此处需调用接口获取数据
             this.getData(queryKind, workItemId, pubFormDataId).then((res) => {
-            let data = res.data.model.curPageData[0];
-            this.$store.commit("setCurrentProcess", data);
-            this.getBackLink();
-            this.getFromConfig();
-            this.isSubmmit();
-            if (this.$store.state.currentList !== "doing") {
-                this.recordOperationLog()
-            }
-            //   if (this.$store.state.currentList !== "doing") {
-            //     this.updateProcessState()
-            //   }
-            if (this.currentList === "todo" || this.currentList === "seal") {
-                this.isSubProcess();
-            }
+                console.log("getData--res,", res);
+                console.log("-------------!=oa this.$store.state.userInfo.userCode == this.$route.query.userCode getData 200 curPageData[0]-------------");
+                let data = res.data.model.curPageData[0];
+                this.$store.commit("setCurrentProcess", data);
+                this.getBackLink();
+                this.getFromConfig();
+                this.isSubmmit();
+                if (this.$store.state.currentList !== "doing") {
+                    this.updateProcessState()
+                }
+                if (this.currentList === "todo" || this.currentList === "seal") {
+                    this.isSubProcess();
+                }
             });
         }
     } else {
-        console.log("-----------------------=oa------------------------")
-        if (this.$store.state.currentList !== "doing") {
-            this.recordOperationLog()
-        }
-        //   if (this.$store.state.currentList !== "doing") {
-        //     this.updateProcessState()
-        //   }
-        this.getBackLink();
-        this.getFromConfig();
-        this.isSubmmit();
-        if (this.currentList === "todo" || this.currentList === "seal") {
-            this.isSubProcess();
-        }
+        // this.$toast.clear();
+        setTimeout(function(){
+            console.log("-----------------------=oa------------------------")
+            if (this.$store.state.currentList !== "doing") {
+                this.updateProcessState()
+            }
+            this.getBackLink();
+            this.getFromConfig();
+            this.isSubmmit();
+            if (this.currentList === "todo" || this.currentList === "seal") {
+                this.isSubProcess();
+            }
+        },10000)
+
     }
 
     setTimeout(() => {
@@ -351,6 +403,30 @@ export default {
     });
   },
   methods: {
+    recordEnterOaLog(){
+        let userAgent = navigator.userAgent.toLowerCase();
+        let PCType = "";
+        if(userAgent.indexOf('windows') !== -1 )
+            PCType = "windows";
+
+        if(userAgent.indexOf('macintosh') !== -1){
+            PCType = "macintosh";
+        }
+        if(userAgent.indexOf('linux') !== -1){
+            PCType = "linux";
+        }
+        let isAndroid = /android/.test(userAgent) && !/iphone|ipad|ipod/.test(userAgent);
+        let isIPad = /ipad/.test(userAgent);
+
+        api
+        .recordEnterOaLog({
+          userUuid: this.$store.state.userInfo.userId,
+          userAgent: PCType == "" ? (isAndroid ? "Android" :  (isIPad ? "iPad" : "iPhone")) : PCType,
+        })
+        .then((res) => {
+            console.log("------记录进入OA的设备日志---------")
+        });
+    },
     //yinyanhong
     reload() {
       this.isRouterAlive = false;
@@ -399,15 +475,21 @@ export default {
       });
     },
     getData(queryKind, workItemId, pubFormDataId) {
+
+        console.log("getData:", "queryKind:", queryKind, "workItemId:",workItemId,"pubFormDataId:",pubFormDataId )
       // 进入系统方式为外部跳转时查询数据
       if (queryKind === "doing") {
+        console.log("queryKind === doing getData api.list")
         return api.list({
           curPage: 1,
           pageSize: 1,
           userCode: this.$store.state.userInfo.userCode,
+          userId: this.$store.state.userInfo.userId,
           pubFormDataId,
         });
       }
+      console.log("queryKind !=== doing getData api.queryList")
+
       return api.queryList({
         curPage: 1,
         pageSize: 1,
@@ -429,6 +511,7 @@ export default {
           actInstId: this.currentProcess.actInstId,
           workitemId: this.currentProcess.workitemId,
           name: this.currentProcess.workitemName,
+          device:"mobile",
           wfmRoleTypes: "todo,drafter",
         })
         .then((res) => {
@@ -616,7 +699,7 @@ export default {
                   .then(() => {
                     this.$store.commit("setFromOut", false);
                     this.$router.replace({
-                      name: this.preRoute,
+                        name: this.preRoute,
                     });
                   })
                   .catch((action) => {

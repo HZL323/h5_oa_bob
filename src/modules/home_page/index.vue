@@ -179,6 +179,7 @@
 </template>
 
 <script>
+import { pid } from "process";
 import { api } from "../../core/api/index";
 import {
   PullRefresh,
@@ -254,6 +255,7 @@ export default {
     },
   },
   created() {
+    this.recordEnterOaLog();
     this.loadUserDeptList();
     this.getTimeState();
     this.loadData();
@@ -265,6 +267,30 @@ export default {
     }
   },
   methods: {
+    recordEnterOaLog(){
+        let userAgent = navigator.userAgent.toLowerCase();
+        let PCType = "";
+        if(userAgent.indexOf('windows') !== -1 )
+            PCType = "windows";
+
+        if(userAgent.indexOf('macintosh') !== -1){
+            PCType = "macintosh";
+        }
+        if(userAgent.indexOf('linux') !== -1){
+            PCType = "linux";
+        }
+        let isAndroid = /android/.test(userAgent) && !/iphone|ipad|ipod/.test(userAgent);
+        let isIPad = /ipad/.test(userAgent);
+
+        api
+        .recordEnterOaLog({
+          userUuid: this.$store.state.userInfo.userId,
+          userAgent: PCType == "" ? (isAndroid ? "Android" :  (isIPad ? "iPad" : "iPhone")) : PCType,
+        })
+        .then((res) => {
+            console.log("------记录进入OA的设备日志---------")
+        });
+    },
     onRefresh() {
       this.loadData();
     },

@@ -59,8 +59,8 @@ router.beforeEach((to, from, next) => {
                 //赵建彰
                 // id: "008922",//平时测试
                 // uCode: "zhaojianzhang"//平时测试
-                //id: "055639",
-                //uCode: "huoxuewen"
+                // id: "055639",
+                // uCode: "huoxuewen"
                 //李嫣然
                 //   id: "009234",
                 //   uCode:"liyanran"
@@ -96,6 +96,8 @@ router.beforeEach((to, from, next) => {
                 // id: "015650",
                 //  uCode: "chengli1bf"
                 // id: "046231",
+                // id:"007137",
+                // uCode:"sunyi1bf",
                 // uCode: "yanmingxia"
                 // id: "012442",
                 // uCode: "liuhao3zgc"
@@ -130,10 +132,10 @@ router.beforeEach((to, from, next) => {
             }).then(res => {
                 console.log("checkUser status", res)
                 if (res.data.status === '200') {
-                    if (typeof res.data.model === "string") {
+                    if (typeof res.data.model.code === -1) {
                         Toast.clear()
                         Dialog.alert({
-                            message: res.data.model,
+                            message: res.data.model.msg,
                             width: "300px",
                             confirmButtonColor: "#ff4444",
                         }).then(() => {
@@ -141,10 +143,10 @@ router.beforeEach((to, from, next) => {
                         });
                     } else {
                         Store.commit('setUserInfo', {
-                            userCode: res.data.model.usercode,
-                            userId: res.data.model.useruuid,
-                            userName: res.data.model.username,
-                            ou: res.data.model.ou
+                            userCode: res.data.model.data.usercode,
+                            userId: res.data.model.data.useruuid,
+                            userName: res.data.model.data.username,
+                            ou: res.data.model.data.ou
                         })
                         Toast.clear()
                         next()

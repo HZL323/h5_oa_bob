@@ -237,3 +237,7 @@ export function getCollectedOpinion(data){
 export function recordOperationLog(data){
     return Axios.post(`${URL}/mob/wfm/ApplicationServiceContainer/MobRecordOperationLog`, data)
 }
+//进入oa记录设备信息
+export function recordEnterOaLog(data){
+    return Axios.post(`${URL}/mob/login/log/mobCreateLoginSuccessLog`, data)
+}

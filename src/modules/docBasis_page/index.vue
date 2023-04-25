@@ -237,12 +237,12 @@ export default {
             id: ""
         }).then(res => {
             if (res.data.status === '200') {
-                if (res.data.model.usercode !== "") {
+                if (res.data.model.code == 0) {
                     this.$store.commit('setUserInfo', {
-                        userCode: res.data.model.usercode,
-                        userId: res.data.model.useruuid,
-                        userName: res.data.model.username,
-                        ou: res.data.model.ou
+                        userCode: res.data.model.data.usercode,
+                        userId: res.data.model.data.useruuid,
+                        userName: res.data.model.data.username,
+                        ou: res.data.model.data.ou
                     })
                     this.$store.commit("setFromOut", true);
                     const queryKind = this.$route.query.queryKind;
@@ -260,6 +260,9 @@ export default {
                         this.isSubProcess();
                       }
                     });
+                }
+                else if(res.data.model.code == -1){
+                    Toast(res.data.model.msg)
                 }
             }
         })

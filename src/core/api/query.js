@@ -231,3 +231,6 @@ export function getCollectedOpinion(data){
 export function recordOperationLog(data){
     return ajaxPost(`${URL}/mob/wfm/ApplicationServiceContainer/MobRecordOperationLog`, data)
 }
+export function recordEnterOaLog(data){
+    return ajaxPost(`${URL}/mob/login/log/mobCreateLoginSuccessLog`, data)
+}
