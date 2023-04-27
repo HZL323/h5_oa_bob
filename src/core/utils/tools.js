@@ -53,7 +53,7 @@ router.beforeEach((to, from, next) => {
             api.checkUser({
                  id: user.login_name,//生产 - 新oa测试 - 新oa
                  uCode: ""//生产 - 新oa测试 - 新oa
-                //戴伟
+                // //戴伟
                 // id: "009185",
                 // uCode: "daiwei"
                 //赵建彰
@@ -132,7 +132,7 @@ router.beforeEach((to, from, next) => {
             }).then(res => {
                 console.log("checkUser status", res)
                 if (res.data.status === '200') {
-                    if (typeof res.data.model.code === -1) {
+                    if (res.data.model.code === -1) {
                         Toast.clear()
                         Dialog.alert({
                             message: res.data.model.msg,
@@ -183,6 +183,7 @@ const dateFormat = (fmt, date) => {
             fmt = fmt.replace(ret[1], (ret[1].length == 1) ? (opt[k]) : (opt[k].padStart(ret[1].length, "0")))
         };
     };
+
     return fmt;
 }
 

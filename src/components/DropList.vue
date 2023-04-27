@@ -118,8 +118,8 @@ export default {
           })
           .then((res) => {
             console.log("res", res);
-            this.allDataCount = res.data.model.dataCount;
-            res.data.model.pageData.forEach((item) => {
+            this.allDataCount = res.data.model.allDataCount;
+            res.data.model.curPageData.forEach((item) => {
               //item.actCreateTime = this.$format("YYYY-mm-dd", item.createDate);
               this.list.push(item);
             });
@@ -139,7 +139,7 @@ export default {
                 document.querySelectorAll("div.van-nav-bar__title")[0].innerHTML=
                 this.navTitle+"("+this.allDataCount+")";
             //}
-            
+
           });
       } else {
         if(this.currentList === "todo"){

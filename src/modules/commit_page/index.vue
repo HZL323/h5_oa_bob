@@ -444,13 +444,11 @@ export default {
           Toast.clear();
           if (res.data.status === "200") {
             this.$store.commit("setRefresh", true);
-            if (this.fromOut) {
-              return;
-            }
             Dialog.alert({
               message: "提交成功",
               width: "200px",
               confirmButtonColor: "#ff4444",
+              closeOnClickOverlay: false,
             }).then(() => {
               this.$router.replace({
                 name: this.backRoute,
@@ -519,6 +517,7 @@ export default {
               message: "提交成功",
               width: "200px",
               confirmButtonColor: "#ff4444",
+
             }).then(() => {
               this.$router.replace({
                 name: this.backRoute,

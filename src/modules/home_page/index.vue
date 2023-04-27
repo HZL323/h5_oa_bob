@@ -255,7 +255,7 @@ export default {
     },
   },
   created() {
-    this.recordEnterOaLog();
+    //this.recordEnterOaLog();
     this.loadUserDeptList();
     this.getTimeState();
     this.loadData();
@@ -275,9 +275,6 @@ export default {
 
         if(userAgent.indexOf('macintosh') !== -1){
             PCType = "macintosh";
-        }
-        if(userAgent.indexOf('linux') !== -1){
-            PCType = "linux";
         }
         let isAndroid = /android/.test(userAgent) && !/iphone|ipad|ipod/.test(userAgent);
         let isIPad = /ipad/.test(userAgent);
@@ -350,12 +347,12 @@ export default {
               // item.actCreateTime = this.$format("YYYY-mm-dd", item.createTime);
             });
           }
-          this.collapseList[2].list = res.data.model.pageData;
-          if (res.data.model.dataCount > 99) {
+          this.collapseList[2].list = res.data.model.curPageData;
+          if (res.data.model.allDataCount > 99) {
             this.collapseList[2].title = "已办(99+)";
           } else {
             this.collapseList[2].title =
-              "已办(" + res.data.model.dataCount + ")";
+              "已办(" + res.data.model.allDataCount + ")";
           }
           this.collapseList[2].loading = false;
         });

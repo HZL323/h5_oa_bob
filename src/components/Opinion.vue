@@ -120,6 +120,7 @@
     >
       <van-field class="bgc-f" v-model="message" type="input" />
     </div>
+    <div v-if="fromOut" style="width: 100%; height: 44px"></div>
     <CommonOpinions
       ref="CommonOpinions"
       :columns="columns"
@@ -168,6 +169,7 @@ export default {
       show: false,
       columns: ["同意", "已阅"], // TODO 这块要去后端获取意见列表
       sealList: [], // 用印申请明细列表
+      placeholder: false,
     };
   },
   props: {
@@ -180,6 +182,9 @@ export default {
     opinionConfig: {
       type: Array,
       default: [],
+    },
+    fromOut: {
+      type: Boolean,
     },
   },
   computed: {
