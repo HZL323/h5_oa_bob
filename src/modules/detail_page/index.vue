@@ -255,7 +255,9 @@ export default {
     console.log("this.$route.query.queryKind:", this.$route.query.queryKind);
 
     if (this.$route.query.from !== "oa") {
-      //this.recordEnterOaLog()
+      console.log("-------------recordEnterOaLog调用前-------------")
+      this.recordEnterOaLog();
+      console.log("-------------recordEnterOaLog调用后-------------")
       if (this.$store.state.userInfo.userCode !== this.$route.query.userCode) {
         console.log(
           "-------------!=oa this.$store.state.userInfo.userCode !== this.$route.query.userCode-------------"
@@ -453,20 +455,15 @@ export default {
   },
   methods: {
     recordEnterOaLog() {
+      console.log("-----------调用recordEnterOaLog函数-----------")
       let userAgent = navigator.userAgent.toLowerCase();
+      console.log("userAgent:",userAgent)
       let PCType = "";
       if (userAgent.indexOf("windows") !== -1) PCType = "windows";
-
-      if (userAgent.indexOf("macintosh") !== -1) {
-        PCType = "macintosh";
-      }
-      if (userAgent.indexOf("linux") !== -1) {
-        PCType = "linux";
-      }
-      let isAndroid =
-        /android/.test(userAgent) && !/iphone|ipad|ipod/.test(userAgent);
+      if (userAgent.indexOf("macintosh") !== -1) PCType = "macintosh";
+      let isAndroid = /android/.test(userAgent) && !/iphone|ipad|ipod/.test(userAgent);
       let isIPad = /ipad/.test(userAgent);
-
+      console.log("-----------调用recordEnterOaLog接口-----------")
       api
         .recordEnterOaLog({
           userUuid: this.$store.state.userInfo.userId,
@@ -590,27 +587,6 @@ export default {
         .then((res) => {
           if (res.data.status === "200") {
             // console.log("更新待办流程状态成功");
-          }
-        });
-    },
-    recordOperationLog() {
-      console.log("-----------执行移动端保存签收日志的方法开始------------");
-      api
-        .recordOperationLog({
-          configId: this.currentProcess.configId,
-          proDirId: this.currentProcess.proDirId,
-          userId: this.$store.state.userInfo.userId,
-          actDefId: this.currentProcess.actDefId,
-          proInstId: this.currentProcess.proInstId,
-          actInstId: this.currentProcess.actInstId,
-          workItemId: this.currentProcess.workitemId,
-          wfmRoleTypes: "todo",
-        })
-        .then((res) => {
-          if (res.data.status === "200") {
-            console.log(
-              "-----------执行移动端保存签收日志的方法结束------------"
-            );
           }
         });
     },
@@ -834,6 +810,71 @@ export default {
         name: "tracking",
       });
     },
+    onMultiCommit() {
+      // 会签环节直接提交
+      let data = {};
+      data.wfmData = {
+        actInstId: this.currentProcess.actInstId,
+        proInstId: this.currentProcess.proInstId,
+        workitemId: this.currentProcess.workitemId,
+        configId: this.currentProcess.configId,
+        proDirId: this.currentProcess.proDirId,
+        actDefId: this.currentProcess.actDefId,
+        processName: this.currentProcess.processName || "",
+        userId: this.userInfo.userId,
+      };
+      //必填生效
+      if(this.noteRequired || (!this.noteRequired &&  this.opinionConfig[0] && this.opinionConfig[0].noteContent)){
+        this.onSave();
+      }
+      setTimeout(() => {
+        api.completeWorkitem(data).then((res) => {
+          Toast.clear();
+          if (res.data.status === "200") {
+            this.$store.commit("setRefresh", true);
+            Dialog.alert({
+              message: "提交成功",
+              width: "200px",
+              confirmButtonColor: "#ff4444",
+              closeOnClickOverlay: false,
+            }).then(() => {
+              this.$router.replace({
+                name: 'home',
+              });
+            });
+          } else {
+            Toast("提交失败");
+          }
+        });
+      }, 500);
+    },
+    onSave() {
+      // 调用保存方法
+      this.opinionConfig.forEach((item) => {
+        console.log("调用保存意见的方法");
+        this.saveOpinion(item);
+      });
+    },
+    saveOpinion(item) {
+      //console.log("----意见内容-----",item.noteContent);
+      item.noteContent = item.noteContent.replace(/&#13;/g, "<br/>");
+      item.noteContent = item.noteContent.replace(/\n/g, "<br/>");
+      //item.noteContent = item.noteContent.replace(/\\r\\n/g,'<br/>');
+      // 保存意见内容
+      let data = {
+        id: item.id || "",
+        type: item.noteId,
+        noteContent: item.noteContent,
+        proInstId: this.currentProcess.proInstId,
+        createUser: this.userInfo.userId,
+        createUserName: this.userInfo.userName,
+        workitemId: this.currentProcess.workitemId,
+        actDefId: this.currentProcess.actDefId,
+      };
+      api.saveOpinion(data).then((res) => {
+        item.id = res.data.model.id;
+      });
+    },
     onCommit() {
       if (
         this.sendDeptVerify &&
@@ -900,13 +941,39 @@ export default {
       //保存意见是否必填  20220714
       this.$store.commit("setNoteRequired", this.noteRequired);
       this.$store.commit("setOpinionData", this.opinionConfig);
-      //进入选择环节页面
-      this.$router.replace({
-        name: "selectlink",
-        params: {
-          backRoute: this.preRoute,
-        },
-      });
+      //如果多人会签环节，并且不是最后一个人提交则直接提交
+      api
+        .queryNextLink({
+          wfmData: {
+            actInstId: this.currentProcess.actInstId,
+            proInstId: this.currentProcess.proInstId,
+            workitemId: this.currentProcess.workitemId,
+            configId: this.currentProcess.configId,
+            configCode: this.currentProcess.configCode,
+            proDirId: this.currentProcess.proDirId,
+            actDefId: this.currentProcess.actDefId,
+            userId: this.userInfo.userId,
+            // sendUserIds: this.currentProcess.sendUserIds ? this.currentProcess.sendUserIds:"",
+          },
+        })
+        .then((res) => {
+            if (res.data.status === "200") {
+                console.log("----下一环节返回内容----", res.data);
+                if (res.data.model.flag == false) {
+                    this.onMultiCommit();
+                } else {
+                    //进入选择环节页面
+                    this.$router.replace({
+                        name: "selectlink",
+                        params: {
+                        backRoute: this.preRoute,
+                        },
+                    });
+                }
+            }
+            this.loading = false;
+         });
+
     },
     onClick(activity, radio) {
       //console.log("---退回节点名称---", activity.name);
@@ -991,29 +1058,6 @@ export default {
           }
         });
     },
-    // onSave() {
-    //   // 调用保存方法
-    //   this.opinionConfig.forEach((item) => {
-    //     this.saveOpinion(item);
-    //   });
-    // },
-    // saveOpinion(item) {
-    //   // 保存意见内容
-    //   console.log(1234);
-    //   let data = {
-    //     id: item.id || "",
-    //     type: item.noteId,
-    //     noteContent: item.noteContent,
-    //     proInstId: this.currentProcess.proInstId,
-    //     createUser: this.userInfo.userId,
-    //     createUserName: this.userInfo.userName,
-    //     workitemId: this.currentProcess.workitemId,
-    //     actDefId: this.currentProcess.actDefId,
-    //   };
-    //   api.saveOpinion(data).then((res) => {
-    //     item.id = res.data.model.id;
-    //   });
-    // },
     onClickInput() {
       //console.log("input");
       var u = navigator.userAgent,

@@ -342,10 +342,11 @@ export default {
           this.addBusinessType();
         }
       }
+      debugger
       //校验是否必填，必填的话调用意见保存方法 20220714
-      //if(this.$store.state.noteRequired){
-      this.onSave();
-      //}
+      if(this.noteRequired || (!this.noteRequired &&  this.opinionConfig[0] && this.opinionConfig[0].noteContent)){
+        this.onSave();
+      }
       //如果是子流程
       if (this.selectIsSubProcess) {
         data.isMobile = true;
@@ -438,7 +439,10 @@ export default {
         processName: this.currentProcess.processName || "",
         userId: this.userInfo.userId,
       };
-      this.onSave();
+      debugger
+      if(this.noteRequired || (!this.noteRequired &&  this.opinionConfig[0] && this.opinionConfig[0].noteContent)){
+        this.onSave();
+      }
       setTimeout(() => {
         api.completeWorkitem(data).then((res) => {
           Toast.clear();
@@ -492,8 +496,11 @@ export default {
           },
         ],
       };
+      debugger
       //保存意见
-      this.onSave();
+      if(this.noteRequired || (!this.noteRequired &&  this.opinionConfig[0] && this.opinionConfig[0].noteContent)){
+        this.onSave();
+      }
       //移动端完成工作项
       setTimeout(() => {
         api.completeWorkitem(data).then((res) => {

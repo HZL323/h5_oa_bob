@@ -397,10 +397,15 @@ export default {
           this.addBusinessType();
         }
       }
-      //校验是否必填，必填的话调用意见保存方法 20220714
-      //if(this.$store.state.noteRequired){
-      this.onSave();
-      //}
+      debugger
+      //校验是否必填，必填的话调用意见保存方法 必填生效
+      console.log("this.noteRequired---------", this.noteRequired)
+      console.log("this.opinionConfig[0]---------", this.opinionConfig[0])
+      console.log("!this.opinionConfig[0].noteContent---------", !this.opinionConfig[0].noteContent)
+
+      if(this.noteRequired || (!this.noteRequired &&  this.opinionConfig[0] && this.opinionConfig[0].noteContent)){
+        this.onSave();
+      }
       //如果是子流程
       if (this.selectIsSubProcess) {
         data.isMobile = true;

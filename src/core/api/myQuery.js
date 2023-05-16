@@ -233,10 +233,6 @@ export function addBusinessType(data){
 export function getCollectedOpinion(data){
     return Axios.post(`${URL}/mob/note/NoteServiceContainer/getNoteCollection`, data)
 }
-//执行签收方法
-export function recordOperationLog(data){
-    return Axios.post(`${URL}/mob/wfm/ApplicationServiceContainer/MobRecordOperationLog`, data)
-}
 //进入oa记录设备信息
 export function recordEnterOaLog(data){
     return Axios.post(`${URL}/mob/login/log/mobCreateLoginSuccessLog`, data)

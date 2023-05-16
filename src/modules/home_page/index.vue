@@ -255,7 +255,9 @@ export default {
     },
   },
   created() {
-    //this.recordEnterOaLog();
+    console.log("-------------home_page-recordEnterOaLog调用前-------------")
+    this.recordEnterOaLog();
+    console.log("-------------home_page-recordEnterOaLog调用后-------------")
     this.loadUserDeptList();
     this.getTimeState();
     this.loadData();

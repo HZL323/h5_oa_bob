@@ -7,9 +7,9 @@
  * @FilePath: \bjbank-xcoa\src\core\api\query.js
  */
 import { ajaxGet, ajaxPost } from '../mxApi'
-//const URL = `http://oa.bj.bob` // 生产
+const URL = `http://oa.bj.bob` // 生产
 //const URL = `http://10.51.228.84:8080` // 新oa测试
-const URL = `http://app.xcoa.bj.bob.test` // 新oa/准生产
+//const URL = `http://app.xcoa.bj.bob.test` // 新oa/准生产
 
 export function queryMessage(data) {
     //return ajaxGet('/api/v1/users?limit=1') //测试接口
@@ -227,9 +227,6 @@ export function addBusinessType(data){
 //获取收藏的意见
 export function getCollectedOpinion(data){
     return ajaxPost(`${URL}/mob/note/NoteServiceContainer/getNoteCollection`, data)
-}
-export function recordOperationLog(data){
-    return ajaxPost(`${URL}/mob/wfm/ApplicationServiceContainer/MobRecordOperationLog`, data)
 }
 export function recordEnterOaLog(data){
     return ajaxPost(`${URL}/mob/login/log/mobCreateLoginSuccessLog`, data)
