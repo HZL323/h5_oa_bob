@@ -251,8 +251,8 @@ export default {
     },
   },
   created() {
-    console.log("生产版本号--1.3.5");
-    console.log("准生产版本号--3.0.0");
+    console.log("生产版本号--1.3.6");
+    console.log("准生产版本号--3.0.1");
     this.$store.commit("setCurrentList", this.$route.query.queryKind);
     this.dropListCurrentList = this.$route.query.queryKind;
     console.log("this.$route.query.queryKind:", this.$route.query.queryKind);
