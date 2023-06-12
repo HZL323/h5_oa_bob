@@ -203,6 +203,19 @@ export default {
             }else{
                this.processTitle = res.data.model.processTitle;
             }
+            let params = {
+                extendKey: "hideOpinion",
+                actDefId: this.currentProcess.actDefId,
+                configId: this.currentProcess.configId,
+                proDirId: this.currentProcess.proDirId
+            }
+            api.getActivityExtendConfigByName(params).then((res) => {
+                if(res.data.status === "200"){
+                    if(res.data.model && res.data.model.hideOpinion && res.data.model.hideOpinion){
+                        this.processTitle = res.data.model.hideOpinion;
+                    }
+                }
+            })
             if(res.data.model.dataForm.sendUserIds!=null){
               this.currentProcess.sendUserIds=res.data.model.dataForm.sendUserIds;
               //console.log("------sendUserIds这个字段有值--------")

@@ -23,13 +23,15 @@
             <wu-feedback v-if="loading" />
             <template v-else>
               <DetailForm :formConfig="formConfig" />
-              <Opinion
+              <div v-if="showOpinion">
+                <Opinion
                 :noteConfig="noteConfig"
                 :opinionConfig.sync="opinionConfig"
                 :fromOut="fromOut"
                 @onClickInput="onClickInput"
                 ref="opinion"
-              />
+                />
+              </div>
             </template>
           </div>
         </van-tab>
@@ -173,6 +175,7 @@ export default {
       dropListCurrentList: "",
       //yinyanhong
       isRouterAlive: true,
+      showOpinion:true
     };
   },
   computed: {
@@ -262,10 +265,16 @@ export default {
         console.log(
           "-------------!=oa this.$store.state.userInfo.userCode !== this.$route.query.userCode-------------"
         );
+        // //兼容旧版本的待办
+        // let resourceid = "";
+        // if(this.$route.query.hasOwnProperty('resourceid')){
+        //     resourceid = this.$route.query.resourceid
+        // }
         api
           .checkUser({
             uCode: this.$route.query.userCode,
             id: "",
+            //resourceid: resourceid
           })
           .then((res) => {
             if (res.data.status === "200") {
@@ -335,6 +344,7 @@ export default {
                     this.getBackLink();
                     this.getFromConfig();
                     this.isSubmmit();
+                    this.isShowOpinion();
                     if (this.$store.state.currentList !== "doing") {
                       this.updateProcessState();
                     }
@@ -417,6 +427,7 @@ export default {
           this.getBackLink();
           this.getFromConfig();
           this.isSubmmit();
+          this.isShowOpinion();
           if (this.$store.state.currentList !== "doing") {
             this.updateProcessState();
           }
@@ -433,6 +444,7 @@ export default {
       this.getBackLink();
       this.getFromConfig();
       this.isSubmmit();
+      this.isShowOpinion();
       if (this.currentList === "todo" || this.currentList === "seal") {
         this.isSubProcess();
       }
@@ -454,6 +466,24 @@ export default {
     });
   },
   methods: {
+    isShowOpinion(){
+        console.log("hideOpinion --------------")
+        let params = {
+            extendKey: "hideOpinion",
+            actDefId: this.currentProcess.actDefId,
+            configId: this.currentProcess.configId,
+            proDirId: this.currentProcess.proDirId
+        }
+        api.getActivityExtendConfigByName(params).then((res) => {
+          if(res.data.model && res.data.model.hideOpinion && res.data.model.hideOpinion){
+            this.showOpinion = false;
+            console.log("hideOpinion --------true-------")
+            return;
+          }
+          this.showOpinion = true;
+          console.log("hideOpinion --------false-------")
+      });
+    },
     recordEnterOaLog() {
       console.log("-----------调用recordEnterOaLog函数-----------")
       let userAgent = navigator.userAgent.toLowerCase();

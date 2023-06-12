@@ -21,25 +21,6 @@ router.beforeEach((to, from, next) => {
     } else {
         Store.commit('setCacheList', ['homePage', 'listPage'])
     }
-    // console.log("----路由位置----",Store.state.currentProcess);
-    // if(to.name === 'detail' && Store.state.currentProcess.workitemName !=undefined  && (
-    // Store.state.currentProcess.workitemName==='会签' ||
-    // Store.state.currentProcess.workitemName.indexOf('部室经理会签')!=-1  ||
-    // Store.state.currentProcess.workitemName==='部室经理会签' ||
-    // Store.state.currentProcess.workitemName==='部门经理会签' ||
-    // Store.state.currentProcess.workitemName==='相关业务线办理' ||
-    // Store.state.currentProcess.workitemName==='相关部室办理' ||
-    // Store.state.currentProcess.workitemName==='辅办部室办理'
-    // //Store.state.currentProcess.workitemName==='相关人员办理' ||
-    // //Store.state.currentProcess.workitemName==='送相关支行' ||
-    // //Store.state.currentProcess.workitemName==='收文经办' ||
-    // // || Store.state.currentProcess.actDefId.indexOf('sub_process')!=-1
-    // )) {
-    //     Toast("请前往PC端处理!!")
-    //     console.log("Store.state.currentProcess.workitemName", Store.state.currentProcess.workitemName)
-    //     console.log("to.name", to.name)
-    //     return
-    // }
     if (Store.state.userInfo.userCode) {
         next()
     } else {
@@ -130,6 +111,8 @@ router.beforeEach((to, from, next) => {
                 //  uCode: "chendandanzgc"
                 //       id: "001763",
                 //  uCode: "wuyihongzgc"
+                // id:"004114",
+                // uCode :"liangyan"
             }).then(res => {
                 console.log("checkUser status", res)
                 if (res.data.status === '200') {
