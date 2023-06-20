@@ -141,8 +141,8 @@ export default {
         })
         .then((res) => {
           //console.log("查找文件中",res);
-          if (res.data.status === "200" && res.data.model!=false) {            
-              file.attachmentId = res.data.model;    
+          if (res.data.status === "200" && res.data.model!=false) {
+              file.attachmentId = res.data.model;
           }
           //console.log("查找之后id",file.attachmentId);
           api

@@ -492,6 +492,8 @@ export default {
             actInstId: item.id,
           },
         },
+        dataForm:this.dataForm
+
       };
       api.queryHandlerList(data).then((res) => {
         if (res.data.status === "200") {

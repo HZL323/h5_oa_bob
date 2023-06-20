@@ -102,7 +102,7 @@
               rows="4"
               type="textarea"
               maxlength="500"
-              :placeholder="item.noteName"
+              :placeholder="notePlaceHolder"
               @click-input="onClickInput"
               show-word-limit
               ref="textarea"
@@ -160,6 +160,7 @@ export default {
   },
   data() {
     return {
+      notePlaceHolder:"请输入意见，最多500字",
       activeNames: [],
       message: "",
       opinionData: [], // 意见内容
@@ -207,6 +208,7 @@ export default {
       this.getOpinion();
       // this.getEditOpinion();
       this.getCollectedOpinion();
+      this.changeNotePlaceHolder();
     },
     getCollectedOpinion() {
       api
@@ -388,6 +390,21 @@ export default {
     onClickInput() {
       this.$emit("onClickInput");
     },
+    changeNotePlaceHolder(){
+        let params = {
+            extendKey: "noteRemind",
+            actDefId: this.currentProcess.actDefId,
+            configId: this.currentProcess.configId,
+            proDirId: this.currentProcess.proDirId
+        }
+        api.getActivityExtendConfigByName(params).then((res) => {
+            if(res.data.status === "200"){
+                if(res.data.model && res.data.model.noteRemind && res.data.model.noteRemind){
+                    this.notePlaceHolder = res.data.model.noteRemind;
+                }
+            }
+        })
+    }
   },
 };
 </script>

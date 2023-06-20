@@ -219,15 +219,16 @@ export default {
     showBackbar() {
       //console.log("----显示退回与否---",this.$store.state.currentProcess.workitemName)
       if (
-        this.$store.state.currentProcess.editFlag !== "1" &&
-        this.$store.state.currentProcess.workitemName.indexOf("会签") === -1 &&
-        this.$store.state.currentProcess.workitemName !== "相关人员办理" &&
-        this.$store.state.currentProcess.workitemName !== "收文经办" &&
-        this.$store.state.currentProcess.workitemName !== "送相关支行"
+        this.$store.state.currentProcess.editFlag === "1" ||
+        this.$store.state.currentProcess.workitemName.indexOf("会签") !== -1 ||
+        this.$store.state.currentProcess.workitemName === "相关人员办理" ||
+        this.$store.state.currentProcess.workitemName === "收文经办" ||
+        this.$store.state.currentProcess.workitemName === "送相关支行"||
+        this.$store.state.currentProcess.workitemName.indexOf("行领导传阅") !== -1
       ) {
-        return true;
-      } else {
         return false;
+      } else {
+        return true;
       }
     },
     fromOut() {
@@ -251,8 +252,8 @@ export default {
     },
   },
   created() {
-    console.log("生产版本号--1.3.6");
-    console.log("准生产版本号--3.0.1");
+    console.log("生产版本号--1.3.7");
+    console.log("准生产版本号--3.0.2");
     this.$store.commit("setCurrentList", this.$route.query.queryKind);
     this.dropListCurrentList = this.$route.query.queryKind;
     console.log("this.$route.query.queryKind:", this.$route.query.queryKind);
@@ -265,16 +266,16 @@ export default {
         console.log(
           "-------------!=oa this.$store.state.userInfo.userCode !== this.$route.query.userCode-------------"
         );
-        // //兼容旧版本的待办
-        // let resourceid = "";
-        // if(this.$route.query.hasOwnProperty('resourceid')){
-        //     resourceid = this.$route.query.resourceid
-        // }
+        //兼容旧版本的待办
+        let resourceid = "";
+        if(this.$route.query.hasOwnProperty('resourceid')){
+            resourceid = this.$route.query.resourceid
+        }
         api
           .checkUser({
             uCode: this.$route.query.userCode,
             id: "",
-            //resourceid: resourceid
+            resourceid: resourceid
           })
           .then((res) => {
             if (res.data.status === "200") {
@@ -743,6 +744,7 @@ export default {
             actInstId: item.id,
           },
         },
+        dataForm:this.dataForm
       };
       api.queryHandlerList(data).then((res) => {
         if (res.data.status === "200") {
@@ -756,50 +758,50 @@ export default {
     onClickLeft() {
       //处理行领导传阅，关闭即签收，结束流程问题
       //console.log("---看看是不是行领导传阅环节----",this.currentProcess.workitemName)
-      if (
-        this.currentProcess.workitemName &&
-        this.currentProcess.workitemName.indexOf("行领导传阅") != -1
-      ) {
-        api
-          .finishCy({
-            proInstId: this.currentProcess.proInstId,
-            userId: this.userInfo.userId,
-          })
-          .then((res) => {
-            if (res.data.status === "200") {
-              //console.log("----行领导传阅结束----");
-              // 退出详情页
-              if (this.fromOut) {
-                Dialog.confirm({
-                  title: "是否留在OA系统？",
-                  confirmButtonColor: "#ff4444",
-                  cancelButtonText: "返回待办",
-                  width: "300px",
-                  closeOnClickOverlay: true,
-                })
-                  .then(() => {
-                    this.$store.commit("setFromOut", false);
-                    this.$router.replace({
-                      name: this.preRoute,
-                    });
-                  })
-                  .catch((action) => {
-                    //console.log("action", action);
-                    if (action !== "overlay") {
-                      setTimeout(() => {
-                        closeWindow();
-                      }, 2000);
-                    }
-                  });
-                return;
-              }
-              this.$store.commit("setRefresh", true);
-              this.$router.replace({
-                name: this.preRoute,
-              });
-            }
-          });
-      } else {
+    //   if (
+    //     this.currentProcess.workitemName &&
+    //     this.currentProcess.workitemName.indexOf("行领导传阅") != -1
+    //   ) {
+    //     api
+    //       .finishCy({
+    //         proInstId: this.currentProcess.proInstId,
+    //         userId: this.userInfo.userId,
+    //       })
+    //       .then((res) => {
+    //         if (res.data.status === "200") {
+    //           //console.log("----行领导传阅结束----");
+    //           // 退出详情页
+    //           if (this.fromOut) {
+    //             Dialog.confirm({
+    //               title: "是否留在OA系统？",
+    //               confirmButtonColor: "#ff4444",
+    //               cancelButtonText: "返回待办",
+    //               width: "300px",
+    //               closeOnClickOverlay: true,
+    //             })
+    //               .then(() => {
+    //                 this.$store.commit("setFromOut", false);
+    //                 this.$router.replace({
+    //                   name: this.preRoute,
+    //                 });
+    //               })
+    //               .catch((action) => {
+    //                 //console.log("action", action);
+    //                 if (action !== "overlay") {
+    //                   setTimeout(() => {
+    //                     closeWindow();
+    //                   }, 2000);
+    //                 }
+    //               });
+    //             return;
+    //           }
+    //           this.$store.commit("setRefresh", true);
+    //           this.$router.replace({
+    //             name: this.preRoute,
+    //           });
+    //         }
+    //       });
+    //   } else {
         // 退出详情页
         if (this.fromOut) {
           Dialog.confirm({
@@ -832,7 +834,7 @@ export default {
           name: this.preRoute,
         });
         console.log("点击左箭头：", this.$route.query.queryKind);
-      }
+      //}
     },
     onClickRight() {
       // 查看流程跟踪
@@ -840,7 +842,7 @@ export default {
         name: "tracking",
       });
     },
-    onMultiCommit() {
+    async onMultiCommit() {
       // 会签环节直接提交
       let data = {};
       data.wfmData = {
@@ -854,8 +856,22 @@ export default {
         userId: this.userInfo.userId,
       };
       //必填生效
+      let saveNoteResult = 0;
       if(this.noteRequired || (!this.noteRequired &&  this.opinionConfig[0] && this.opinionConfig[0].noteContent)){
-        this.onSave();
+        debugger
+        await this.saveOpinion().then((results) => {
+            if(results[0].data.status !== "200" || (results[0].data.status === "200" && results[0].data.model.code !== 0)){
+                saveNoteResult = -1;
+            };
+            // 处理第一个元素的结果
+            }).catch((error) => {
+                // 处理错误
+                saveNoteResult = -1;
+        });
+        if(saveNoteResult === -1){
+            this.$toast("提交失败");
+            return
+        }
       }
       setTimeout(() => {
         api.completeWorkitem(data).then((res) => {
@@ -878,32 +894,29 @@ export default {
         });
       }, 500);
     },
-    onSave() {
-      // 调用保存方法
-      this.opinionConfig.forEach((item) => {
-        console.log("调用保存意见的方法");
-        this.saveOpinion(item);
-      });
-    },
-    saveOpinion(item) {
-      //console.log("----意见内容-----",item.noteContent);
-      item.noteContent = item.noteContent.replace(/&#13;/g, "<br/>");
-      item.noteContent = item.noteContent.replace(/\n/g, "<br/>");
-      //item.noteContent = item.noteContent.replace(/\\r\\n/g,'<br/>');
-      // 保存意见内容
-      let data = {
-        id: item.id || "",
-        type: item.noteId,
-        noteContent: item.noteContent,
-        proInstId: this.currentProcess.proInstId,
-        createUser: this.userInfo.userId,
-        createUserName: this.userInfo.userName,
-        workitemId: this.currentProcess.workitemId,
-        actDefId: this.currentProcess.actDefId,
-      };
-      api.saveOpinion(data).then((res) => {
-        item.id = res.data.model.id;
-      });
+    async saveOpinion() {
+        //因为forEach()方法不会等待异步操作的结果，它只是遍历数组中的每个元素并对其执行回调函数
+        //异步操作是在回调函数中发生的，但是forEach()方法并不会等待它们完成。因此，在forEach()中返回的返回值是undefined
+        //使用了map()方法替代了forEach()方法来生成一个包含多个Promise对象的数组。然后，我们使用Promise.all()方法来等待所有异步操作完成，最终返回一个新的Promise对象。
+        const promises = this.opinionConfig.map(async (item) => {
+            item.noteContent = item.noteContent.replace(/&#13;/g, "<br/>");
+            item.noteContent = item.noteContent.replace(/\n/g, "<br/>");
+            let data = {
+                id: item.id || "",
+                type: item.noteId,
+                noteContent: item.noteContent,
+                proInstId: this.currentProcess.proInstId,
+                createUser: this.userInfo.userId,
+                createUserName: this.userInfo.userName,
+                workitemId: this.currentProcess.workitemId,
+                actDefId: this.currentProcess.actDefId,
+            };
+            const res = await api.saveOpinion(data);
+            if (res.data.status === 200 && res.data.model.code === 0) item.id = res.data.data.id;
+            return res;
+        });
+        debugger
+        return Promise.all(promises);
     },
     onCommit() {
       if (
@@ -992,6 +1005,7 @@ export default {
                 if (res.data.model.flag == false) {
                     this.onMultiCommit();
                 } else {
+                    //if(this.currentProcess.)
                     //进入选择环节页面
                     this.$router.replace({
                         name: "selectlink",

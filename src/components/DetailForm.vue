@@ -320,8 +320,23 @@ export default {
           return reg("TEXT_SOURCE", "textSource");
         case "businessType":
           return reg("BUSINESS_TYPE", "businessType");
+          //业务数据处理单
+        case "dataType":
+          return reg("BusinessDataType", "dataType")
+        case "demandType":
+          return reg("DemandType", "demandType")
+        case "isEffectClient":
+          return reg("IsEffectClient", "isEffectClient")
+        case "isInvolveInfo":
+          return reg("IsInvolveInfo", "isInvolveInfo")
+        case "isClientRequire":
+          return reg("IsClientRequire", "isClientRequire")
+        case "estimateResult":
+          return reg("EstimateResult", "estimateResult")
         case "sysFilePositionText":
           return formatArr("sysFilePosition");
+        case "DemandScreen":
+          return formatArr("demandScreenList");
         default:
           return this.formData[item.colCode] || "";
       }
