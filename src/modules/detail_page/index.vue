@@ -190,20 +190,15 @@ export default {
     },
     showTabbar() {
       if (
-        this.$store.state.currentList !== "doing" &&
-        this.$store.state.currentProcess.workitemName &&
-        this.$store.state.currentProcess.workitemName.indexOf("行领导传阅") ===
-          -1
-      ) {
-        return true;
-      } else if (
         this.$store.state.currentProcess.processFrom &&
         this.$store.state.currentProcess.processFrom === "documentBasis"
       ) {
         return false;
-      } else {
+      }
+      if(this.$store.state.currentList === "doing"){
         return false;
       }
+      return true;
     },
     showNote() {
       console.log(
@@ -758,50 +753,45 @@ export default {
     onClickLeft() {
       //处理行领导传阅，关闭即签收，结束流程问题
       //console.log("---看看是不是行领导传阅环节----",this.currentProcess.workitemName)
-    //   if (
-    //     this.currentProcess.workitemName &&
-    //     this.currentProcess.workitemName.indexOf("行领导传阅") != -1
-    //   ) {
-    //     api
-    //       .finishCy({
-    //         proInstId: this.currentProcess.proInstId,
-    //         userId: this.userInfo.userId,
-    //       })
-    //       .then((res) => {
-    //         if (res.data.status === "200") {
-    //           //console.log("----行领导传阅结束----");
-    //           // 退出详情页
-    //           if (this.fromOut) {
-    //             Dialog.confirm({
-    //               title: "是否留在OA系统？",
-    //               confirmButtonColor: "#ff4444",
-    //               cancelButtonText: "返回待办",
-    //               width: "300px",
-    //               closeOnClickOverlay: true,
-    //             })
-    //               .then(() => {
-    //                 this.$store.commit("setFromOut", false);
-    //                 this.$router.replace({
-    //                   name: this.preRoute,
-    //                 });
-    //               })
-    //               .catch((action) => {
-    //                 //console.log("action", action);
-    //                 if (action !== "overlay") {
-    //                   setTimeout(() => {
-    //                     closeWindow();
-    //                   }, 2000);
-    //                 }
-    //               });
-    //             return;
-    //           }
-    //           this.$store.commit("setRefresh", true);
-    //           this.$router.replace({
-    //             name: this.preRoute,
-    //           });
-    //         }
-    //       });
-    //   } else {
+      if (this.showOpinion === false) {
+        api
+          .finishCy({
+            proInstId: this.currentProcess.proInstId,
+            userId: this.userInfo.userId,
+          })
+          .then((res) => {
+            if (res.data.status === "200") {
+              if (this.fromOut) {
+                Dialog.confirm({
+                  title: "是否留在OA系统？",
+                  confirmButtonColor: "#ff4444",
+                  cancelButtonText: "返回待办",
+                  width: "300px",
+                  closeOnClickOverlay: true,
+                })
+                  .then(() => {
+                    this.$store.commit("setFromOut", false);
+                    this.$router.replace({
+                      name: this.preRoute,
+                    });
+                  })
+                  .catch((action) => {
+                    //console.log("action", action);
+                    if (action !== "overlay") {
+                      setTimeout(() => {
+                        closeWindow();
+                      }, 2000);
+                    }
+                  });
+                return;
+              }
+              this.$store.commit("setRefresh", true);
+              this.$router.replace({
+                name: this.preRoute,
+              });
+            }
+          });
+      } else {
         // 退出详情页
         if (this.fromOut) {
           Dialog.confirm({
@@ -834,7 +824,7 @@ export default {
           name: this.preRoute,
         });
         console.log("点击左箭头：", this.$route.query.queryKind);
-      //}
+      }
     },
     onClickRight() {
       // 查看流程跟踪
@@ -918,106 +908,146 @@ export default {
         debugger
         return Promise.all(promises);
     },
-    onCommit() {
-      if (
-        this.sendDeptVerify &&
-        (this.$store.state.currentList === "todo" ||
-          this.$store.state.currentList === "seal")
-      ) {
-        if (
-          this.dataForm.sendDeptText == null ||
-          this.dataForm.sendDeptText == ""
-        ) {
-          Toast("请选择发送部门");
-          return;
-        }
-      }
-      if (
-        this.businessTypeVerify &&
-        (this.$store.state.currentList === "todo" ||
-          this.$store.state.currentList === "seal")
-      ) {
-        if (
-          this.dataForm.businessType == null ||
-          this.dataForm.businessType == ""
-        ) {
-          Toast("请选择业务类型");
-          return;
-        }
-      }
 
-      // 提交
-      if (!this.SubmitPermission) {
-        Toast("请前往PC端提交!");
-        return;
-      }
-      var u = navigator.userAgent,
-        app = navigator.appVersion;
-      var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
-      //console.log("isiOS", isiOS);
-      for (let i = 0; i < this.opinionConfig.length; i++) {
-        //意见必填时再进行意见填写  20220714
-        console.log(this.noteRequired);
-        if (this.noteRequired) {
-          //如果输入框内容是空的
-          if (!this.opinionConfig[i].noteContent) {
-            // if (isiOS) {
-            //   document.documentElement.scrollTop =
-            //     this.$refs.detailWrap.clientHeight - 255;
-            // } else {
-            //   window.scrollTo(0, 9999);
-            // }
-            let scrollEle = document.querySelector(".van-tabs__content");
-            let elH = document.querySelector("#tabWrap").clientHeight;
-            let scrollH = elH - scrollEle.clientHeight;
-            scrollEle.scrollTop = scrollH;
-            Toast("请填写审批意见");
-            return;
-          } else {
-            if (this.opinionConfig[i].noteContent.length > 500) {
-              Toast("意见内容已超过500字限制");
-              return;
-            }
-          }
-        }
-      }
-      //保存意见是否必填  20220714
-      this.$store.commit("setNoteRequired", this.noteRequired);
-      this.$store.commit("setOpinionData", this.opinionConfig);
-      //如果多人会签环节，并且不是最后一个人提交则直接提交
-      api
-        .queryNextLink({
-          wfmData: {
-            actInstId: this.currentProcess.actInstId,
-            proInstId: this.currentProcess.proInstId,
-            workitemId: this.currentProcess.workitemId,
-            configId: this.currentProcess.configId,
-            configCode: this.currentProcess.configCode,
-            proDirId: this.currentProcess.proDirId,
-            actDefId: this.currentProcess.actDefId,
-            userId: this.userInfo.userId,
-            // sendUserIds: this.currentProcess.sendUserIds ? this.currentProcess.sendUserIds:"",
-          },
-        })
-        .then((res) => {
-            if (res.data.status === "200") {
-                console.log("----下一环节返回内容----", res.data);
-                if (res.data.model.flag == false) {
-                    this.onMultiCommit();
-                } else {
-                    //if(this.currentProcess.)
-                    //进入选择环节页面
-                    this.$router.replace({
-                        name: "selectlink",
-                        params: {
-                        backRoute: this.preRoute,
-                        },
+    async onCommit() {
+        let commited = 0
+        //判断是否是行领导传阅流程 showOpinion是通过hideOpinion扩展属性设置的
+        if (this.showOpinion === false) {
+            await this.onCommitFinishCy().then((result) => {
+                if(result.data.status === "200" && result.data.model === true){
+                    commited = 1;//正常结束
+                }else if(result.data.status === "200" && result.data.model === false){
+                    commited = 1;//在调用此接口之前已经结束了
+                }else{
+                    commited = 2;//非200状态
+                }
+            }).catch((error) => {
+                commited = 2;//接口无法返回
+            });
+            if(commited === 1){
+                this.$store.commit("setRefresh", true);
+                if (this.fromOut) {
+                    this.$dialog
+                    .alert({
+                        message: "提交成功",
+                        width: "200px",
+                        confirmButtonColor: "#ff4444",
+                    })
+                    .then(() => {
+                        this.$store.commit("setFromOut", false);
+                        this.$router.replace({
+                            name: this.backRoute,
+                        });
                     });
+                    return;
+                }
+                Dialog.alert({
+                    message: "提交成功",
+                    width: "200px",
+                    confirmButtonColor: "#ff4444",
+                    closeOnClickOverlay: false,
+                }).then(() => {
+                    this.$router.replace({
+                        name: 'home',
+                    });
+                });
+                return
+            }
+            if(commited === 2){
+                Toast("提交失败");
+                return
+            }
+        }
+        if (this.sendDeptVerify && (this.$store.state.currentList === "todo" || this.$store.state.currentList === "seal")) {
+            if (this.dataForm.sendDeptText == null ||this.dataForm.sendDeptText == "") {
+                Toast("请选择发送部门");
+                return;
+            }
+        }
+        if (this.businessTypeVerify && (this.$store.state.currentList === "todo" || this.$store.state.currentList === "seal")) {
+            if (this.dataForm.businessType == null ||this.dataForm.businessType == "") {
+                Toast("请选择业务类型");
+                return;
+            }
+        }
+        // 提交
+        if (!this.SubmitPermission) {
+            Toast("请前往PC端提交!");
+            return;
+        }
+        var u = navigator.userAgent,
+            app = navigator.appVersion;
+        var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+        //console.log("isiOS", isiOS);
+        for (let i = 0; i < this.opinionConfig.length; i++) {
+            //意见必填时再进行意见填写  20220714
+            console.log(this.noteRequired);
+            if (this.noteRequired) {
+            //如果输入框内容是空的
+                if (!this.opinionConfig[i].noteContent) {
+                    // if (isiOS) {
+                    //   document.documentElement.scrollTop =
+                    //     this.$refs.detailWrap.clientHeight - 255;
+                    // } else {
+                    //   window.scrollTo(0, 9999);
+                    // }
+                    let scrollEle = document.querySelector(".van-tabs__content");
+                    let elH = document.querySelector("#tabWrap").clientHeight;
+                    let scrollH = elH - scrollEle.clientHeight;
+                    scrollEle.scrollTop = scrollH;
+                    Toast("请填写审批意见");
+                    return;
+                } else {
+                    if (this.opinionConfig[i].noteContent.length > 500) {
+                        Toast("意见内容已超过500字限制");
+                        return;
+                    }
                 }
             }
-            this.loading = false;
-         });
-
+        }
+        //保存意见是否必填  20220714
+        this.$store.commit("setNoteRequired", this.noteRequired);
+        this.$store.commit("setOpinionData", this.opinionConfig);
+        //如果多人会签环节，并且不是最后一个人提交则直接提交
+        api
+            .queryNextLink({
+            wfmData: {
+                actInstId: this.currentProcess.actInstId,
+                proInstId: this.currentProcess.proInstId,
+                workitemId: this.currentProcess.workitemId,
+                configId: this.currentProcess.configId,
+                configCode: this.currentProcess.configCode,
+                proDirId: this.currentProcess.proDirId,
+                actDefId: this.currentProcess.actDefId,
+                userId: this.userInfo.userId,
+                // sendUserIds: this.currentProcess.sendUserIds ? this.currentProcess.sendUserIds:"",
+            },
+            })
+            .then((res) => {
+                if (res.data.status === "200") {
+                    console.log("----下一环节返回内容----", res.data);
+                    if (res.data.model.flag == false) {
+                        this.onMultiCommit();
+                    } else {
+                        //if(this.currentProcess.)
+                        //进入选择环节页面
+                        this.$router.replace({
+                            name: "selectlink",
+                            params: {
+                                backRoute: this.preRoute,
+                            },
+                        });
+                    }
+                }
+                this.loading = false;
+            });
+    },
+    async onCommitFinishCy(){
+        const res = await api.finishCy({
+            proInstId: this.currentProcess.proInstId,
+            userId: this.userInfo.userId,
+        })
+        return res;
     },
     onClick(activity, radio) {
       //console.log("---退回节点名称---", activity.name);

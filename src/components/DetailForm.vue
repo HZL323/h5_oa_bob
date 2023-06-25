@@ -337,6 +337,8 @@ export default {
           return formatArr("sysFilePosition");
         case "DemandScreen":
           return formatArr("demandScreenList");
+        case "isSearchSynDept":
+            return reg("IsSearchSynDept", "isSearchSynDept")
         default:
           return this.formData[item.colCode] || "";
       }
