@@ -432,6 +432,7 @@ export default {
             if (res.data.status === "200") {
               this.$store.commit("setRefresh", true);
               if (this.fromOut) {
+
                 this.$dialog
                   .alert({
                     message: "提交成功",
@@ -439,6 +440,7 @@ export default {
                     confirmButtonColor: "#ff4444",
                   })
                   .then(() => {
+                    console.log("selectHandler 443行的提交成功")
                     this.$store.commit("setFromOut", false);
                     this.$router.replace({
                       name: this.backRoute,
@@ -453,6 +455,7 @@ export default {
                   confirmButtonColor: "#ff4444",
                 })
                 .then(() => {
+                 console.log("selectHandler 459行的提交成功")
                   this.$router.replace({
                     name: this.$route.params.backRoute,
                   });
@@ -479,6 +482,7 @@ export default {
                     confirmButtonColor: "#ff4444",
                   })
                   .then(() => {
+                    console.log("selectHandler 485行的提交成功")
                     this.$store.commit("setFromOut", false);
                     this.$router.replace({
                       name: this.backRoute,
@@ -494,6 +498,7 @@ export default {
                   confirmButtonColor: "#ff4444",
                 })
                 .then(() => {
+                    console.log("selectHandler 501行的提交成功")
                   this.$router.replace({
                     name: this.$route.params.backRoute,
                   });
@@ -524,6 +529,7 @@ export default {
       });
     },
     async saveOpinion() {
+        debugger
         //因为forEach()方法不会等待异步操作的结果，它只是遍历数组中的每个元素并对其执行回调函数
         //异步操作是在回调函数中发生的，但是forEach()方法并不会等待它们完成。因此，在forEach()中返回的返回值是undefined
         //使用了map()方法替代了forEach()方法来生成一个包含多个Promise对象的数组。然后，我们使用Promise.all()方法来等待所有异步操作完成，最终返回一个新的Promise对象。
@@ -540,6 +546,7 @@ export default {
                 workitemId: this.currentProcess.workitemId,
                 actDefId: this.currentProcess.actDefId,
             };
+
             const res = await api.saveOpinion(data);
             if (res.data.status === 200 && res.data.model.code === 0) item.id = res.data.data.id;
             return res;

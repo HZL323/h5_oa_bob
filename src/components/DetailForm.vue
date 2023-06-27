@@ -339,6 +339,12 @@ export default {
           return formatArr("demandScreenList");
         case "isSearchSynDept":
             return reg("IsSearchSynDept", "isSearchSynDept")
+        case "testResult":
+            return reg("testResult", "testResult")
+        case "confirmResult":
+            return reg("confirmResult", "confirmResult")
+        case "isDataDelete":
+            return reg("isDataDelete", "isDataDelete")
         default:
           return this.formData[item.colCode] || "";
       }

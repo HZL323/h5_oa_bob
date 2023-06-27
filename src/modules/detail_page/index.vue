@@ -249,6 +249,7 @@ export default {
   created() {
     console.log("生产版本号--1.3.7");
     console.log("准生产版本号--3.0.2");
+    console.log("测试版本号--1.9.5");
     this.$store.commit("setCurrentList", this.$route.query.queryKind);
     this.dropListCurrentList = this.$route.query.queryKind;
     console.log("this.$route.query.queryKind:", this.$route.query.queryKind);
@@ -863,6 +864,7 @@ export default {
             return
         }
       }
+      debugger
       setTimeout(() => {
         api.completeWorkitem(data).then((res) => {
           Toast.clear();
@@ -874,6 +876,8 @@ export default {
               confirmButtonColor: "#ff4444",
               closeOnClickOverlay: false,
             }).then(() => {
+                console.log("detailPage 878行的提交成功")
+
               this.$router.replace({
                 name: 'home',
               });
@@ -885,6 +889,7 @@ export default {
       }, 500);
     },
     async saveOpinion() {
+        debugger
         //因为forEach()方法不会等待异步操作的结果，它只是遍历数组中的每个元素并对其执行回调函数
         //异步操作是在回调函数中发生的，但是forEach()方法并不会等待它们完成。因此，在forEach()中返回的返回值是undefined
         //使用了map()方法替代了forEach()方法来生成一个包含多个Promise对象的数组。然后，我们使用Promise.all()方法来等待所有异步操作完成，最终返回一个新的Promise对象。
@@ -924,9 +929,13 @@ export default {
             }).catch((error) => {
                 commited = 2;//接口无法返回
             });
+            console.log("commited:1--------------",commited)
             if(commited === 1){
+                console.log("commited:2--------------",commited)
                 this.$store.commit("setRefresh", true);
                 if (this.fromOut) {
+                    console.log("commited:3--------------",commited)
+                    debugger
                     this.$dialog
                     .alert({
                         message: "提交成功",
@@ -934,9 +943,12 @@ export default {
                         confirmButtonColor: "#ff4444",
                     })
                     .then(() => {
+                        console.log("detailPage 944行的提交成功")
+
                         this.$store.commit("setFromOut", false);
+                        console.log("commited:3--------------",commited)
                         this.$router.replace({
-                            name: this.backRoute,
+                            name: 'home',
                         });
                     });
                     return;
@@ -947,6 +959,8 @@ export default {
                     confirmButtonColor: "#ff4444",
                     closeOnClickOverlay: false,
                 }).then(() => {
+                    console.log("detailPage 961行的提交成功")
+
                     this.$router.replace({
                         name: 'home',
                     });
