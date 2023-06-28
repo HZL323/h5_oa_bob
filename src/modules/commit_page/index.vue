@@ -185,7 +185,7 @@ export default {
         .then((res) => {
             console.log("报错了")
             if (res.data.status === "200") {
-                console.log("----下一环节返回内容----", res.data);
+                console.log("----commit_page下一环节返回内容----", res.data);
                 if (res.data.model.flag == false) {
                     this.onMultiCommit();
                 } else {
@@ -397,7 +397,7 @@ export default {
                 });
               });
             } else {
-              Toast("提交失败");
+                this.$toast("提交失败");
             }
           });
         }, 500);
@@ -406,6 +406,7 @@ export default {
         setTimeout(() => {
           console.log("-------------所选环节不是子流程，调用completeWorkitem--------------");
           api.completeWorkitem(data).then((res) => {
+            console.log("commit_page 409行completeWorkitem被调用")
             Toast.clear();
             if (res.data.status === "200") {
               console.log("调用完成工作项接口返回值：" + res.data);
@@ -436,7 +437,7 @@ export default {
                 });
               });
             } else {
-              Toast("提交失败");
+                this.$toast("提交失败");
             }
           });
         }, 500);
@@ -444,6 +445,11 @@ export default {
     },
 
     async onMultiCommit() {
+        this.$toast.loading({
+            message: "提交中...",
+            forbidClick: true,
+            duration: 0,
+      });
       // 会签环节直接提交
       let data = {};
       data.wfmData = {
@@ -475,7 +481,8 @@ export default {
       }
       setTimeout(() => {
         api.completeWorkitem(data).then((res) => {
-          Toast.clear();
+            console.log("commit_page 478行completeWorkitem被调用")
+            this.$toast.clear();
           if (res.data.status === "200") {
             this.$store.commit("setRefresh", true);
             Dialog.alert({
@@ -490,16 +497,16 @@ export default {
               });
             });
           } else {
-            Toast("提交失败");
+            this.$toast("提交失败");
           }
         });
       }, 500);
     },
     async onSubCommit() {
-      Toast.loading({
-        message: "提交中...",
-        forbidClick: true,
-        duration: 0,
+        this.$toast.loading({
+            message: "提交中...",
+            forbidClick: true,
+            duration: 0,
       });
       let data = {};
       data.wfmData = {
@@ -548,7 +555,8 @@ export default {
       //移动端完成工作项
       setTimeout(() => {
         api.completeWorkitem(data).then((res) => {
-          Toast.clear();
+          console.log("commit_page 551行completeWorkitem被调用")
+          this.$toast.clear()
           if (res.data.status === "200") {
             this.$store.commit("setRefresh", true);
             if (this.fromOut) {
@@ -578,7 +586,7 @@ export default {
               });
             });
           } else {
-            Toast("提交失败");
+            this.$toast("提交失败");
           }
         });
       }, 500);

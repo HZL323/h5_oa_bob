@@ -664,6 +664,7 @@ export default {
         });
     },
     getFromConfig() {
+        debugger
       // 获取表单字段和意见字段（修改逻辑，加入子流程验证环节）
       //console.log("-----currentProcess------",this.currentProcess)
       api
@@ -834,6 +835,11 @@ export default {
       });
     },
     async onMultiCommit() {
+        this.$toast.loading({
+            message: "提交中...",
+            forbidClick: true,
+            duration: 0,
+      });
       // 会签环节直接提交
       let data = {};
       data.wfmData = {
@@ -867,7 +873,8 @@ export default {
       debugger
       setTimeout(() => {
         api.completeWorkitem(data).then((res) => {
-          Toast.clear();
+            console.log("detail_page 870行completeWorkitem被调用")
+            this.$toast.clear();
           if (res.data.status === "200") {
             this.$store.commit("setRefresh", true);
             Dialog.alert({
@@ -883,7 +890,7 @@ export default {
               });
             });
           } else {
-            Toast("提交失败");
+            this.$toast("提交失败");
           }
         });
       }, 500);
@@ -968,7 +975,7 @@ export default {
                 return
             }
             if(commited === 2){
-                Toast("提交失败");
+                this.$toast("提交失败");
                 return
             }
         }
@@ -1025,21 +1032,21 @@ export default {
         //如果多人会签环节，并且不是最后一个人提交则直接提交
         api
             .queryNextLink({
-            wfmData: {
-                actInstId: this.currentProcess.actInstId,
-                proInstId: this.currentProcess.proInstId,
-                workitemId: this.currentProcess.workitemId,
-                configId: this.currentProcess.configId,
-                configCode: this.currentProcess.configCode,
-                proDirId: this.currentProcess.proDirId,
-                actDefId: this.currentProcess.actDefId,
-                userId: this.userInfo.userId,
-                // sendUserIds: this.currentProcess.sendUserIds ? this.currentProcess.sendUserIds:"",
-            },
+                wfmData: {
+                    actInstId: this.currentProcess.actInstId,
+                    proInstId: this.currentProcess.proInstId,
+                    workitemId: this.currentProcess.workitemId,
+                    configId: this.currentProcess.configId,
+                    configCode: this.currentProcess.configCode,
+                    proDirId: this.currentProcess.proDirId,
+                    actDefId: this.currentProcess.actDefId,
+                    userId: this.userInfo.userId,
+                    // sendUserIds: this.currentProcess.sendUserIds ? this.currentProcess.sendUserIds:"",
+                },
             })
             .then((res) => {
                 if (res.data.status === "200") {
-                    console.log("----下一环节返回内容----", res.data);
+                    console.log("----detail_page下一环节返回内容----", res.data);
                     if (res.data.model.flag == false) {
                         this.onMultiCommit();
                     } else {

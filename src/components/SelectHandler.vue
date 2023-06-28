@@ -470,7 +470,9 @@ export default {
         setTimeout(() => {
           console.log("-------------所选环节不是部室经理会签环节，调用completeWorkitem--------------");
           api.completeWorkitem(data).then((res) => {
+            console.log("selectHandler 473行completeWorkitem被调用")
             this.$toast.clear();
+            debugger
             if (res.data.status === "200") {
               console.log("调用完成工作项接口返回值：" + res.data);
               this.$store.commit("setRefresh", true);
