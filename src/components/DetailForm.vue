@@ -345,6 +345,8 @@ export default {
             return reg("confirmResult", "confirmResult")
         case "isDataDelete":
             return reg("isDataDelete", "isDataDelete")
+        case "IsMustTest":
+            return reg("IsMustTest", "isMustTest")
         default:
           return this.formData[item.colCode] || "";
       }
