@@ -922,6 +922,7 @@ export default {
     },
 
     async onCommit() {
+        debugger
         let commited = 0
         //判断是否是行领导传阅流程 showOpinion是通过hideOpinion扩展属性设置的
         if (this.showOpinion === false) {
@@ -1049,7 +1050,36 @@ export default {
                     console.log("----detail_page下一环节返回内容----", res.data);
                     if (res.data.model.flag == false) {
                         this.onMultiCommit();
-                    } else {
+                    }
+                    //勾选了不弹出选人的复选框
+                    else if(res.data.model.flag == true && res.data.model.wfmData.isShowCompleteDialog == false){
+                        debugger
+                        let data = {};
+                        data.wfmData = {
+                            actInstId: this.currentProcess.actInstId,
+                            proInstId: this.currentProcess.proInstId,
+                            workitemId: this.currentProcess.workitemId,
+                            configId: this.currentProcess.configId,
+                            proDirId: this.currentProcess.proDirId,
+                            actDefId: res.data.model.wfmData.nextActivities[0].actDefId,
+                            processName: this.currentProcess.processName || "",
+                            userId: this.userInfo.userId,
+                            nextActivities: [
+                                {
+                                    actDefId: res.data.model.wfmData.nextActivities[0].actDefId || "",
+                                    actDefName:  "",
+                                    proDefId: res.data.model.wfmData.nextActivities[0].proDefId || "",
+                                    actDefPath: res.data.model.wfmData.nextActivities[0].actDefPath || "",
+                                    proDirId: res.data.model.wfmData.nextActivities[0].proDirId || "",
+                                    actInstId: "",
+                                    participants:res.data.model.wfmData.nextActivities[0].participants,
+                                    returnSelect: false,
+                                },
+                            ],
+                        };
+                        this.hldNotShowNextActivities(data);
+                    }
+                     else {
                         //if(this.currentProcess.)
                         //进入选择环节页面
                         this.$router.replace({
@@ -1189,6 +1219,46 @@ export default {
         document.documentElement.scrollTop = this.$refs.detailWrap.clientHeight;
       }
     },
+    async hldNotShowNextActivities(data){
+        //必填生效
+        let saveNoteResult = 0;
+        if(this.noteRequired || (!this.noteRequired &&  this.opinionConfig[0] && this.opinionConfig[0].noteContent)){
+            debugger
+            await this.saveOpinion().then((results) => {
+                if(results[0].data.status !== "200" || (results[0].data.status === "200" && results[0].data.model.code !== 0)){
+                    saveNoteResult = -1;
+                };
+                // 处理第一个元素的结果
+                }).catch((error) => {
+                    // 处理错误
+                    saveNoteResult = -1;
+            });
+            if(saveNoteResult === -1){
+                this.$toast("提交失败");
+                return
+            }
+        }
+        setTimeout(() => {
+            api.completeWorkitem(data).then((res) => {
+                this.$toast.clear();
+                if (res.data.status === "200") {
+                    this.$store.commit("setRefresh", true);
+                    Dialog.alert({
+                        message: "提交成功",
+                        width: "200px",
+                        confirmButtonColor: "#ff4444",
+                        closeOnClickOverlay: false,
+                    }).then(() => {
+                        this.$router.replace({
+                            name: 'home',
+                        });
+                    });
+                } else {
+                    this.$toast("提交失败");
+                }
+            });
+        }, 500);
+    }
   },
 };
 </script>

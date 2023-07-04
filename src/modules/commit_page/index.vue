@@ -183,7 +183,7 @@ export default {
           },
         })
         .then((res) => {
-            console.log("报错了")
+            debugger
             if (res.data.status === "200") {
                 console.log("----commit_page下一环节返回内容----", res.data);
                 if (res.data.model.flag == false) {
