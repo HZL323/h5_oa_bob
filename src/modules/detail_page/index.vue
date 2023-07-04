@@ -1106,31 +1106,60 @@ export default {
       this.activity = activity;
       this.radio = radio;
     },
-    sendBack() {
+    async sendBack() {
       //let sendNode = this.$refs.sendBack.selectData;
       //console.log("---currentProcess---", this.currentProcess);
+        Toast.loading({
+            message: "回退中...",
+            forbidClick: true,
+            duration: 0,
+        });
       // 退回上一环节
-      if (!this.radio) {
-        Toast("请选择回退环节");
-        return;
-      }
-      if (
-        this.activity.name.indexOf("会签") != -1 ||
-        this.activity.name === "相关业务线办理" ||
-        this.activity.name === "相关人员办理" ||
-        this.activity.name === "相关部室办理" ||
-        this.activity.name === "辅办部室办理" ||
-        this.activity.name === "收文经办" ||
-        this.activity.name === "送相关支行"
-      ) {
-        Toast("请前往PC端退回该环节");
-        return;
-      }
-      Toast.loading({
-        message: "回退中...",
-        forbidClick: true,
-        duration: 0,
-      });
+        if (!this.radio) {
+            Toast("请选择回退环节");
+            return;
+        }
+        if (
+            this.activity.name.indexOf("会签") != -1 ||
+            this.activity.name === "相关业务线办理" ||
+            this.activity.name === "相关人员办理" ||
+            this.activity.name === "相关部室办理" ||
+            this.activity.name === "辅办部室办理" ||
+            this.activity.name === "收文经办" ||
+            this.activity.name === "送相关支行"
+        ) {
+            Toast("请前往PC端退回该环节");
+            return;
+        }
+        debugger
+        if(this.currentProcess.processName === '业务数据处理申请流程' ||
+            this.currentProcess.processName === '总行办公自动化用户维护申请流程' ||
+            this.currentProcess.processName === '通用流程' ||
+            this.currentProcess.processName === '总分行办公检法查询申请流程' ||
+            this.currentProcess.processName === '短信发布申请' ){
+            if(this.opinionConfig[0] && !this.opinionConfig[0].noteContent){
+                Toast("请填写审批意见");
+                return;
+            }
+        }
+        if(this.opinionConfig[0] && this.opinionConfig[0].noteContent){
+            debugger
+            let saveNoteResult = 0
+            await this.saveOpinion().then((results) => {
+                if(results[0].data.status !== "200" || (results[0].data.status === "200" && results[0].data.model.code !== 0)){
+                    saveNoteResult = -1;
+                };
+                // 处理第一个元素的结果
+            }).catch((error) => {
+                    // 处理错误
+                    saveNoteResult = -1;
+            });
+            if(saveNoteResult === -1){
+                this.$toast("提交失败");
+                return
+            }
+        }
+
       api
         .sendBack({
           wfmData: {
