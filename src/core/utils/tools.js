@@ -113,6 +113,8 @@ router.beforeEach((to, from, next) => {
                 //  uCode: "wuyihongzgc"
                 // id:"004114",
                 // uCode :"liangyan"
+                //  id:"007177",
+                // uCode :"liujiangtao"
             }).then(res => {
                 console.log("checkUser status", res)
                 if (res.data.status === '200') {

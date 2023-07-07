@@ -247,9 +247,9 @@ export default {
     },
   },
   created() {
-    console.log("生产版本号--1.3.7");
-    console.log("准生产版本号--3.0.2");
-    console.log("测试版本号--1.9.5");
+    console.log("生产版本号--1.3.8");
+    console.log("准生产版本号--3.0.3");
+    console.log("测试版本号--1.9.7");
     this.$store.commit("setCurrentList", this.$route.query.queryKind);
     this.dropListCurrentList = this.$route.query.queryKind;
     console.log("this.$route.query.queryKind:", this.$route.query.queryKind);
@@ -857,8 +857,11 @@ export default {
       if(this.noteRequired || (!this.noteRequired &&  this.opinionConfig[0] && this.opinionConfig[0].noteContent)){
         debugger
         await this.saveOpinion().then((results) => {
-            if(results[0].data.status !== "200" || (results[0].data.status === "200" && results[0].data.model.code !== 0)){
+            if(results[0].data.status !== "200" || (results[0].data.status === "200" && results[0].data.model.code === -1)){
                 saveNoteResult = -1;
+            };
+             if(results[0].data.status === "200" && results[0].data.model.code === -2){
+                saveNoteResult = -2;
             };
             // 处理第一个元素的结果
             }).catch((error) => {
@@ -867,6 +870,11 @@ export default {
         });
         if(saveNoteResult === -1){
             this.$toast("提交失败");
+            return
+        }
+        if(saveNoteResult === -2){
+           this.$toast("由于您在PC端已经填过意见，需要重新进入页面加载该意见");
+            this.$router.replace({ path: '/home', force: true })
             return
         }
       }
@@ -1002,6 +1010,7 @@ export default {
         var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
         //console.log("isiOS", isiOS);
         for (let i = 0; i < this.opinionConfig.length; i++) {
+
             //意见必填时再进行意见填写  20220714
             console.log(this.noteRequired);
             if (this.noteRequired) {
@@ -1131,6 +1140,7 @@ export default {
             Toast("请前往PC端退回该环节");
             return;
         }
+        console.log("sendBack:----", this.currentProcess.processName)
         debugger
         if(this.currentProcess.processName === '业务数据处理申请流程' ||
             this.currentProcess.processName === '总行办公自动化用户维护申请流程' ||
@@ -1146,8 +1156,11 @@ export default {
             debugger
             let saveNoteResult = 0
             await this.saveOpinion().then((results) => {
-                if(results[0].data.status !== "200" || (results[0].data.status === "200" && results[0].data.model.code !== 0)){
+                if(results[0].data.status !== "200" || (results[0].data.status === "200" && results[0].data.model.code === -1)){
                     saveNoteResult = -1;
+                };
+                if(results[0].data.status === "200" && results[0].data.model.code === -2){
+                    saveNoteResult = -2;
                 };
                 // 处理第一个元素的结果
             }).catch((error) => {
@@ -1156,6 +1169,11 @@ export default {
             });
             if(saveNoteResult === -1){
                 this.$toast("提交失败");
+                return
+            }
+            if(saveNoteResult === -2){
+                this.$toast("由于您在PC端已经填过意见，需要重新进入页面加载该意见");
+                this.$router.replace({ path: '/home', force: true })
                 return
             }
         }
@@ -1254,8 +1272,11 @@ export default {
         if(this.noteRequired || (!this.noteRequired &&  this.opinionConfig[0] && this.opinionConfig[0].noteContent)){
             debugger
             await this.saveOpinion().then((results) => {
-                if(results[0].data.status !== "200" || (results[0].data.status === "200" && results[0].data.model.code !== 0)){
+                if(results[0].data.status !== "200" || (results[0].data.status === "200" && results[0].data.model.code === -1)){
                     saveNoteResult = -1;
+                };
+                if(results[0].data.status === "200" && results[0].data.model.code === -2){
+                    saveNoteResult = -2;
                 };
                 // 处理第一个元素的结果
                 }).catch((error) => {
@@ -1264,6 +1285,11 @@ export default {
             });
             if(saveNoteResult === -1){
                 this.$toast("提交失败");
+                return
+            }
+            if(saveNoteResult === -2){
+                this.$toast("PC端已经填过意见，但未提交，请重新进入页面加载该意见");
+                this.$router.replace({ path: '/home', force: true })
                 return
             }
         }

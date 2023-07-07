@@ -51,13 +51,15 @@
                   v-for="(item_, index_) in item.noteData"
                   :key="index_"
                 >
-                  <div class="opinion-info">
-                    <div class="name">{{ item_.createUserName }}</div>
-                    <div class="date-time">{{ item_.createTime }}</div>
-                  </div>
-                  <div class="opinion-content">
-                    <p v-html="item_.noteContent"></p>
-                  </div>
+                    <div v-if="item_.isSubmitAfter === 'Y'">
+                        <div class="opinion-info">
+                            <div class="name">{{ item_.createUserName }}</div>
+                            <div class="date-time">{{ item_.createTime }}</div>
+                        </div>
+                        <div class="opinion-content">
+                            <p v-html="item_.noteContent"></p>
+                        </div>
+                    </div>
                 </div>
               </template>
             </van-collapse-item>
@@ -229,8 +231,10 @@ export default {
         .getOpinionData({
           proInstId: this.currentProcess.proInstId,
           configCode: this.currentProcess.configCode,
+          userUuid: this.$store.state.userInfo.userId
         })
         .then((res) => {
+            debugger
           if (res.data.status === "200") {
             let obj = {};
             this.opinionData = res.data.model;
@@ -286,24 +290,26 @@ export default {
           workitemId: this.currentProcess.workitemId,
           wfmRoleTypes: "todo,drafter",
         })
-        .then((res) => {
+        .then( (res) => {
           Toast.clear();
           console.log("getEditOpinion()_res.data.model:", res.data.model);
           if (res.data.status === "200") {
             let eum = {}; // 将意见元转换为枚举数据
             this.noteConfig.forEach((item) => {
               eum[item.noteCode] = {
-                //noteCode：意见框的字母名称比如"fhbmhqyj"
-                noteName: item.noteName, //noteName：意见框的中文名称比如“分行部门会签意见”
+                //noteCode: 意见框的字母名称比如"fhbmhqyj"
+                noteName: item.noteName, //noteName: 意见框的中文名称比如“分行部门会签意见”
               };
             });
             let obj = {}; // 提取可编辑意见的回显数据?? 这里的obj是什么
+            console.log(this.opinionData)
+            let objDrawback = {}; //单独提取最新的意见
             this.opinionData.forEach((item) => {
               if (
                 item.actDefId === this.currentProcess.actDefId &&
                 item.isSubmitAfter === "N" &&
-                item.createUser === this.userInfo.userId &&
-                item.proInstId === this.currentProcess.proInstId
+                item.createUser === this.userInfo.userId
+                //&& item.proInstId === this.currentProcess.proInstId
               ) {
                 obj[item.type] = {
                   value: item.noteContent,
@@ -311,49 +317,66 @@ export default {
                   id: item.id,
                 };
               }
+              if(item.actDefId === this.currentProcess.actDefId &&
+              item.isSubmitAfter === "Y" &&
+              item.createUser === this.userInfo.userId){
+                objDrawback[item.type] = {
+                    value: item.noteContent,
+                    type: item.type,
+                    id: item.id,
+                    createTime : item.createTime
+                }
+              }
             });
-            const copy = Object.assign({}, obj);
-            console.log("可编辑意见的回显数据obj:", copy);
-            console.log("可编辑意见opinionConfig", this.opinionConfig);
+            console.log("清空opinionConfig", this.opinionConfig);
             this.opinionConfig.forEach((item, i) => {
               this.opinionConfig.splice(i);
             });
-            console.log("可编辑意见opinionConfig_slice", this.opinionConfig);
-            console.log(
-              "可编辑意见opinionConfig_长度",
-              this.opinionConfig.length
-            );
             console.log("res.data.model.noteEdit", res.data.model.noteEdit); //比如yydbyj
-            if (res.data.model.noteEdit) {
-              let arr = res.data.model.noteEdit.split(",");
-              arr.forEach((item) => {
-                this.opinionConfig.push({
-                  noteId: item, //比如yydbyj
-                  noteName: eum[item].noteName, //比如"用印督办意见"
-                  noteContent: obj[item] ? obj[item].value : "",
-                  id: obj[item] ? obj[item].id : "",
-                });
-              });
-              console.log("currentList", this.currentList);
+            //判断收回
+            let queryIsDrawbackParam = {
+                workitemId: this.currentProcess.workitemId
             }
-            console.log("可编辑意见opinionConfig_push", this.opinionConfig);
-            console.log(
-              "可编辑意见opinionConfig_push_length",
-              this.opinionConfig.length
-            );
+            debugger
+            api.getCurrentWorkItemType(queryIsDrawbackParam).then(typeRes=>{
+                //是收回
+                if(typeRes.data.model.code === 0){
+                    if (res.data.model.noteEdit) {
+                        let arr = res.data.model.noteEdit.split(",");
+                        arr.forEach((item) => {
+                            this.opinionConfig.push({
+                                noteId: item, //比如yydbyj
+                                noteName: eum[item].noteName, //比如"用印督办意见"
+                                noteContent: objDrawback[item] ? objDrawback[item].value : "",
+                                id: objDrawback[item] ? objDrawback[item].id : "",
+                            });
+                        });
+                        console.log("currentList", this.currentList);
+                    }
+                }else{
+                    if (res.data.model.noteEdit) {
+                        let arr = res.data.model.noteEdit.split(",");
+                        arr.forEach((item) => {
+                            this.opinionConfig.push({
+                                noteId: item, //比如yydbyj
+                                noteName: eum[item].noteName, //比如"用印督办意见"
+                                noteContent: obj[item] ? obj[item].value : "",
+                                id: obj[item] ? obj[item].id : "",
+                            });
+                        });
+                        console.log("currentList", this.currentList);
+                    }
+                }
+                console.log("可编辑意见opinionConfig_push", this.opinionConfig);
+                var showNoteDom = document.getElementById("showNoteText");
+                if (
+                  showNoteDom != null &&
+                  this.currentProcess.state == "closed.completed"
+                ) {
+                  showNoteDom.hidden = true;
+                }
+            });
           }
-          //校验是否需要填写意见
-          //opinionConfig.length>0 -> showNote
-          //判断dom存不存在
-          var showNoteDom = document.getElementById("showNoteText");
-          if (
-            showNoteDom != null &&
-            this.currentProcess.state == "closed.completed"
-          ) {
-            showNoteDom.hidden = true;
-          }
-
-          // this.$store.commit("updateCount", 1);
         });
     },
     getSealList() {

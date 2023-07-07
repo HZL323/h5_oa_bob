@@ -237,3 +237,6 @@ export function getCollectedOpinion(data){
 export function recordEnterOaLog(data){
     return Axios.post(`${URL}/mob/login/log/mobCreateLoginSuccessLog`, data)
 }
+export function  getCurrentWorkItemType(data){
+    return Axios.post(`${URL}/mob/note/NoteServiceContainer/getCurrentWorkItemType`, data)
+}
