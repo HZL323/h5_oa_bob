@@ -21,6 +21,10 @@ router.beforeEach((to, from, next) => {
     } else {
         Store.commit('setCacheList', ['homePage', 'listPage'])
     }
+    if(to.name === 'detail' && to.query.from  !== 'oa' && to.query.queryKind === "doing"){
+        Toast("请到OA（新）或用印申请（新）系统查看")
+        return
+    }
     if (Store.state.userInfo.userCode) {
         next()
     } else {

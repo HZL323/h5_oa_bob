@@ -1063,6 +1063,11 @@ export default {
                     //勾选了不弹出选人的复选框
                     else if(res.data.model.flag == true && res.data.model.wfmData.isShowCompleteDialog == false){
                         debugger
+                        this.$toast.loading({
+                            message: "提交中...",
+                            forbidClick: true,
+                            duration: 0,
+                        });
                         let data = {};
                         data.wfmData = {
                             actInstId: this.currentProcess.actInstId,
