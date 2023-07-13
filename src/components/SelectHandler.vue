@@ -402,7 +402,6 @@ export default {
       //校验是否必填，必填的话调用意见保存方法 必填生效
       console.log("this.noteRequired---------", this.noteRequired)
       console.log("this.opinionConfig[0]---------", this.opinionConfig[0])
-      console.log("!this.opinionConfig[0].noteContent---------", !this.opinionConfig[0].noteContent)
       let saveNoteResult = 0;
       if(this.noteRequired || (!this.noteRequired &&  this.opinionConfig[0] && this.opinionConfig[0].noteContent)){
         await this.saveOpinion().then((results) => {

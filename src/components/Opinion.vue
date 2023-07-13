@@ -53,7 +53,13 @@
                 >
                     <div v-if="item_.isSubmitAfter === 'Y'">
                         <div class="opinion-info">
-                            <div class="name">{{ item_.createUserName }}</div>
+                            <div class="name">{{ item_.createUserName.indexOf("_") < 0 ?
+                                 item_.createUserName :
+                                 item_.createUserName.substring(0, item_.createUserName.indexOf("_"))
+                                 + item_.createUserName.substring(item_.createUserName.indexOf("( "))
+                                 +" 代 )"
+                                }}
+                            </div>
                             <div class="date-time">{{ item_.createTime }}</div>
                         </div>
                         <div class="opinion-content">
