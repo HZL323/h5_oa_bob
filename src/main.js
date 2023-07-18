@@ -21,7 +21,6 @@ import Components from './components/index'
 import VConsose from 'vconsole'
 import ajax from 'vux/src/plugins/ajax';
 import axios from "axios";
-import moment from "moment";
 import qs from "qs";
 import cors from "cors"
 //axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8';
@@ -37,11 +36,10 @@ axios.interceptors.request.use((config)=>{
 })
 //Vue.use(cors({origin:['http://localhost:8089']}))
 
-//Vue.use(new VConsose())
+Vue.use(new VConsose())
 Vue.use(Components) // 全局注册组件
 Vue.use(ToastPlugin)
 Vue.use(LoadingPlugin)
-Vue.use(moment)
 
 
 Vue.config.productionTip = false
