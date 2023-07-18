@@ -60,7 +60,7 @@
                                  +" 代 )"
                                 }}
                             </div>
-                            <div class="date-time">{{ item_.createTime }}</div>
+                            <div class="date-time">{{ formatDate(item_.createTime) }}</div>
                         </div>
                         <div class="opinion-content">
                             <p v-html="item_.noteContent"></p>
@@ -152,6 +152,7 @@ import {
 import { api } from "../core/api/index";
 import SealList from "./SealList.vue";
 import CommonOpinions from "./CommonOpinions.vue";
+import moment from "moment"
 export default {
   name: "opinion",
   components: {
@@ -212,6 +213,11 @@ export default {
     this.getSealList();
   },
   methods: {
+    formatDate(item) {
+        const format = "YYYY-MM-DD HH:mm"
+        let dateTime = moment(item).format(format);
+        return item ? dateTime:"";
+    },
     init() {
       this.getOpinion();
       // this.getEditOpinion();

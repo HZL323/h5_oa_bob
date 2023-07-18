@@ -101,6 +101,7 @@
 
 <script>
 import { Divider, Skeleton, Picker, Popup, Button, Toast } from "vant";
+import moment,* as moments  from "moment"
 import { api } from "../core/api/index";
 export default {
   //yinyanhong
@@ -242,26 +243,25 @@ export default {
         });
     },
     formMatData(item) {
-      /*const formatDate = (item) => {
+        const format = "YYYY-MM-DD HH:mm"
         if(/日期|时间/g.test(item.colName)){
-          return this.formData[item.colCode] ? this.$dateFormat("YYYY-mm-dd",this.formData[item.colCode]):"";
+            let dateTime = moment(this.formData[item.colCode]).format(format);
+            return this.formData[item.colCode] ? dateTime:"";
         }
-        return this.formData[item.colCode] || "--";
-      };
 
-      const mapDictKey = (item) =>{
-        switch (item.colCode) {
-          case "fwType":
-            return "fileType";
-          case "secretLevel":
-            return "secret_level";
-          default:
-            return item.colCode;
-        }
-      };
-      if(){
 
-      }*/
+
+    //   const mapDictKey = (item) =>{
+    //     switch (item.colCode) {
+    //       case "fwType":
+    //         return "fileType";
+    //       case "secretLevel":
+    //         return "secret_level";
+    //       default:
+    //         return item.colCode;
+    //     }
+    //   };
+
 
       // 用来格式化表单数据值
       const reg = (dict, type) => {
