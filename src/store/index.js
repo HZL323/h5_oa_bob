@@ -34,7 +34,6 @@ export default new Vuex.Store({
         sendDeptVerify : false, //岗位有发送部门的标识
         sendDeptText: null ,
         businessTypeText: null,
-        fwqqProcess:null,
         businessTypeVerify: false
     },
     mutations: {
@@ -83,9 +82,6 @@ export default new Vuex.Store({
         },
         setBusinessTypeText(state, payload){
             state.businessTypeText = payload
-        },
-        setFwqqProcess(state, payload){
-            state.fwqqProcess = payload
         },
         setBusinessTypeVerify(state, payload){
             state.businessTypeVerify = payload

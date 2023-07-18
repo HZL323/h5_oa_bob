@@ -132,6 +132,7 @@ import Opinion from "../../components/Opinion.vue";
 import Attachment from "../../components/Attachment.vue";
 import { api } from "../../core/api/index";
 import { closeWindow } from "../../core/mxApi";
+import moment from "moment";
 export default {
   name: "detail",
   components: {
@@ -247,7 +248,7 @@ export default {
     },
   },
   created() {
-    console.log("生产版本号--1.3.8");
+    console.log("生产版本号--1.3.9");
     console.log("准生产版本号--3.0.3");
     console.log("测试版本号--1.9.7");
     this.$store.commit("setCurrentList", this.$route.query.queryKind);
@@ -879,6 +880,8 @@ export default {
         }
       }
       debugger
+      console.log("接口开始时间",moment(new Date()).format("YYYY-MM-DD HH:mm:ss"));
+
       setTimeout(() => {
         api.completeWorkitem(data).then((res) => {
             console.log("detail_page 870行completeWorkitem被调用")
@@ -902,6 +905,8 @@ export default {
           }
         });
       }, 500);
+      console.log("接口结束时间",moment(new Date()).format("YYYY-MM-DD HH:mm:ss"));
+
     },
     async saveOpinion() {
         debugger
@@ -933,7 +938,9 @@ export default {
         debugger
         let commited = 0
         //判断是否是行领导传阅流程 showOpinion是通过hideOpinion扩展属性设置的
+
         if (this.showOpinion === false) {
+            console.log("接口开始时间",moment(new Date()).format("YYYY-MM-DD HH:mm:ss"));
             await this.onCommitFinishCy().then((result) => {
                 if(result.data.status === "200" && result.data.model === true){
                     commited = 1;//正常结束
@@ -942,6 +949,8 @@ export default {
                 }else{
                     commited = 2;//非200状态
                 }
+                console.log("接口结束时间",moment(new Date()).format("YYYY-MM-DD HH:mm:ss"));
+
             }).catch((error) => {
                 commited = 2;//接口无法返回
             });
@@ -1298,6 +1307,8 @@ export default {
                 return
             }
         }
+        console.log("接口开始时间",moment(new Date()).format("YYYY-MM-DD HH:mm:ss"));
+
         setTimeout(() => {
             api.completeWorkitem(data).then((res) => {
                 this.$toast.clear();
@@ -1318,6 +1329,8 @@ export default {
                 }
             });
         }, 500);
+        console.log("接口结束时间",moment(new Date()).format("YYYY-MM-DD HH:mm:ss"));
+
     }
   },
 };

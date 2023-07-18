@@ -103,6 +103,7 @@
 
 <script>
 import { api } from "../core/api/index";
+import moment from "moment";
 import {
   NavBar,
   Search,
@@ -432,6 +433,7 @@ export default {
         data.dataForm = this.dataForm;
         console.log("data.dataForm:", data.dataForm);
         console.log("data.wfmData", data.wfmData);
+        console.log("接口开始时间",moment(new Date()).format("YYYY-MM-DD HH:mm:ss"));
         setTimeout(() => {
           console.log("-----------所选环节是部室经理会签选择，调用subProcessCompleteWorkItem---------------")
           api.subProcessCompleteWorkItem(data).then((res) => {
@@ -472,8 +474,12 @@ export default {
             }
           });
         }, 500);
+        console.log("接口结束时间",moment(new Date()).format("YYYY-MM-DD HH:mm:ss"));
+
       } else {
         console.log("-------所选环节不是部室经理会签环节---------");
+        console.log("接口开始时间",moment(new Date()).format("YYYY-MM-DD HH:mm:ss"));
+
         setTimeout(() => {
           console.log("-------------所选环节不是部室经理会签环节，调用completeWorkitem--------------");
           api.completeWorkitem(data).then((res) => {
@@ -517,6 +523,8 @@ export default {
             }
           });
         }, 500);
+        console.log("接口结束时间",moment(new Date()).format("YYYY-MM-DD HH:mm:ss"));
+
       }
     },
     addBusinessType() {

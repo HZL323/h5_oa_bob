@@ -10,7 +10,6 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import homePageRouter from '@/modules/home_page/route' // 首页路由
 import listPageRouter from '@/modules/list_page/route' // 列表页路由
-import fwqqListPageRouter from '@/modules/fwqqList_page/route' // 服务请求页路由
 import detailPageRouter from '@/modules/detail_page/route' // 详情页路由
 import docDetailPageRouter from '@/modules/docBasis_page/route' // 详情页路由
 import processTrackingRouter from '@/modules/process_tracking/route' // 流程跟踪路由
@@ -27,7 +26,6 @@ const router = new Router({
       redirect: '/home'
     },
     homePageRouter,
-    fwqqListPageRouter,
     listPageRouter,
     detailPageRouter,
     processTrackingRouter,

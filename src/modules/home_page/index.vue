@@ -34,25 +34,19 @@
                 <i
                   :class="{
                     'iconfont icon-Down-': true,
-                    'rotate-icon': onRotate(item.name, item),
+                    'rotate-icon': onRotate(item.name),
                   }"
-                  v-if="item.name !== '服务请求批量办理'"
                 ></i>
               </template>
               <template slot="title">{{ item.title }}</template>
               <template slot="right-icon">
-                <div class="more" @click.stop="getMore(item.type)" v-if="item.title !== '服务请求批量办理'">
+                <div class="more" @click.stop="getMore(item.type)">
                   more...
-                </div></template
-              >
-              <template slot="right-icon">
-                <div class="more" @click.stop="getMore(item.type)" v-if="item.title === '服务请求批量办理'">
-                  进入
                 </div></template
               >
               <wu-feedback v-if="item.loading" />
               <template v-else>
-                <div class="empty" v-if="item.list.length === 0 && item.title !== '服务请求批量办理'">
+                <div class="empty" v-if="item.list.length === 0">
                   无更多数据
                 </div>
                 <div v-else>
@@ -299,61 +293,12 @@ export default {
     onRefresh() {
       this.loadData();
     },
-    async loadData() {
-      let index = 0;
+    loadData() {
       this.refreshing = false;
       this.collapseList.forEach((item) => {
         item.list = [];
         item.loading = true;
       });
-      let isBatchBusinessHandler = false;
-      console.log("服务请求")
-      console.log("this.userInfo.userId", this.userInfo.userId)
-      await api.isBatchBusinessHandler({resourceid : this.userInfo.userId}).then((res)=>{
-        if(res.data.model.code === 0){
-            isBatchBusinessHandler = true;
-        }
-      })
-      console.log("服务请求", isBatchBusinessHandler)
-      if(isBatchBusinessHandler === true){
-        index = 1;
-        this.collapseList = [
-            {
-                title: "服务请求批量办理",
-                type: "fwqqTodo",
-                name: "0",
-                loading: false,
-                list: [],
-            },
-            {
-              title: "公文待办",
-              type: "todo",
-              name: "1",
-              loading: true,
-              list: [],
-            },
-            {
-              title: "用印待办",
-              type: "seal",
-              name: "2",
-              loading: true,
-              list: [],
-            },
-            {
-              title: "已办",
-              type: "doing",
-              name: "3",
-              loading: true,
-              list: [],
-            },
-            {
-              title: "待阅",
-              type: "toread",
-              name: "4",
-              loading: true,
-              list: [],
-            }]
-      }
       api
         .queryList({
           curPage: 1,
@@ -363,15 +308,15 @@ export default {
         })
         .then((res) => {
           //console.log("-------公文待办---------",res.data.model);
-          this.collapseList[index].list = res.data.model.curPageData;
+          this.collapseList[0].list = res.data.model.curPageData;
           if (res.data.model.allDataCount > 99) {
-            this.collapseList[index].title = "公文待办(99+)";
+            this.collapseList[0].title = "公文待办(99+)";
           } else {
-            this.collapseList[index].title =
+            this.collapseList[0].title =
               "公文待办(" + res.data.model.allDataCount + ")";
           }
-          //this.collapseList[index].title = '待办('+res.data.model.allDataCount+')';
-          this.collapseList[index].loading = false;
+          //this.collapseList[0].title = '待办('+res.data.model.allDataCount+')';
+          this.collapseList[0].loading = false;
         });
       api
         .queryList({
@@ -382,15 +327,15 @@ export default {
         })
         .then((res) => {
           //console.log("-------用印待办---------",res.data.model);
-          this.collapseList[index+1].list = res.data.model.curPageData;
+          this.collapseList[1].list = res.data.model.curPageData;
           if (res.data.model.allDataCount > 99) {
-            this.collapseList[index+1].title = "用印待办(99+)";
+            this.collapseList[1].title = "用印待办(99+)";
           } else {
-            this.collapseList[index+1].title =
+            this.collapseList[1].title =
               "用印待办(" + res.data.model.allDataCount + ")";
           }
-          //this.collapseList[index+1].title = '待办('+res.data.model.allDataCount+')';
-          this.collapseList[index+1].loading = false;
+          //this.collapseList[0].title = '待办('+res.data.model.allDataCount+')';
+          this.collapseList[1].loading = false;
         });
       api
         .list({
@@ -404,14 +349,14 @@ export default {
               // item.actCreateTime = this.$format("YYYY-mm-dd", item.createTime);
             });
           }
-          this.collapseList[index+2].list = res.data.model.curPageData;
+          this.collapseList[2].list = res.data.model.curPageData;
           if (res.data.model.allDataCount > 99) {
-            this.collapseList[index+2].title = "已办(99+)";
+            this.collapseList[2].title = "已办(99+)";
           } else {
-            this.collapseList[index+2].title =
+            this.collapseList[2].title =
               "已办(" + res.data.model.allDataCount + ")";
           }
-          this.collapseList[index+2].loading = false;
+          this.collapseList[2].loading = false;
         });
       api
         .queryList({
@@ -421,14 +366,14 @@ export default {
           queryKind: "toread",
         })
         .then((res) => {
-          this.collapseList[index+3].list = res.data.model.curPageData;
+          this.collapseList[3].list = res.data.model.curPageData;
           if (res.data.model.allDataCount > 99) {
-            this.collapseList[index+3].title = "待阅(99+)";
+            this.collapseList[3].title = "待阅(99+)";
           } else {
-            this.collapseList[index+3].title =
+            this.collapseList[3].title =
               "待阅(" + res.data.model.allDataCount + ")";
           }
-          this.collapseList[index+3].loading = false;
+          this.collapseList[3].loading = false;
         });
     },
     getTimeState() {
@@ -459,12 +404,8 @@ export default {
         }
       });
     },
-    onRotate(key, item) {
+    onRotate(key) {
       for (let i = 0; i < this.activeNames.length; i++) {
-        if(this.activeNames[i] === "0"){
-            item.loading = false;
-            return false
-        }
         if (key === this.activeNames[i]) {
           return true;
         }
@@ -474,22 +415,13 @@ export default {
     getMore(type) {
       this.$store.commit("setCurrentList", type);
       this.$store.commit("setRefresh", true);
-      if(type === "fwqqTodo"){
-        this.$router.replace({
-            name: "fwqqList",
-            query: {
-                queryKind: type,
-            },
-        })
-      }else{
-        this.$router.replace({
-            name: "list",
-            query: {
-              queryKind: type,
-            },
-          });
-      }
-
+      console.log("more", type);
+      this.$router.replace({
+        name: "list",
+        query: {
+          queryKind: type,
+        },
+      });
     },
     rowClick(type, row) {
       // 点击查看详情
