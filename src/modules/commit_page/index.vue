@@ -344,7 +344,7 @@ export default {
       }
       let saveNoteResult = 0;
       //校验是否必填，必填的话调用意见保存方法 20220714
-      if(this.noteRequired || (!this.noteRequired &&  this.opinionConfig[0] && this.opinionConfig[0].noteContent)){
+      if((this.noteRequired && this.opinionConfig[0]) || (!this.noteRequired &&  this.opinionConfig[0] && this.opinionConfig[0].noteContent)){
         debugger
         await this.saveOpinion().then((results) => {
             if(results[0].data.status !== "200" || (results[0].data.status === "200" && results[0].data.model.code === -1)){
@@ -471,7 +471,7 @@ export default {
         userId: this.userInfo.userId,
       };
       let saveNoteResult = 0;
-      if(this.noteRequired || (!this.noteRequired &&  this.opinionConfig[0] && this.opinionConfig[0].noteContent)){
+      if((this.noteRequired && this.opinionConfig[0]) || (!this.noteRequired &&  this.opinionConfig[0] && this.opinionConfig[0].noteContent)){
         debugger
         await this.saveOpinion().then((results) => {
             if(results[0].data.status !== "200" || (results[0].data.status === "200" && results[0].data.model.code === -1)){
@@ -552,7 +552,7 @@ export default {
       };
       let saveNoteResult = 0;
       //保存意见
-      if(this.noteRequired || (!this.noteRequired &&  this.opinionConfig[0] && this.opinionConfig[0].noteContent)){
+      if((this.noteRequired && this.opinionConfig[0]) || (!this.noteRequired &&  this.opinionConfig[0] && this.opinionConfig[0].noteContent)){
         debugger
         await this.saveOpinion().then((results) => {
             if(results[0].data.status !== "200" || (results[0].data.status === "200" && results[0].data.model.code === -1)){

@@ -403,7 +403,7 @@ export default {
       console.log("this.noteRequired---------", this.noteRequired)
       console.log("this.opinionConfig[0]---------", this.opinionConfig[0])
       let saveNoteResult = 0;
-      if(this.noteRequired || (!this.noteRequired &&  this.opinionConfig[0] && this.opinionConfig[0].noteContent)){
+      if((this.noteRequired && this.opinionConfig[0]) || (!this.noteRequired &&  this.opinionConfig[0] && this.opinionConfig[0].noteContent)){
         await this.saveOpinion().then((results) => {
             if(results[0].data.status !== "200" || (results[0].data.status === "200" && results[0].data.model.code === -1)){
                 saveNoteResult = -1;
