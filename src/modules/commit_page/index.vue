@@ -101,7 +101,6 @@ import {
 } from "vant";
 import SelectHandler from "../../components/SelectHandler.vue";
 import { api } from "../../core/api/index";
-import moment from "moment";
 import { ajaxPost, closeWindow } from "../../core/mxApi";
 export default {
   name: "selectLink", // 选择环节页
@@ -375,8 +374,6 @@ export default {
         data.dataForm = this.dataForm;
         console.log("data.dataForm:", data.dataForm);
         console.log("data.wfmData", data.wfmData);
-        console.log("接口开始时间",moment(new Date()).format("YYYY-MM-DD HH:mm:ss"));
-
         setTimeout(() => {
           console.log("-----------所选环节是部室经理会签选择，调用subProcessCompleteWorkItem---------------")
           api.subProcessCompleteWorkItem(data).then((res) => {
@@ -412,11 +409,7 @@ export default {
             }
           });
         }, 500);
-        console.log("接口结束时间",moment(new Date()).format("YYYY-MM-DD HH:mm:ss"));
-
       } else {
-        console.log("接口开始时间",moment(new Date()).format("YYYY-MM-DD HH:mm:ss"));
-
         console.log("-------所选环节不是子流程---------");
         setTimeout(() => {
           console.log("-------------所选环节不是子流程，调用completeWorkitem--------------");
@@ -456,8 +449,6 @@ export default {
             }
           });
         }, 500);
-        console.log("接口结束时间",moment(new Date()).format("YYYY-MM-DD HH:mm:ss"));
-
       }
     },
 
@@ -504,8 +495,6 @@ export default {
             return
         }
       }
-      console.log("接口开始时间",moment(new Date()).format("YYYY-MM-DD HH:mm:ss"));
-
       setTimeout(() => {
         api.completeWorkitem(data).then((res) => {
             console.log("commit_page 478行completeWorkitem被调用")
@@ -528,8 +517,6 @@ export default {
           }
         });
       }, 500);
-      console.log("接口结束时间",moment(new Date()).format("YYYY-MM-DD HH:mm:ss"));
-
     },
     async onSubCommit() {
         this.$toast.loading({
@@ -589,8 +576,6 @@ export default {
             return
         }
       }
-      console.log("接口开始时间",moment(new Date()).format("YYYY-MM-DD HH:mm:ss"));
-
       //移动端完成工作项
       setTimeout(() => {
         api.completeWorkitem(data).then((res) => {
@@ -629,8 +614,6 @@ export default {
           }
         });
       }, 500);
-      console.log("接口结束时间",moment(new Date()).format("YYYY-MM-DD HH:mm:ss"));
-
     },
     modifySendDeptAndUsers() {
       //保存发送部门以及对应的人员到业务表中
