@@ -89,6 +89,7 @@ export default {
         .then((res) => {
           if (res.data.status === "200") {
             this.list = res.data.model;
+            console.log(this.list)
             this.list.forEach((item) => {
               if (item.fileData.length > 0) {
                 this.activeNames.push(item.type);
@@ -132,17 +133,43 @@ export default {
       }
     },
     onPreview(file) {
+      debugger
+      //console.log("未查找之前id",file.attachmentId);
       api
-        .Preview({
-          fileid: file.attachmentId,
+        .getSealAttach({
+          fileId: file.attachmentId,proInstId: this.currentProcess.proInstId,
         })
         .then((res) => {
-          if (res.data.status === "200") {
-            openUrlPage(res.data.model.url).then((res) => {
-              console.log(res);
-            });
+          //console.log("查找文件中",res);
+          if (res.data.status === "200" && res.data.model!=false) {
+              file.attachmentId = res.data.model;
           }
+          //console.log("查找之后id",file.attachmentId);
+          api
+            .Preview({
+              fileid: file.attachmentId,
+              userid: this.$store.state.userInfo.userId
+            })
+            .then((res) => {
+              if (res.data.status === "200") {
+                openUrlPage(res.data.model.url).then((res) => {
+                  //console.log(res);
+                });
+              }
+            });
         });
+
+      //api
+      //  .Preview({
+      //    fileid: file.attachmentId,
+      //  })
+      //  .then((res) => {
+      //    if (res.data.status === "200") {
+      //      openUrlPage(res.data.model.url).then((res) => {
+      //        console.log(res);
+      //      });
+      //    }
+      //  });
     },
   },
 };

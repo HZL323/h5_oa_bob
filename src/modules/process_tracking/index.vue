@@ -1,31 +1,34 @@
 <template>
   <div class="tracking-wrap">
-    <van-nav-bar
-      title="流程跟踪"
-      left-text=""
-      left-arrow
-      @click-left="onClickLeft"
-      fixed
-      placeholder
-      z-index="99"
-    />
-    <wu-feedback v-if="loading" />
-    <div class="setp-wrap" v-else>
-      <van-steps direction="vertical" :active="0">
-        <van-step v-for="(item, index) in dataList" :key="index">
-          <div
-            :class="{
-              'step-wrap van-hairline--top': true,
-              'van-hairline--bottom': item_.border,
-            }"
-            v-for="item_ in stepList"
-            :key="item_.id"
-          >
-            <div class="title van-hairline--right">{{ item_.key }}</div>
-            <div class="value">{{ formatData(item, item_.id) }}</div>
-          </div>
-        </van-step>
-      </van-steps>
+    <div class="header-wrap">
+      <van-nav-bar
+        title="流程跟踪"
+        left-text=""
+        left-arrow
+        @click-left="onClickLeft"
+        placeholder
+        z-index="99"
+      />
+    </div>
+    <div class="content-wrap">
+      <wu-feedback v-if="loading" />
+      <div class="setp-wrap" v-else>
+        <van-steps direction="vertical" :active="0">
+          <van-step v-for="(item, index) in dataList" :key="index">
+            <div
+              :class="{
+                'step-wrap van-hairline--top': true,
+                'van-hairline--bottom': item_.border,
+              }"
+              v-for="item_ in stepList"
+              :key="item_.id"
+            >
+              <div class="title van-hairline--right">{{ item_.key }}</div>
+              <div class="value">{{ formatData(item, item_.id) }}</div>
+            </div>
+          </van-step>
+        </van-steps>
+      </div>
     </div>
   </div>
 </template>
@@ -111,7 +114,7 @@ export default {
           }
         });
     },
-    
+
     formatData(item, key) {
       if (key === "state") {
         switch (item[key]) {
@@ -170,6 +173,23 @@ export default {
       height: 14px;
       background-color: #07c160;
     }
+  }
+
+  .header-wrap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
+
+  .content-wrap {
+    position: absolute;
+    left: 0;
+    top: 46px;
+    bottom: 0;
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 
   .step-wrap {

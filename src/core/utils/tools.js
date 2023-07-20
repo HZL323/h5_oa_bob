@@ -15,26 +15,14 @@ import { Toast, Dialog } from 'vant'
 
 router.beforeEach((to, from, next) => {
 
-    //debugger
     // 路由守卫，动态设置缓存组件
-    if (to.name === 'detail' || to.name === 'selectlink' || to.name === 'tracking' || to.name === 'preview') {
-        Store.commit('setCacheList', ['homePage', 'listPage', 'detail', 'selectLink', 'processTracking'])
+    if (to.name === 'detail' || to.name === 'selectlink' || to.name === 'tracking' || to.name === 'preview' || to.name === 'fwqqList') {
+        Store.commit('setCacheList', ['homePage', 'listPage', 'detail', 'selectLink', 'processTracking', 'fwqqListPage'])
     } else {
-        Store.commit('setCacheList', ['homePage', 'listPage'])
+        Store.commit('setCacheList', ['homePage', 'listPage','fwqqListPage'])
     }
-    console.log("----路由位置----",Store.state.currentProcess);
-    if(to.name === 'detail' && Store.state.currentProcess.workitemName !=undefined  && ( 
-    //Store.state.currentProcess.workitemName.indexOf('部室经理会签')!=-1  ||
-    Store.state.currentProcess.workitemName==='部室经理会签' || 
-    Store.state.currentProcess.workitemName==='相关业务线办理' || 
-    //Store.state.currentProcess.workitemName==='相关人员办理' ||
-    Store.state.currentProcess.workitemName==='相关部室办理' || 
-    Store.state.currentProcess.workitemName==='辅办部室办理' 
-    //Store.state.currentProcess.workitemName==='送相关支行' || 
-    //Store.state.currentProcess.workitemName==='收文经办' || 
-    // || Store.state.currentProcess.actDefId.indexOf('sub_process')!=-1 
-    )) {
-        Toast("请前往PC端处理!!")
+    if(to.name === 'detail' && to.query.from  !== 'oa' && to.query.queryKind === "doing"){
+        Toast("请到OA（新）或用印申请（新）系统查看")
         return
     }
     if (Store.state.userInfo.userCode) {
@@ -48,14 +36,15 @@ router.beforeEach((to, from, next) => {
         getCurrentUser().then(user => {
             console.log("获取当前用户信息", user);
             api.checkUser({
-                Id: user.login_name
-                //Id:""
+                id: user.login_name,//生产 - 新oa测试 - 新oa
+                uCode: ""
             }).then(res => {
+                console.log("checkUser status", res)
                 if (res.data.status === '200') {
-                    if (typeof res.data.model === "string") {
+                    if (res.data.model.code === -1) {
                         Toast.clear()
                         Dialog.alert({
-                            message: res.data.model,
+                            message: res.data.model.msg,
                             width: "300px",
                             confirmButtonColor: "#ff4444",
                         }).then(() => {
@@ -63,10 +52,10 @@ router.beforeEach((to, from, next) => {
                         });
                     } else {
                         Store.commit('setUserInfo', {
-                            userCode: res.data.model.usercode,
-                            userId: res.data.model.useruuid,
-                            userName: res.data.model.username,
-                            ou: res.data.model.ou
+                            userCode: res.data.model.data.usercode,
+                            userId: res.data.model.data.useruuid,
+                            userName: res.data.model.data.username,
+                            ou: res.data.model.data.ou
                         })
                         Toast.clear()
                         next()
@@ -81,9 +70,9 @@ api.queryKeyValueByTypes().then(res => {
     // 获取枚举数据
     if (res.data.status === '200') {
         Store.commit('setEnumerationData', res.data.model)
-        console.log("queryKeyValueByTypes", res)
+        // console.log("queryKeyValueByTypes", res)
     }
-})
+}).catch(err => console.log(err))
 
 const dateFormat = (fmt, date) => {
     let ret;
@@ -103,6 +92,7 @@ const dateFormat = (fmt, date) => {
             fmt = fmt.replace(ret[1], (ret[1].length == 1) ? (opt[k]) : (opt[k].padStart(ret[1].length, "0")))
         };
     };
+
     return fmt;
 }
 

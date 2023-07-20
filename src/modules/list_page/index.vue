@@ -8,33 +8,47 @@
 -->
 <template>
   <div class="home-wrap">
-    <van-nav-bar
-      :title="navTitle"
-      left-text=""
-      left-arrow
-      @click-left="onClickLeft"
-      fixed
-      placeholder
-    />
-    <div class="list-content">
-      <DropList :key="key" />
+    <div class="header-wrap">
+      <van-nav-bar
+        :title="navTitle"
+        left-text=""
+        left-arrow
+        @click-left="onClickLeft"
+        placeholder
+      />
+      <!-- <van-sticky offset-top="46"> -->
+      <van-search
+        v-model="value"
+        placeholder="请输入搜索关键词"
+        @search="onSearch"
+        shape="round"
+      ></van-search>
+      <!-- </van-sticky> -->
+    </div>
+
+    <div class="list-content content-wrap">
+      <DropList :key="key" ref="dropList" :searchParams="searchParams" />
     </div>
   </div>
 </template>
 
 <script>
-import { NavBar } from "vant";
+import { NavBar, Search, Sticky } from "vant";
 import DropList from "../../components/DropList.vue";
 export default {
   name: "listPage",
   components: {
     [NavBar.name]: NavBar,
+    [Search.name]: Search,
+    [Sticky.name]: Sticky,
     DropList,
   },
   data() {
     return {
       active: 0,
       key: "bj",
+      value: "",
+      //searchParams: {}
     };
   },
   computed: {
@@ -43,6 +57,11 @@ export default {
     },
     refresh() {
       return this.$store.state.refresh;
+    },
+    searchParams() {
+      return {
+        title: this.value,
+      };
     },
   },
   activated() {
@@ -54,20 +73,26 @@ export default {
     getNavTitle(type) {
       switch (type) {
         case "todo":
-          return "待办列表";
+          return "公文待办列表";
         case "doing":
           return "已办列表";
         case "toread":
           return "待阅列表";
+        case "seal":
+          return "用印待办列表";
         default:
           return "";
       }
     },
     onClickLeft() {
+      this.value = "";
       this.$store.commit("setRefresh", false);
       this.$router.replace({
         name: "home",
       });
+    },
+    onSearch() {
+      this.$refs.dropList.onRefresh();
     },
   },
 };
@@ -78,5 +103,23 @@ export default {
 
 .home-wrap {
   height: 100%;
+
+  .header-wrap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
+
+  .content-wrap {
+    position: absolute;
+    top: 100px;
+    left: 0;
+    margin: auto;
+    bottom: 0;
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
 }
 </style>

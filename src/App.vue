@@ -31,11 +31,18 @@ export default {
 <style lang='less'>
 html,
 body{
-  min-height: 100%;
+  height: 100%;
 }
 #app {
-  min-height: 100vh;
+  height: 100%;
   background-color: #fafafa;
+
 }
+// @supports(bottom: env(safe-area-inset-bottom)){
+//   #app{
+//     padding-bottom: constant(safe-area-inset-bottom);
+//     padding-bottom: env(safe-area-inset-bottom);
+//   }
+// }
 
 </style>

@@ -1,3 +1,3 @@
 export const logger = function(log){
-    console.log(log)
+    // console.log(log)
 }

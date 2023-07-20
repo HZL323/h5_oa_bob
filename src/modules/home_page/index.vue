@@ -1,63 +1,169 @@
 <template>
   <div class="home-wrap">
-    <van-sticky>
+    <!-- <van-sticky offset-top="0" > -->
+    <div class="header_box">
       <div class="banner">
-        <img src="../../assets/img/logo.png" alt="" srcset="" />
-        <div class="tips">移动办公系统</div>
+        <img class="logo" src="../../assets/img/logo.png" alt="" srcset="" />
+        <img class="word" src="../../assets/img/word.png" alt="" srcset="" />
       </div>
-      <div class="user-info van-ellipsis" @click="show = true">
-        {{ welcome + "：" + userInfo.userName + "_" + userInfo.ou }}
+      <div class="changedept-wrap">
+        <div class="user-info van-ellipsis">
+          {{ welcome + "：" + userInfo.userName + "_" + userInfo.ou }}
+        </div>
+        <div class="custom-btn" @click="show = true">
+          <!-- <van-button
+            class="change-dept"
+            color="#ff4444"
+            round
+            @click="show = true"
+            size="small"
+            >切换部门
+          </van-button> -->
+          切换部门
+        </div>
       </div>
-    </van-sticky>
-    <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
-      <van-collapse v-model="activeNames">
-        <template v-for="(item, index) in collapseList">
-          <van-collapse-item :name="item.name" :border="false" :key="index">
-            <template slot="icon">
-              <i
-                :class="{
-                  'iconfont icon-Down-': true,
-                  'rotate-icon': onRotate(item.name),
-                }"
-              ></i>
-            </template>
-            <template slot="title">{{ item.title }}</template>
-            <template slot="right-icon">
-              <div class="more" @click.stop="getMore(item.type)">
-                more...
-              </div></template
-            >
-            <wu-feedback v-if="item.loading" />
-            <template v-else>
-              <div class="empty" v-if="item.list.length === 0">无更多数据</div>
-              <div v-else>
-                <div
-                  class="wu-list"
-                  v-for="item_ in item.list"
-                  :key="item_.id"
-                  @click="rowClick(item.type, item_)"
-                >
-                  <div class="wuicon">
-                    <i class="iconfont icon-daiban"></i>
-                  </div>
-                  <div class="wu-list-content">
-                    <div class="title">{{ item_.title }}</div>
-                    <div class="content-intro">
-                      <div>{{ item_.actCreateTime }}</div>  
-                      <div class="divider"></div>
-                      <div>{{ item_.workitemName }}</div>
+    </div>
+    <!-- </van-sticky> -->
+
+    <div class="content-wrap">
+      <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
+        <van-collapse v-model="activeNames">
+          <template v-for="(item, index) in collapseList">
+            <van-collapse-item :name="item.name" :border="false" :key="index">
+              <template slot="icon">
+                <i
+                  :class="{
+                    'iconfont icon-Down-': true,
+                    'rotate-icon': onRotate(item.name, item),
+                  }"
+                  v-if="item.name !== '服务请求批量办理'"
+                ></i>
+              </template>
+              <template slot="title">{{ item.title }}</template>
+              <template slot="right-icon">
+                <div class="more" @click.stop="getMore(item.type)" v-if="item.title !== '服务请求批量办理'">
+                  more...
+                </div></template
+              >
+              <template slot="right-icon">
+                <div class="more" @click.stop="getMore(item.type)" v-if="item.title === '服务请求批量办理'">
+                  进入
+                </div></template
+              >
+              <wu-feedback v-if="item.loading" />
+              <template v-else>
+                <div class="empty" v-if="item.list.length === 0 && item.title !== '服务请求批量办理'">
+                  无更多数据
+                </div>
+                <div v-else>
+                  <div
+                    class="wu-list"
+                    v-for="item_ in item.list"
+                    :key="item_.id"
+                    @click="rowClick(item.type, item_)"
+                  >
+                    <div
+                      v-if="item.type != 'doing' && item_.priority === '001'"
+                    >
+                      <img
+                        style="height: 40px"
+                        src="../../assets/img/icon_flag_blue.png"
+                      />
+                    </div>
+                    <div
+                      v-if="item.type != 'doing' && item_.priority === '002'"
+                    >
+                      <img
+                        style="height: 40px"
+                        src="../../assets/img/icon_flag_yellow.png"
+                      />
+                    </div>
+                    <div
+                      v-if="item.type != 'doing' && item_.priority === '003'"
+                    >
+                      <img
+                        style="height: 40px"
+                        src="../../assets/img/icon_flag_red.png"
+                      />
+                    </div>
+                    <div
+                      v-if="
+                        item.type != 'doing' &&
+                        (item_.priority === null || item_.priority === '')
+                      "
+                    >
+                      <img
+                        style="height: 40px"
+                        src="../../assets/img/icon_flag_white.png"
+                      />
+                    </div>
+
+                    <!-- 已办 -->
+                    <div
+                      v-if="
+                        item.type == 'doing' && item_.priorityCode === '001'
+                      "
+                    >
+                      <img
+                        style="height: 40px"
+                        src="../../assets/img/icon_flag_blue.png"
+                      />
+                    </div>
+                    <div
+                      v-if="
+                        item.type == 'doing' && item_.priorityCode === '002'
+                      "
+                    >
+                      <img
+                        style="height: 40px"
+                        src="../../assets/img/icon_flag_yellow.png"
+                      />
+                    </div>
+                    <div
+                      v-if="
+                        item.type == 'doing' && item_.priorityCode === '003'
+                      "
+                    >
+                      <img
+                        style="height: 40px"
+                        src="../../assets/img/icon_flag_red.png"
+                      />
+                    </div>
+                    <div
+                      v-if="
+                        item.type == 'doing' &&
+                        (item_.priorityCode === null ||
+                          item_.priorityCode === '')
+                      "
+                    >
+                      <img
+                        style="height: 40px"
+                        src="../../assets/img/icon_flag_white.png"
+                      />
+                    </div>
+
+                    <div class="wu-list-content">
+                      <div class="title">
+                        {{ item_.title }}
+                      </div>
+                      <div class="content-intro">
+                        <div>{{ item_.actCreateTime }}</div>
+                        <div class="divider"></div>
+                        <div>{{ item_.workitemName }}</div>
+                      </div>
+                    </div>
+                    <div class="wuicon-right">
+                      <van-icon name="arrow" size="24" />
                     </div>
                   </div>
-                  <div class="wuicon-right">
-                    <van-icon name="arrow" size="24" />
-                  </div>
                 </div>
-              </div>
-            </template>
-          </van-collapse-item>
-        </template>
-      </van-collapse>
-    </van-pull-refresh>
+              </template>
+            </van-collapse-item>
+          </template>
+        </van-collapse>
+      </van-pull-refresh>
+    </div>
+
     <van-popup
       v-model="show"
       round
@@ -79,6 +185,7 @@
 </template>
 
 <script>
+import { pid } from "process";
 import { api } from "../../core/api/index";
 import {
   PullRefresh,
@@ -88,6 +195,7 @@ import {
   Icon,
   Picker,
   Popup,
+  Button,
 } from "vant";
 export default {
   name: "homePage",
@@ -99,29 +207,37 @@ export default {
     [Icon.name]: Icon,
     [Picker.name]: Picker,
     [Popup.name]: Popup,
+    [Button.name]: Button,
   },
   data() {
     return {
-      activeNames: ["1", "2", "3"],
+      activeNames: ["1", "2", "3", "4"],
       collapseList: [
         {
-          title: "待办",
+          title: "公文待办",
           type: "todo",
           name: "1",
           loading: true,
           list: [],
         },
         {
+          title: "用印待办",
+          type: "seal",
+          name: "2",
+          loading: true,
+          list: [],
+        },
+        {
           title: "已办",
           type: "doing",
-          name: "2",
+          name: "3",
           loading: true,
           list: [],
         },
         {
           title: "待阅",
           type: "toread",
-          name: "3",
+          name: "4",
           loading: true,
           list: [],
         },
@@ -145,25 +261,99 @@ export default {
     },
   },
   created() {
+    console.log("-------------home_page-recordEnterOaLog调用前-------------")
+    this.recordEnterOaLog();
+    console.log("-------------home_page-recordEnterOaLog调用后-------------")
     this.loadUserDeptList();
     this.getTimeState();
     this.loadData();
   },
   activated() {
     if (this.refresh) {
+      console.log("refres被调用");
       this.loadData();
     }
   },
   methods: {
+    recordEnterOaLog(){
+        let userAgent = navigator.userAgent.toLowerCase();
+        let PCType = "";
+        if(userAgent.indexOf('windows') !== -1 )
+            PCType = "windows";
+
+        if(userAgent.indexOf('macintosh') !== -1){
+            PCType = "macintosh";
+        }
+        let isAndroid = /android/.test(userAgent) && !/iphone|ipad|ipod/.test(userAgent);
+        let isIPad = /ipad/.test(userAgent);
+
+        api
+        .recordEnterOaLog({
+          userUuid: this.$store.state.userInfo.userId,
+          userAgent: PCType == "" ? (isAndroid ? "Android" :  (isIPad ? "iPad" : "iPhone")) : PCType,
+        })
+        .then((res) => {
+            console.log("------记录进入OA的设备日志---------")
+        });
+    },
     onRefresh() {
       this.loadData();
     },
-    loadData() {
+    async loadData() {
+      let index = 0;
       this.refreshing = false;
       this.collapseList.forEach((item) => {
         item.list = [];
         item.loading = true;
       });
+      let isBatchBusinessHandler = false;
+      console.log("服务请求")
+      console.log("this.userInfo.userId", this.userInfo.userId)
+      await api.isBatchBusinessHandler({resourceid : this.userInfo.userId}).then((res)=>{
+        if(res.data.model.code === 0){
+            isBatchBusinessHandler = true;
+        }
+      })
+      console.log("服务请求", isBatchBusinessHandler)
+      if(isBatchBusinessHandler === true){
+        index = 1;
+        this.collapseList = [
+            {
+                title: "服务请求批量办理",
+                type: "fwqqTodo",
+                name: "0",
+                loading: false,
+                list: [],
+            },
+            {
+              title: "公文待办",
+              type: "todo",
+              name: "1",
+              loading: true,
+              list: [],
+            },
+            {
+              title: "用印待办",
+              type: "seal",
+              name: "2",
+              loading: true,
+              list: [],
+            },
+            {
+              title: "已办",
+              type: "doing",
+              name: "3",
+              loading: true,
+              list: [],
+            },
+            {
+              title: "待阅",
+              type: "toread",
+              name: "4",
+              loading: true,
+              list: [],
+            }]
+      }
       api
         .queryList({
           curPage: 1,
@@ -172,8 +362,35 @@ export default {
           queryKind: "todo",
         })
         .then((res) => {
-          this.collapseList[0].list = res.data.model.curPageData;
-          this.collapseList[0].loading = false;
+          //console.log("-------公文待办---------",res.data.model);
+          this.collapseList[index].list = res.data.model.curPageData;
+          if (res.data.model.allDataCount > 99) {
+            this.collapseList[index].title = "公文待办(99+)";
+          } else {
+            this.collapseList[index].title =
+              "公文待办(" + res.data.model.allDataCount + ")";
+          }
+          //this.collapseList[index].title = '待办('+res.data.model.allDataCount+')';
+          this.collapseList[index].loading = false;
+        });
+      api
+        .queryList({
+          curPage: 1,
+          pageSize: 5,
+          userCode: this.$store.state.userInfo.userCode,
+          queryKind: "seal",
+        })
+        .then((res) => {
+          //console.log("-------用印待办---------",res.data.model);
+          this.collapseList[index+1].list = res.data.model.curPageData;
+          if (res.data.model.allDataCount > 99) {
+            this.collapseList[index+1].title = "用印待办(99+)";
+          } else {
+            this.collapseList[index+1].title =
+              "用印待办(" + res.data.model.allDataCount + ")";
+          }
+          //this.collapseList[index+1].title = '待办('+res.data.model.allDataCount+')';
+          this.collapseList[index+1].loading = false;
         });
       api
         .list({
@@ -187,8 +404,14 @@ export default {
               // item.actCreateTime = this.$format("YYYY-mm-dd", item.createTime);
             });
           }
-          this.collapseList[1].list = res.data.model.pageData;
-          this.collapseList[1].loading = false;
+          this.collapseList[index+2].list = res.data.model.curPageData;
+          if (res.data.model.allDataCount > 99) {
+            this.collapseList[index+2].title = "已办(99+)";
+          } else {
+            this.collapseList[index+2].title =
+              "已办(" + res.data.model.allDataCount + ")";
+          }
+          this.collapseList[index+2].loading = false;
         });
       api
         .queryList({
@@ -198,8 +421,14 @@ export default {
           queryKind: "toread",
         })
         .then((res) => {
-          this.collapseList[2].list = res.data.model.curPageData;
-          this.collapseList[2].loading = false;
+          this.collapseList[index+3].list = res.data.model.curPageData;
+          if (res.data.model.allDataCount > 99) {
+            this.collapseList[index+3].title = "待阅(99+)";
+          } else {
+            this.collapseList[index+3].title =
+              "待阅(" + res.data.model.allDataCount + ")";
+          }
+          this.collapseList[index+3].loading = false;
         });
     },
     getTimeState() {
@@ -226,11 +455,16 @@ export default {
       api.loadUserDeptList({ userCode: this.userInfo.userCode }).then((res) => {
         if (res.data.status === "200") {
           this.columns = res.data.model;
+          console.log("this.columns", this.columns);
         }
       });
     },
-    onRotate(key) {
+    onRotate(key, item) {
       for (let i = 0; i < this.activeNames.length; i++) {
+        if(this.activeNames[i] === "0"){
+            item.loading = false;
+            return false
+        }
         if (key === this.activeNames[i]) {
           return true;
         }
@@ -239,11 +473,23 @@ export default {
     },
     getMore(type) {
       this.$store.commit("setCurrentList", type);
-      this.$store.commit("setCurrentList", type);
       this.$store.commit("setRefresh", true);
-      this.$router.replace({
-        name: "list",
-      });
+      if(type === "fwqqTodo"){
+        this.$router.replace({
+            name: "fwqqList",
+            query: {
+                queryKind: type,
+            },
+        })
+      }else{
+        this.$router.replace({
+            name: "list",
+            query: {
+              queryKind: type,
+            },
+          });
+      }
+
     },
     rowClick(type, row) {
       // 点击查看详情
@@ -256,6 +502,7 @@ export default {
         },
         query: {
           from: "oa",
+          queryKind: type,
         },
       });
     },
@@ -283,28 +530,57 @@ export default {
 
 .home-wrap {
   height: 100%;
-  .banner {
-    height: 120px;
-    background-color: #ffffff;
-    text-align: center;
-    background-image: url("../../assets/img/banner.jpg");
-    background-position: center;
-    position: relative;
+  //   -webkit-overflow-scrolling: touch;
+  .header_box {
+    // top: 0;
+    position: absolute;
+    height: 155px;
+    top: 0;
+    left: 0;
+    width: 100%;
 
-    img {
-      width: 300px;
-      height: 88px;
-      position: absolute;
-      left: 0;
-    }
+    .banner {
+      height: 120px;
+      background-color: #ffffff;
+      //text-align: center;
+      background-image: url("../../assets/img/banner.jpg");
+      //background-position: center;
+      position: relative;
+      background-repeat: no-repeat;
+      background-size: 100% 100%;
 
-    .tips {
-      position: absolute;
-      right: 8px;
-      bottom: 8px;
-      color: #ffffff;
-      font-size: 18px;
+      img.logo {
+        width: 100px;
+        height: 30px;
+        position: relative;
+        left: 20px;
+      }
+
+      img.word {
+        width: 250px;
+        height: 50px;
+        position: relative;
+        left: -87px;
+        top: 55px;
+      }
+
+      .tips {
+        position: absolute;
+        right: 8px;
+        bottom: 8px;
+        color: #ffffff;
+        font-size: 18px;
+      }
     }
+  }
+
+  .content-wrap {
+    position: absolute;
+    width: 100%;
+    top: 155px;
+    bottom: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 
   .icon-Down- {
@@ -316,11 +592,32 @@ export default {
     transform: rotate(0deg);
   }
 
+  .changedept-wrap {
+    display: flex;
+    align-items: center;
+    background-color: #ffffff;
+    border-top: 1px solid rgba(255, 68, 68, 0.3);
+    border-bottom: 1px solid rgba(255, 68, 68, 0.3);
+  }
+
   .user-info {
     background-color: #ffffff;
     padding: 5px;
-    border-top: 1px solid rgba(255, 68, 68, 0.3);
-    border-bottom: 1px solid rgba(255, 68, 68, 0.3);
+    // border-top: 1px solid rgba(255, 68, 68, 0.3);
+    // border-bottom: 1px solid rgba(255, 68, 68, 0.3);
+    flex: 1;
+    .change-dept {
+      width: 100px;
+      height: 32px;
+    }
+  }
+
+  .custom-btn {
+    background-color: #ff4444;
+    color: #ffffff;
+    padding: 2px 8px;
+    border-radius: 14px;
+    margin: 0 6px;
   }
 
   .empty {
