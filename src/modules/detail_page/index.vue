@@ -154,6 +154,14 @@ export default {
     return {
       reload: this.reload,
     };
+
+  },
+  watch:{
+    dataForm(newVal, oldVal){
+        if(JSON.stringify(newVal) !== {}){
+            this.getBackLink()
+        }
+    }
   },
   data() {
     return {
@@ -338,7 +346,7 @@ export default {
                     }
                     let data = res.data.model.curPageData[0];
                     this.$store.commit("setCurrentProcess", data);
-                    this.getBackLink();
+                    //this.getBackLink();
                     this.getFromConfig();
                     this.isSubmmit();
                     this.isShowOpinion();
@@ -421,7 +429,7 @@ export default {
           }
           let data = res.data.model.curPageData[0];
           this.$store.commit("setCurrentProcess", data);
-          this.getBackLink();
+          //this.getBackLink();
           this.getFromConfig();
           this.isSubmmit();
           this.isShowOpinion();
@@ -438,7 +446,7 @@ export default {
       if (this.$store.state.currentList !== "doing") {
         this.updateProcessState();
       }
-      this.getBackLink();
+      //this.getBackLink();
       this.getFromConfig();
       this.isSubmmit();
       this.isShowOpinion();
@@ -479,7 +487,7 @@ export default {
           }
           this.showOpinion = true;
           console.log("hideOpinion --------false-------")
-      });
+        });
     },
     recordEnterOaLog() {
       console.log("-----------调用recordEnterOaLog函数-----------")
@@ -745,7 +753,7 @@ export default {
       };
       api.queryHandlerList(data).then((res) => {
         if (res.data.status === "200") {
-          item.handler = res.data.model.resourceIds;
+          item.handler = res.data.model.resourceIds || [];
         }
       });
     },

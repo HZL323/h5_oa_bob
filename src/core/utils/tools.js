@@ -16,10 +16,10 @@ import { Toast, Dialog } from 'vant'
 router.beforeEach((to, from, next) => {
 
     // 路由守卫，动态设置缓存组件
-    if (to.name === 'detail' || to.name === 'selectlink' || to.name === 'tracking' || to.name === 'preview') {
-        Store.commit('setCacheList', ['homePage', 'listPage', 'detail', 'selectLink', 'processTracking'])
+    if (to.name === 'detail' || to.name === 'selectlink' || to.name === 'tracking' || to.name === 'preview' || to.name === 'fwqqList') {
+        Store.commit('setCacheList', ['homePage', 'listPage', 'detail', 'selectLink', 'processTracking', 'fwqqListPage'])
     } else {
-        Store.commit('setCacheList', ['homePage', 'listPage'])
+        Store.commit('setCacheList', ['homePage', 'listPage','fwqqListPage'])
     }
     if(to.name === 'detail' && to.query.from  !== 'oa' && to.query.queryKind === "doing"){
         Toast("请到OA（新）或用印申请（新）系统查看")
