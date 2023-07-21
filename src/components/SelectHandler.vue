@@ -480,7 +480,7 @@ export default {
             console.log("selectHandler 473行completeWorkitem被调用")
             this.$toast.clear();
             debugger
-            if (res.data.status === "200") {
+            if (res.data.status === "200" && res.data.model.code === 0) {
               console.log("调用完成工作项接口返回值：" + res.data);
               this.$store.commit("setRefresh", true);
               if (this.fromOut) {

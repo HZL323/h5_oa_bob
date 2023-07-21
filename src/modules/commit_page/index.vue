@@ -414,9 +414,10 @@ export default {
         setTimeout(() => {
           console.log("-------------所选环节不是子流程，调用completeWorkitem--------------");
           api.completeWorkitem(data).then((res) => {
+
             console.log("commit_page 409行completeWorkitem被调用")
             Toast.clear();
-            if (res.data.status === "200") {
+            if (res.data.status === "200" && res.data.model.code === 0) {
               console.log("调用完成工作项接口返回值：" + res.data);
               this.$store.commit("setRefresh", true);
               if (this.fromOut) {
@@ -499,7 +500,7 @@ export default {
         api.completeWorkitem(data).then((res) => {
             console.log("commit_page 478行completeWorkitem被调用")
             this.$toast.clear();
-          if (res.data.status === "200") {
+          if (res.data.status === "200" && res.data.model.code === 0) {
             this.$store.commit("setRefresh", true);
             Dialog.alert({
               message: "提交成功",
@@ -581,7 +582,7 @@ export default {
         api.completeWorkitem(data).then((res) => {
           console.log("commit_page 551行completeWorkitem被调用")
           this.$toast.clear()
-          if (res.data.status === "200") {
+          if (res.data.status === "200" && res.data.model.code === 0) {
             this.$store.commit("setRefresh", true);
             if (this.fromOut) {
               Dialog.alert({

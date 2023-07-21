@@ -313,11 +313,16 @@ export default {
                 noteName: item.noteName, //noteName: 意见框的中文名称比如“分行部门会签意见”
               };
             });
-            let obj = {}; // 提取可编辑意见的回显数据?? 这里的obj是什么
+            let obj = {}; // 提取可编辑意见的回显数据
             console.log(this.opinionData)
             let objDrawback = {}; //单独提取最新的意见
+            console.log("________________________")
             this.opinionData.forEach((item) => {
-              if (
+                if(item.isSubmitAfter === "N"){
+                    console.log(item.actDefId, "-----",this.currentProcess.actDefId )
+                }
+
+                if (
                 item.actDefId === this.currentProcess.actDefId &&
                 item.isSubmitAfter === "N" &&
                 item.createUser === this.userInfo.userId
