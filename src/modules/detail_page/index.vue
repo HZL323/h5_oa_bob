@@ -843,11 +843,6 @@ export default {
       });
     },
     async onMultiCommit() {
-        this.$toast.loading({
-            message: "提交中...",
-            forbidClick: true,
-            duration: 0,
-      });
       // 会签环节直接提交
       let data = {};
       data.wfmData = {
@@ -877,11 +872,13 @@ export default {
                 saveNoteResult = -1;
         });
         if(saveNoteResult === -1){
+            this.$toast.clear();
             this.$toast("提交失败");
             return
         }
         if(saveNoteResult === -2){
-           this.$toast("由于您在PC端已经填过意见，需要重新进入页面加载该意见");
+            this.$toast.clear();
+            this.$toast("由于您在PC端已经填过意见，需要重新进入页面加载该意见");
             this.$router.replace({ path: '/home', force: true })
             return
         }
@@ -891,7 +888,7 @@ export default {
         api.completeWorkitem(data).then((res) => {
             console.log("detail_page 870行completeWorkitem被调用")
             this.$toast.clear();
-          if (res.data.status === "200") {
+          if (res.data.status === "200" && res.data.model.code === 0) {
             this.$store.commit("setRefresh", true);
             Dialog.alert({
               message: "提交成功",
@@ -939,6 +936,11 @@ export default {
 
     async onCommit() {
         debugger
+        this.$toast.loading({
+            message: "提交中...",
+            forbidClick: true,
+            duration: 0,
+        });
         let commited = 0
         //判断是否是行领导传阅流程 showOpinion是通过hideOpinion扩展属性设置的
         if (this.showOpinion === false) {
@@ -953,6 +955,8 @@ export default {
             }).catch((error) => {
                 commited = 2;//接口无法返回
             });
+            // 关闭提交loading
+            this.$toast.clear();
             console.log("commited:1--------------",commited)
             if(commited === 1){
                 console.log("commited:2--------------",commited)
@@ -1071,11 +1075,6 @@ export default {
                     //勾选了不弹出选人的复选框
                     else if(res.data.model.flag == true && res.data.model.wfmData.isShowCompleteDialog == false){
                         debugger
-                        this.$toast.loading({
-                            message: "提交中...",
-                            forbidClick: true,
-                            duration: 0,
-                        });
                         let data = {};
                         data.wfmData = {
                             actInstId: this.currentProcess.actInstId,
@@ -1104,6 +1103,7 @@ export default {
                      else {
                         //if(this.currentProcess.)
                         //进入选择环节页面
+                        this.$toast.clear();
                         this.$router.replace({
                             name: "selectlink",
                             params: {
@@ -1291,16 +1291,22 @@ export default {
                 if(results[0].data.status === "200" && results[0].data.model.code === -2){
                     saveNoteResult = -2;
                 };
+                // 关闭提交loading
+                this.$toast.clear();
                 // 处理第一个元素的结果
                 }).catch((error) => {
                     // 处理错误
                     saveNoteResult = -1;
             });
             if(saveNoteResult === -1){
+                // 关闭提交loading
+                this.$toast.clear();
                 this.$toast("提交失败");
                 return
             }
             if(saveNoteResult === -2){
+                // 关闭提交loading
+                this.$toast.clear();
                 this.$toast("PC端已经填过意见，但未提交，请重新进入页面加载该意见");
                 this.$router.replace({ path: '/home', force: true })
                 return
@@ -1309,7 +1315,7 @@ export default {
         setTimeout(() => {
             api.completeWorkitem(data).then((res) => {
                 this.$toast.clear();
-                if (res.data.status === "200") {
+                if (res.data.status === "200" && res.data.model.code === 0) {
                     this.$store.commit("setRefresh", true);
                     Dialog.alert({
                         message: "提交成功",
