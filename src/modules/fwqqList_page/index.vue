@@ -9,7 +9,7 @@
 <template>
     <div class="handler-wrap">
         <div class="header-wrap">
-            <van-nav-bar :title="navTitle" @click-left="onClickLeft" placeholder>
+            <van-nav-bar title="服务请求批量办理" @click-left="onClickLeft" placeholder>
               <template slot="left">
                 <van-icon name="cross" />
               </template>
@@ -31,47 +31,43 @@
                 </template>
             </div>
         </div>
-      <div class="cell-wrap">
-        <!-- <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
-            <template v-if="!empty"> -->
-                <!-- <van-list
-                  v-model="loading"
-                  :finished="finished"
-                  finished-text="没有更多了"
-                  @load="onLoad"
-                > -->
-                    <div v-if="handlerList.length > 0">
-                        <van-checkbox-group
-                        v-model="result"
-                        ref="checkboxGroup"
-                        v-if="multiCheck"
-                        >
-                        <van-cell-group>
-                            <van-cell
-                            v-for="(item, index) in handlerList"
-                            clickable
-                            :key="index"
-                            :title="item.title"
-                            @click="toggle(index)"
-                            >
-                            <template slot="right-icon">
-                                <van-checkbox
-                                :name="formatName(item)"
-                                ref="checkboxes"
-                                icon-size="16"
-                                checked-color="#ff4444"
-                                shape="square"
-                                />
-                            </template>
-                            </van-cell>
-                        </van-cell-group>
-                        </van-checkbox-group>
-                    </div>
-                <!-- </van-list>  -->
-            <!-- </template>
-        </van-pull-refresh> -->
 
-      </div>
+        <div class="cell-wrap">
+        <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
+            <template v-if="!empty">
+                <div v-if="handlerList.length > 0">
+                    <van-checkbox-group
+                    v-model="result"
+                    ref="checkboxGroup"
+                    v-if="multiCheck"
+                    >
+                    <van-cell-group>
+                        <van-cell
+                        v-for="(item, index) in handlerList"
+                        clickable
+                        :key="index"
+                        :title="item.title"
+                        @click="toggle(index)"
+                        >
+                        <template slot="right-icon">
+                            <van-checkbox
+                            :name="formatName(item)"
+                            ref="checkboxes"
+                            icon-size="16"
+                            checked-color="#ff4444"
+                            shape="square"
+                            />
+                        </template>
+                        </van-cell>
+                    </van-cell-group>
+                    </van-checkbox-group>
+                </div>
+             </template>
+             <wu-feedback v-else types="empty" />
+         </van-pull-refresh>
+
+        </div>
+
       <div class="footer-wrap">
         <!-- <van-tabbar :safe-area-inset-bottom="true" :placeholder="true"> -->
         <div class="btn-wrap">
@@ -178,20 +174,20 @@ import { api } from "../../core/api/index";
         columns: [],
         searchParam:"",
         empty: false,
-        finished : false
+        finished : false,
+
       };
     },
     computed: {
-      navTitle() {
-        return "服务请求批量办理"
-      },
-
       refresh() {
         return this.$store.state.refresh;
       },
       reg() {
         return new RegExp(`.*${this.value}.*$`);
       },
+      userInfo() {
+            return this.$store.state.userInfo;
+        },
     },
 
     activated() {
@@ -204,6 +200,7 @@ import { api } from "../../core/api/index";
             this.count = newVal.length;
         },
     },
+
     methods: {
         onConfirm(data, index) {
             this.$store.commit("setFwqqProcess", data.configCode);
@@ -223,6 +220,7 @@ import { api } from "../../core/api/index";
         },
         loadData() {
             this.loading = true;
+            this.refreshing  = true;
             this.columns = [{
                   processName: '业务数据处理申请流程',
                   configCode:'qq_ywsjcl_process'
@@ -269,12 +267,17 @@ import { api } from "../../core/api/index";
                 processName:"",
                 order:"",
                 title: this.searchParam,
-                personId:this.$store.state.userInfo.userId
+                personId:this.userInfo.userId
             })
             .then((res) => {
                 this.loading = false;
+                this.refreshing = false;
                 if (res.data.status === "200") {
+                    console.log("handlerList", this.handlerList)
                     this.handlerList = res.data.model.pageData;
+                    if(this.handlerList.length === 0){
+                        this.empty = true;
+                    }
                 }
             })
         },
@@ -283,10 +286,9 @@ import { api } from "../../core/api/index";
             this.list = [];
             this.curPage = 1;
             this.refreshing = false;
-            this.isLoading = false;
+            this.loading = false;
             this.finished = false;
             this.empty = false;
-            this.loading = true;
             this.onLoad();
         },
         onCheckAll() {
@@ -301,16 +303,16 @@ import { api } from "../../core/api/index";
         },
         onCommit() {
             let data = this.result.map((item) => JSON.parse(item));
-            console.log(data);
-            if (data.length === 0) {
+            console.log("commit---data:", data)
+            if (this.result.length === 0) {
                 this.$toast("请选择数据");
                 return;
             }
             let params = {
-                paramArr : data,
-                flag: "mobile"
+                paramArr : JSON.stringify(data),
+                flag: "mobile",
+                userId: this.userInfo.userId
             }
-            console.log(data)
             api.batchCompleteWorkitem(params).then((res)=>{
                 if(res.data.status === "200"){
                     Toast(res.data.model.msg)
