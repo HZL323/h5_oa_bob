@@ -218,7 +218,7 @@ export default {
             proInstId: this.currentProcess.proInstId,
             workitemId: this.currentProcess.workitemId,
             configId: this.currentProcess.configId,
-            proDirId: this.currentLink.proDirId,
+            proDirId: this.currentProcess.proDirId,
             actDefId: this.currentProcess.actDefId,
             userId: this.userInfo.userId,
             sendUserIds: this.currentProcess.sendUserIds
@@ -346,7 +346,7 @@ export default {
         workitemId: this.currentProcess.workitemId,
         configId: this.currentProcess.configId,
         proDirId: this.currentProcess.proDirId,
-        actDefId: this.currentLink.actDefId,
+        actDefId: this.currentProcess.actDefId,
         processName: this.currentProcess.processName || "",
         userId: this.userInfo.userId,
         nextActivities: [
