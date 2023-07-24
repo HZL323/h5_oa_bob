@@ -309,7 +309,7 @@ export default {
       console.log("this.noteRequired", this.noteRequired);
       if (this.noteRequired) {
         //如果输入框内容是空的
-        if (this.opinionConfig[0] && !this.opinionConfig[0].noteContent) {
+        if (this.opinionConfig[0] && (!this.opinionConfig[0].noteContent  || this.opinionConfig[0].noteContent.trim().length === 0)) {
           Toast("请填写审批意见");
           return;
         }
