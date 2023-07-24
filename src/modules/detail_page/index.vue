@@ -1027,7 +1027,7 @@ export default {
             console.log(this.noteRequired);
             if (this.noteRequired) {
             //如果输入框内容是空的
-                if (!this.opinionConfig[i].noteContent) {
+                if (!this.opinionConfig[i].noteContent  || this.opinionConfig[i].noteContent.trim().length === 0) {
                     // if (isiOS) {
                     //   document.documentElement.scrollTop =
                     //     this.$refs.detailWrap.clientHeight - 255;
@@ -1160,7 +1160,7 @@ export default {
             this.currentProcess.processName === '通用流程' ||
             this.currentProcess.processName === '总分行办公检法查询申请流程' ||
             this.currentProcess.processName === '短信发布申请' ){
-            if(this.opinionConfig[0] && !this.opinionConfig[0].noteContent){
+            if(this.opinionConfig[0] && (!this.opinionConfig[0].noteContent  || this.opinionConfig[0].noteContent.trim().length === 0)){
                 Toast("请填写审批意见");
                 return;
             }

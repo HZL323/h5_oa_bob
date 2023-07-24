@@ -617,7 +617,7 @@ export default {
         console.log(this.noteRequired)
         if(this.noteRequired){
           //如果输入框内容是空的
-          if (!this.opinionConfig[i].noteContent) {
+          if (!this.opinionConfig[i].noteContent || this.opinionConfig[i].noteContent.trim().length === 0) {
             if (isiOS) {
               document.documentElement.scrollTop = this.$refs.detailWrap.clientHeight - 255;
             } else {
