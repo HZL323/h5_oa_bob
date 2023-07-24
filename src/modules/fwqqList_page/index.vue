@@ -165,7 +165,7 @@ import { api } from "../../core/api/index";
         multiCheck: true, // 是否可以多选
         showMulti: true, //是否显示全选按钮
         handlerList: [], // 办理人或办理部门list
-        multiFlag: true, //多选flag
+        multiFlag: false, //多选flag
         count: 0,
         selectData: [], // 已选择的数据
         subProcessName: "", //子流程的名称
