@@ -22,15 +22,56 @@
             class="wut-card"
             @click="rowClick(item)"
           >
-             <div class="wu-list"><!--doing指的是已办 -->
-                <div v-if="(currentList === 'doing') ? (item.priorityCode === '001') : (item.priority === '001')">
-                  <img style="height:40px;" src ="../assets/img/icon_flag_blue.png"></div>
-                <div v-if="(currentList === 'doing') ? (item.priorityCode === '002') : (item.priority === '002')">
-                  <img style="height:40px;" src ="../assets/img/icon_flag_yellow.png"></div>
-                <div v-if="(currentList === 'doing') ? (item.priorityCode === '003') : (item.priority === '003')">
-                  <img style="height:40px;" src ="../assets/img/icon_flag_red.png"></div>
-                <div v-if="(currentList === 'doing') ? (item.priorityCode === null || item.priorityCode === '') : (item.priority ===null || item.priority ==='')">
-                  <img style="height:40px;" src ="../assets/img/icon_flag_white.png"></div>
+            <div class="wu-list">
+              <!--doing指的是已办 -->
+              <div
+                v-if="
+                  currentList === 'doing'
+                    ? item.priorityCode === '001'
+                    : item.priority === '001'
+                "
+              >
+                <img
+                  style="height: 40px"
+                  src="../assets/img/icon_flag_blue.png"
+                />
+              </div>
+              <div
+                v-if="
+                  currentList === 'doing'
+                    ? item.priorityCode === '002'
+                    : item.priority === '002'
+                "
+              >
+                <img
+                  style="height: 40px"
+                  src="../assets/img/icon_flag_yellow.png"
+                />
+              </div>
+              <div
+                v-if="
+                  currentList === 'doing'
+                    ? item.priorityCode === '003'
+                    : item.priority === '003'
+                "
+              >
+                <img
+                  style="height: 40px"
+                  src="../assets/img/icon_flag_red.png"
+                />
+              </div>
+              <div
+                v-if="
+                  currentList === 'doing'
+                    ? item.priorityCode === null || item.priorityCode === ''
+                    : item.priority === null || item.priority === ''
+                "
+              >
+                <img
+                  style="height: 40px"
+                  src="../assets/img/icon_flag_white.png"
+                />
+              </div>
               <div class="wu-list-content">
                 <div class="title">{{ item.title }}</div>
                 <div class="content-intro">
@@ -73,11 +114,11 @@ export default {
       allDataCount: 0, // 总条目数
     };
   },
-  props:{
-    searchParams:{
+  props: {
+    searchParams: {
       type: Object,
-      default:() => ({})
-    }
+      default: () => ({}),
+    },
   },
   computed: {
     params() {
@@ -110,11 +151,12 @@ export default {
       // 加载数据
       //console.log("searchParams", this.searchParams)
       if (this.currentList === "doing") {
-        document.querySelectorAll("div.van-nav-bar__title")[0].innerHTML="我的已办"
+        document.querySelectorAll("div.van-nav-bar__title")[0].innerHTML =
+          "我的已办";
         api
           .list({
             ...this.params,
-            ...this.searchParams
+            ...this.searchParams,
           })
           .then((res) => {
             console.log("res", res);
@@ -136,21 +178,27 @@ export default {
             //     document.querySelectorAll("div.van-nav-bar__title")[0].innerHTML=
             //     this.navTitle+"(99+)";
             // }else{
-                document.querySelectorAll("div.van-nav-bar__title")[0].innerHTML=
-                this.navTitle+"("+this.allDataCount+")";
+            document.querySelectorAll("div.van-nav-bar__title")[0].innerHTML =
+              this.navTitle + "(" + this.allDataCount + ")";
             //}
-
           });
       } else {
-        if(this.currentList === "todo"){
-          document.querySelectorAll("div.van-nav-bar__title")[0].innerHTML="我的公文待办";
-        }else if(this.currentList === "seal"){
-          document.querySelectorAll("div.van-nav-bar__title")[0].innerHTML="我的用印待办";
-        }else{
-          document.querySelectorAll("div.van-nav-bar__title")[0].innerHTML="我的待阅";
+        if (this.currentList === "todo") {
+          document.querySelectorAll("div.van-nav-bar__title")[0].innerHTML =
+            "我的公文待办";
+        } else if (this.currentList === "seal") {
+          document.querySelectorAll("div.van-nav-bar__title")[0].innerHTML =
+            "我的用印待办";
+        } else {
+          document.querySelectorAll("div.van-nav-bar__title")[0].innerHTML =
+            "我的待阅";
         }
         api
-          .queryList({ ...this.params, queryKind: this.currentList, ...this.searchParams })
+          .queryList({
+            ...this.params,
+            queryKind: this.currentList,
+            ...this.searchParams,
+          })
           .then((res) => {
             console.log("res", res);
             this.allDataCount = res.data.model.allDataCount;
@@ -165,21 +213,20 @@ export default {
             if (this.list.length >= this.allDataCount) {
               this.finished = true;
             }
-            this.navTitle="我的待阅";
-            if(this.currentList === "todo"){
-              this.navTitle='我的公文待办';
+            this.navTitle = "我的待阅";
+            if (this.currentList === "todo") {
+              this.navTitle = "我的公文待办";
             }
-            if(this.currentList === "seal"){
-              this.navTitle='我的用印待办';
+            if (this.currentList === "seal") {
+              this.navTitle = "我的用印待办";
             }
             //if(this.allDataCount>0){
             //    document.querySelectorAll("div.van-nav-bar__title")[0].innerHTML=
             //    this.navTitle+"(99+)";
             //}else{
-                document.querySelectorAll("div.van-nav-bar__title")[0].innerHTML=
-                this.navTitle+"("+this.allDataCount+")";
+            document.querySelectorAll("div.van-nav-bar__title")[0].innerHTML =
+              this.navTitle + "(" + this.allDataCount + ")";
             //}
-
           });
       }
     },
@@ -194,7 +241,7 @@ export default {
         },
         query: {
           from: "oa",
-          queryKind: this.$store.state.currentList
+          queryKind: this.$store.state.currentList,
         },
       });
     },
@@ -214,10 +261,14 @@ export default {
 
   .wut-card {
     box-shadow: 0px 2px 6px 0px rgba(97, 101, 105, 0.08);
-    border-radius: 8px;
+    // border-radius: 8px;
     margin-top: 16px;
     padding: 5px 16px;
     background-color: #ffffff;
+
+    .wu-list-content {
+      flex: 1;
+    }
   }
 }
 </style>
