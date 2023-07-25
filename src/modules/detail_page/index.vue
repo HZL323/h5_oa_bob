@@ -228,7 +228,8 @@ export default {
         this.$store.state.currentProcess.workitemName === "收文经办" ||
         this.$store.state.currentProcess.workitemName === "送相关支行"||
         this.$store.state.currentProcess.workitemName.indexOf("行领导传阅") !== -1||
-        this.$store.state.currentProcess.workitemName === "技术可行性及业务测试评估" 
+        this.$store.state.currentProcess.workitemName === "技术可行性及业务测试评估" ||
+        this.$store.state.currentProcess.workitemName === "技术可行性评估结果审核" 
       ) {
         return false;
       } else {
@@ -256,9 +257,7 @@ export default {
     },
   },
   created() {
-    console.log("生产版本号--1.3.8");
-    console.log("准生产版本号--3.0.3");
-    console.log("测试版本号--1.9.7");
+    console.log("生产版本号--1.4.1");
     this.$store.commit("setCurrentList", this.$route.query.queryKind);
     this.dropListCurrentList = this.$route.query.queryKind;
     console.log("this.$route.query.queryKind:", this.$route.query.queryKind);

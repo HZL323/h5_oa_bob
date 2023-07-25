@@ -186,16 +186,6 @@ export default {
       loading: false, // 列表加载标识
     };
   },
-  activated() {
-      this.searchParam = ""
-      this.$store.commit("setFwqqProcess","qq_zhgjfcx_process,qq_zhbgzdhyhwh_process,qq_ywsjcl_process,qq_ty_process,qq_dxfb_process" )
-      this.handlerList = [];
-      this.loading = true;
-      this.finished = false;
-      this.empty = false;
-      this.curPage = 1;
-      this.loadData();
-  },
   computed: {
     refresh() {
       return this.$store.state.refresh;
@@ -350,6 +340,7 @@ export default {
     onClickLeft() {
       this.value = "";
       this.$store.commit("setRefresh", false);
+      this.$store.commit("setFwqqProcess", "qq_zhgjfcx_process,qq_zhbgzdhyhwh_process,qq_ywsjcl_process,qq_ty_process,qq_dxfb_process")
       this.$router.replace({
         name: "home",
       });
