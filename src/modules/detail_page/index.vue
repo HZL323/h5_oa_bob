@@ -227,7 +227,8 @@ export default {
         this.$store.state.currentProcess.workitemName === "相关人员办理" ||
         this.$store.state.currentProcess.workitemName === "收文经办" ||
         this.$store.state.currentProcess.workitemName === "送相关支行"||
-        this.$store.state.currentProcess.workitemName.indexOf("行领导传阅") !== -1
+        this.$store.state.currentProcess.workitemName.indexOf("行领导传阅") !== -1||
+        this.$store.state.currentProcess.workitemName === "技术可行性及业务测试评估" 
       ) {
         return false;
       } else {
