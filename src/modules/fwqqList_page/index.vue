@@ -328,8 +328,13 @@ export default {
       };
       api.batchCompleteWorkitem(params).then((res) => {
         if (res.data.status === "200") {
-          Toast(res.data.model.msg);
+          let msg = res.data.model.msg;
+          if(msg.indexOf("<br/>")){
+            msg = msg.replace("<br/>", ",")
+          }
+          Toast(msg);
           this.handlerList = []
+          this.curPage = 1
           this.loadData();
           this.count = 0;
           this.result = [];
