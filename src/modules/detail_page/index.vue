@@ -229,7 +229,13 @@ export default {
         this.$store.state.currentProcess.workitemName === "送相关支行"||
         this.$store.state.currentProcess.workitemName.indexOf("行领导传阅") !== -1||
         this.$store.state.currentProcess.workitemName === "技术可行性及业务测试评估" ||
-        this.$store.state.currentProcess.workitemName === "技术可行性评估结果审核" 
+        this.$store.state.currentProcess.workitemName === "技术可行性评估结果审核" ||
+        this.$store.state.currentProcess.workitemName === "结果确认" ||
+        this.$store.state.currentProcess.workitemName === "业务测试" ||
+        this.$store.state.currentProcess.workitemName === "确认数据销毁" 
+
+
+
       ) {
         return false;
       } else {
