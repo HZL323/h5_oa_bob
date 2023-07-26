@@ -100,8 +100,8 @@ export function list(data) {
         resolve({
             data: {
                 "model": {
-                    "dataCount": 1,
-                    "pageData": [
+                    "allDataCount": 1,
+                    "curPageData": [
                         {
                             "actDefId": "bswjglycs",
                             "actInstId": "47990b630b314376a16d6cd7d3c7beba",
@@ -1727,6 +1727,32 @@ export function isSubProcess(data) {
             data: {
                 model: {
                     subProcess: false
+                },
+                status: '200'
+            }
+        })
+    })
+}
+
+export function recordEnterOaLog(data) {
+    return new Promise((resolve, reject) => {
+        resolve({
+            data: {
+                model: {
+                    code: 0
+                },
+                status: '200'
+            }
+        })
+    })
+}
+
+export function isBatchBusinessHandler(data) {
+    return new Promise((resolve, reject) => {
+        resolve({
+            data: {
+                model: {
+                    code: 0
                 },
                 status: '200'
             }

@@ -25,11 +25,11 @@
               <DetailForm :formConfig="formConfig" @sendDeptVerify="getSendDeptVerify" @businessTypeVerify="getBusinessTypeVerify"/>
               <div v-if="showOpinion">
                 <Opinion
-                :noteConfig="noteConfig"
-                :opinionConfig.sync="opinionConfig"
-                :fromOut="fromOut"
-                @onClickInput="onClickInput"
-                ref="opinion"
+                  :noteConfig="noteConfig"
+                  :opinionConfig.sync="opinionConfig"
+                  :fromOut="fromOut"
+                  @onClickInput="onClickInput"
+                  ref="opinion"
                 />
               </div>
             </template>
@@ -154,14 +154,13 @@ export default {
     return {
       reload: this.reload,
     };
-
   },
-  watch:{
-    dataForm(newVal, oldVal){
-        if(JSON.stringify(newVal) !== {}){
-            this.getBackLink()
-        }
-    }
+  watch: {
+    dataForm(newVal, oldVal) {
+      if (JSON.stringify(newVal) !== {}) {
+        this.getBackLink();
+      }
+    },
   },
   data() {
     return {
@@ -183,7 +182,7 @@ export default {
       dropListCurrentList: "",
       //yinyanhong
       isRouterAlive: true,
-      showOpinion:true
+      showOpinion: true,
     };
   },
   computed: {
@@ -203,7 +202,7 @@ export default {
       ) {
         return false;
       }
-      if(this.$store.state.currentList === "doing"){
+      if (this.$store.state.currentList === "doing") {
         return false;
       }
       return true;
@@ -226,16 +225,16 @@ export default {
         this.$store.state.currentProcess.workitemName.indexOf("会签") !== -1 ||
         this.$store.state.currentProcess.workitemName === "相关人员办理" ||
         this.$store.state.currentProcess.workitemName === "收文经办" ||
-        this.$store.state.currentProcess.workitemName === "送相关支行"||
-        this.$store.state.currentProcess.workitemName.indexOf("行领导传阅") !== -1||
-        this.$store.state.currentProcess.workitemName === "技术可行性及业务测试评估" ||
-        this.$store.state.currentProcess.workitemName === "技术可行性评估结果审核" ||
+        this.$store.state.currentProcess.workitemName === "送相关支行" ||
+        this.$store.state.currentProcess.workitemName.indexOf("行领导传阅") !==
+          -1 ||
+        this.$store.state.currentProcess.workitemName ===
+          "技术可行性及业务测试评估" ||
+        this.$store.state.currentProcess.workitemName ===
+          "技术可行性评估结果审核" ||
         this.$store.state.currentProcess.workitemName === "结果确认" ||
         this.$store.state.currentProcess.workitemName === "业务测试" ||
-        this.$store.state.currentProcess.workitemName === "确认数据销毁" 
-
-
-
+        this.$store.state.currentProcess.workitemName === "确认数据销毁"
       ) {
         return false;
       } else {
@@ -263,23 +262,23 @@ export default {
     console.log("this.$route.query.queryKind:", this.$route.query.queryKind);
 
     if (this.$route.query.from !== "oa") {
-      console.log("-------------recordEnterOaLog调用前-------------")
+      console.log("-------------recordEnterOaLog调用前-------------");
       this.recordEnterOaLog();
-      console.log("-------------recordEnterOaLog调用后-------------")
+      console.log("-------------recordEnterOaLog调用后-------------");
       if (this.$store.state.userInfo.userCode !== this.$route.query.userCode) {
         console.log(
           "-------------!=oa this.$store.state.userInfo.userCode !== this.$route.query.userCode-------------"
         );
         //兼容旧版本的待办
         let resourceid = "";
-        if(this.$route.query.hasOwnProperty('resourceid')){
-            resourceid = this.$route.query.resourceid
+        if (this.$route.query.hasOwnProperty("resourceid")) {
+          resourceid = this.$route.query.resourceid;
         }
         api
           .checkUser({
             uCode: this.$route.query.userCode,
             id: "",
-            resourceid: resourceid
+            resourceid: resourceid,
           })
           .then((res) => {
             if (res.data.status === "200") {
@@ -477,34 +476,39 @@ export default {
     getBusinessTypeVerify(businessTypeVerify){
       this.businessTypeVerify = businessTypeVerify
     },
-    isShowOpinion(){
-        console.log("hideOpinion --------------")
-        let params = {
-            extendKey: "hideOpinion",
-            actDefId: this.currentProcess.actDefId,
-            configId: this.currentProcess.configId,
-            proDirId: this.currentProcess.proDirId
+    isShowOpinion() {
+      console.log("hideOpinion --------------");
+      let params = {
+        extendKey: "hideOpinion",
+        actDefId: this.currentProcess.actDefId,
+        configId: this.currentProcess.configId,
+        proDirId: this.currentProcess.proDirId,
+      };
+      api.getActivityExtendConfigByName(params).then((res) => {
+        if (
+          res.data.model &&
+          res.data.model.hideOpinion &&
+          res.data.model.hideOpinion
+        ) {
+          this.showOpinion = false;
+          console.log("hideOpinion --------true-------");
+          return;
         }
-        api.getActivityExtendConfigByName(params).then((res) => {
-          if(res.data.model && res.data.model.hideOpinion && res.data.model.hideOpinion){
-            this.showOpinion = false;
-            console.log("hideOpinion --------true-------")
-            return;
-          }
-          this.showOpinion = true;
-          console.log("hideOpinion --------false-------")
-        });
+        this.showOpinion = true;
+        console.log("hideOpinion --------false-------");
+      });
     },
     recordEnterOaLog() {
-      console.log("-----------调用recordEnterOaLog函数-----------")
+      console.log("-----------调用recordEnterOaLog函数-----------");
       let userAgent = navigator.userAgent.toLowerCase();
-      console.log("userAgent:",userAgent)
+      console.log("userAgent:", userAgent);
       let PCType = "";
       if (userAgent.indexOf("windows") !== -1) PCType = "windows";
       if (userAgent.indexOf("macintosh") !== -1) PCType = "macintosh";
-      let isAndroid = /android/.test(userAgent) && !/iphone|ipad|ipod/.test(userAgent);
+      let isAndroid =
+        /android/.test(userAgent) && !/iphone|ipad|ipod/.test(userAgent);
       let isIPad = /ipad/.test(userAgent);
-      console.log("-----------调用recordEnterOaLog接口-----------")
+      console.log("-----------调用recordEnterOaLog接口-----------");
       api
         .recordEnterOaLog({
           userUuid: this.$store.state.userInfo.userId,
@@ -678,7 +682,6 @@ export default {
         });
     },
     getFromConfig() {
-        debugger
       // 获取表单字段和意见字段（修改逻辑，加入子流程验证环节）
       //console.log("-----currentProcess------",this.currentProcess)
       api
@@ -755,7 +758,7 @@ export default {
             actInstId: item.id,
           },
         },
-        dataForm:this.dataForm
+        dataForm: this.dataForm,
       };
       api.queryHandlerList(data).then((res) => {
         if (res.data.status === "200") {
@@ -863,37 +866,50 @@ export default {
       };
       //必填生效
       let saveNoteResult = 0;
-      if((this.noteRequired && this.opinionConfig[0])|| (!this.noteRequired &&  this.opinionConfig[0] && this.opinionConfig[0].noteContent)){
-        debugger
-        await this.saveOpinion().then((results) => {
-            if(results[0].data.status !== "200" || (results[0].data.status === "200" && results[0].data.model.code === -1)){
-                saveNoteResult = -1;
-            };
-             if(results[0].data.status === "200" && results[0].data.model.code === -2){
-                saveNoteResult = -2;
-            };
+      if (
+        (this.noteRequired && this.opinionConfig[0]) ||
+        (!this.noteRequired &&
+          this.opinionConfig[0] &&
+          this.opinionConfig[0].noteContent)
+      ) {
+        await this.saveOpinion()
+          .then((results) => {
+            if (
+              results[0].data.status !== "200" ||
+              (results[0].data.status === "200" &&
+                results[0].data.model.code === -1)
+            ) {
+              saveNoteResult = -1;
+            }
+            if (
+              results[0].data.status === "200" &&
+              results[0].data.model.code === -2
+            ) {
+              saveNoteResult = -2;
+            }
             // 处理第一个元素的结果
-            }).catch((error) => {
-                // 处理错误
-                saveNoteResult = -1;
-        });
-        if(saveNoteResult === -1){
-            this.$toast.clear();
-            this.$toast("提交失败");
-            return
+          })
+          .catch((error) => {
+            // 处理错误
+            saveNoteResult = -1;
+          });
+        if (saveNoteResult === -1) {
+          this.$toast.clear();
+          this.$toast("提交失败");
+          return;
         }
-        if(saveNoteResult === -2){
-            this.$toast.clear();
-            this.$toast("由于您在PC端已经填过意见，需要重新进入页面加载该意见");
-            this.$router.replace({ path: '/home', force: true })
-            return
+        if (saveNoteResult === -2) {
+          this.$toast.clear();
+          this.$toast("由于您在PC端已经填过意见，需要重新进入页面加载该意见");
+          this.$router.replace({ path: "/home", force: true });
+          return;
         }
       }
-      debugger
+
       setTimeout(() => {
         api.completeWorkitem(data).then((res) => {
-            console.log("detail_page 870行completeWorkitem被调用")
-            this.$toast.clear();
+          console.log("detail_page 870行completeWorkitem被调用");
+          this.$toast.clear();
           if (res.data.status === "200" && res.data.model.code === 0) {
             this.$store.commit("setRefresh", true);
             Dialog.alert({
@@ -902,10 +918,10 @@ export default {
               confirmButtonColor: "#ff4444",
               closeOnClickOverlay: false,
             }).then(() => {
-                console.log("detailPage 878行的提交成功")
+              console.log("detailPage 878行的提交成功");
 
               this.$router.replace({
-                name: 'home',
+                name: "home",
               });
             });
           } else {
@@ -915,85 +931,89 @@ export default {
       }, 500);
     },
     async saveOpinion() {
-        debugger
-        //因为forEach()方法不会等待异步操作的结果，它只是遍历数组中的每个元素并对其执行回调函数
-        //异步操作是在回调函数中发生的，但是forEach()方法并不会等待它们完成。因此，在forEach()中返回的返回值是undefined
-        //使用了map()方法替代了forEach()方法来生成一个包含多个Promise对象的数组。然后，我们使用Promise.all()方法来等待所有异步操作完成，最终返回一个新的Promise对象。
-        const promises = this.opinionConfig.map(async (item) => {
-            item.noteContent = item.noteContent.replace(/&#13;/g, "<br/>");
-            item.noteContent = item.noteContent.replace(/\n/g, "<br/>");
-            let data = {
-                id: item.id || "",
-                type: item.noteId,
-                noteContent: item.noteContent,
-                proInstId: this.currentProcess.proInstId,
-                createUser: this.userInfo.userId,
-                createUserName: this.userInfo.userName,
-                workitemId: this.currentProcess.workitemId,
-                actDefId: this.currentProcess.actDefId,
-            };
-            const res = await api.saveOpinion(data);
-            if (res.data.status === 200 && res.data.model.code === 0) item.id = res.data.data.id;
-            return res;
-        });
-        debugger
-        return Promise.all(promises);
+      //因为forEach()方法不会等待异步操作的结果，它只是遍历数组中的每个元素并对其执行回调函数
+      //异步操作是在回调函数中发生的，但是forEach()方法并不会等待它们完成。因此，在forEach()中返回的返回值是undefined
+      //使用了map()方法替代了forEach()方法来生成一个包含多个Promise对象的数组。然后，我们使用Promise.all()方法来等待所有异步操作完成，最终返回一个新的Promise对象。
+      const promises = this.opinionConfig.map(async (item) => {
+        item.noteContent = item.noteContent.replace(/&#13;/g, "<br/>");
+        item.noteContent = item.noteContent.replace(/\n/g, "<br/>");
+        let data = {
+          id: item.id || "",
+          type: item.noteId,
+          noteContent: item.noteContent,
+          proInstId: this.currentProcess.proInstId,
+          createUser: this.userInfo.userId,
+          createUserName: this.userInfo.userName,
+          workitemId: this.currentProcess.workitemId,
+          actDefId: this.currentProcess.actDefId,
+        };
+        const res = await api.saveOpinion(data);
+        if (res.data.status === 200 && res.data.model.code === 0)
+          item.id = res.data.data.id;
+        return res;
+      });
+
+      return Promise.all(promises);
     },
 
     async onCommit() {
-        debugger
-        this.$toast.loading({
-            message: "提交中...",
-            forbidClick: true,
-            duration: 0,
-        });
-        let commited = 0
-        //判断是否是行领导传阅流程 showOpinion是通过hideOpinion扩展属性设置的
-        if (this.showOpinion === false) {
-            await this.onCommitFinishCy().then((result) => {
-                if(result.data.status === "200" && result.data.model === true){
-                    commited = 1;//正常结束
-                }else if(result.data.status === "200" && result.data.model === false){
-                    commited = 1;//在调用此接口之前已经结束了
-                }else{
-                    commited = 2;//非200状态
-                }
-            }).catch((error) => {
-                commited = 2;//接口无法返回
-            });
-            // 关闭提交loading
-            this.$toast.clear();
-            console.log("commited:1--------------",commited)
-            if(commited === 1){
-                console.log("commited:2--------------",commited)
-                this.$store.commit("setRefresh", true);
-                if (this.fromOut) {
-                    console.log("commited:3--------------",commited)
-                    debugger
-                    this.$dialog
-                    .alert({
-                        message: "提交成功",
-                        width: "200px",
-                        confirmButtonColor: "#ff4444",
-                    })
-                    .then(() => {
-                        console.log("detailPage 944行的提交成功")
+      this.$toast.loading({
+        message: "提交中...",
+        forbidClick: true,
+        duration: 0,
+      });
+      let commited = 0;
+      //判断是否是行领导传阅流程 showOpinion是通过hideOpinion扩展属性设置的
+      if (this.showOpinion === false) {
+        await this.onCommitFinishCy()
+          .then((result) => {
+            if (result.data.status === "200" && result.data.model === true) {
+              commited = 1; //正常结束
+            } else if (
+              result.data.status === "200" &&
+              result.data.model === false
+            ) {
+              commited = 1; //在调用此接口之前已经结束了
+            } else {
+              commited = 2; //非200状态
+            }
+          })
+          .catch((error) => {
+            commited = 2; //接口无法返回
+          });
+        // 关闭提交loading
+        this.$toast.clear();
+        console.log("commited:1--------------", commited);
+        if (commited === 1) {
+          console.log("commited:2--------------", commited);
+          this.$store.commit("setRefresh", true);
+          if (this.fromOut) {
+            console.log("commited:3--------------", commited);
 
-                        this.$store.commit("setFromOut", false);
-                        console.log("commited:3--------------",commited)
-                        this.$router.replace({
-                            name: 'home',
-                        });
-                    });
-                    return;
-                }
-                Dialog.alert({
-                    message: "提交成功",
-                    width: "200px",
-                    confirmButtonColor: "#ff4444",
-                    closeOnClickOverlay: false,
-                }).then(() => {
-                    console.log("detailPage 961行的提交成功")
+            this.$dialog
+              .alert({
+                message: "提交成功",
+                width: "200px",
+                confirmButtonColor: "#ff4444",
+              })
+              .then(() => {
+                console.log("detailPage 944行的提交成功");
+
+                this.$store.commit("setFromOut", false);
+                console.log("commited:3--------------", commited);
+                this.$router.replace({
+                  name: "home",
+                });
+              });
+            return;
+          }
+          Dialog.alert({
+            message: "提交成功",
+            width: "200px",
+            confirmButtonColor: "#ff4444",
+            closeOnClickOverlay: false,
+          }).then(() => {
+            console.log("detailPage 961行的提交成功");
 
                     this.$router.replace({
                         name: 'home',
@@ -1114,8 +1134,6 @@ export default {
                             name: "selectlink",
                             params: {
                                 backRoute: this.preRoute,
-                                sendDeptVerify:this.sendDeptVerify,
-                                businessTypeVerify:this.businessTypeVerify
                             },
                         });
                     }
@@ -1123,12 +1141,12 @@ export default {
                 this.loading = false;
             });
     },
-    async onCommitFinishCy(){
-        const res = await api.finishCy({
-            proInstId: this.currentProcess.proInstId,
-            userId: this.userInfo.userId,
-        })
-        return res;
+    async onCommitFinishCy() {
+      const res = await api.finishCy({
+        proInstId: this.currentProcess.proInstId,
+        userId: this.userInfo.userId,
+      });
+      return res;
     },
     onClick(activity, radio) {
       //console.log("---退回节点名称---", activity.name);
@@ -1139,65 +1157,79 @@ export default {
     async sendBack() {
       //let sendNode = this.$refs.sendBack.selectData;
       //console.log("---currentProcess---", this.currentProcess);
-        Toast.loading({
-            message: "回退中...",
-            forbidClick: true,
-            duration: 0,
-        });
+      Toast.loading({
+        message: "回退中...",
+        forbidClick: true,
+        duration: 0,
+      });
       // 退回上一环节
-        if (!this.radio) {
-            Toast("请选择回退环节");
-            return;
-        }
+      if (!this.radio) {
+        Toast("请选择回退环节");
+        return;
+      }
+      if (
+        this.activity.name.indexOf("会签") != -1 ||
+        this.activity.name === "相关业务线办理" ||
+        this.activity.name === "相关人员办理" ||
+        this.activity.name === "相关部室办理" ||
+        this.activity.name === "辅办部室办理" ||
+        this.activity.name === "收文经办" ||
+        this.activity.name === "送相关支行"
+      ) {
+        Toast("请前往PC端退回该环节");
+        return;
+      }
+      console.log("sendBack:----", this.currentProcess.processName);
+
+      if (
+        this.currentProcess.processName === "业务数据处理申请流程" ||
+        this.currentProcess.processName === "总行办公自动化用户维护申请流程" ||
+        this.currentProcess.processName === "通用流程" ||
+        this.currentProcess.processName === "总分行办公检法查询申请流程" ||
+        this.currentProcess.processName === "短信发布申请"
+      ) {
         if (
-            this.activity.name.indexOf("会签") != -1 ||
-            this.activity.name === "相关业务线办理" ||
-            this.activity.name === "相关人员办理" ||
-            this.activity.name === "相关部室办理" ||
-            this.activity.name === "辅办部室办理" ||
-            this.activity.name === "收文经办" ||
-            this.activity.name === "送相关支行"
+          this.opinionConfig[0] &&
+          (!this.opinionConfig[0].noteContent ||
+            this.opinionConfig[0].noteContent.trim().length === 0)
         ) {
-            Toast("请前往PC端退回该环节");
-            return;
+          Toast("请填写审批意见");
+          return;
         }
-        console.log("sendBack:----", this.currentProcess.processName)
-        debugger
-        if(this.currentProcess.processName === '业务数据处理申请流程' ||
-            this.currentProcess.processName === '总行办公自动化用户维护申请流程' ||
-            this.currentProcess.processName === '通用流程' ||
-            this.currentProcess.processName === '总分行办公检法查询申请流程' ||
-            this.currentProcess.processName === '短信发布申请' ){
-            if(this.opinionConfig[0] && (!this.opinionConfig[0].noteContent  || this.opinionConfig[0].noteContent.trim().length === 0)){
-                Toast("请填写审批意见");
-                return;
+      }
+      if (this.opinionConfig[0] && this.opinionConfig[0].noteContent) {
+        let saveNoteResult = 0;
+        await this.saveOpinion()
+          .then((results) => {
+            if (
+              results[0].data.status !== "200" ||
+              (results[0].data.status === "200" &&
+                results[0].data.model.code === -1)
+            ) {
+              saveNoteResult = -1;
             }
+            if (
+              results[0].data.status === "200" &&
+              results[0].data.model.code === -2
+            ) {
+              saveNoteResult = -2;
+            }
+            // 处理第一个元素的结果
+          })
+          .catch((error) => {
+            // 处理错误
+            saveNoteResult = -1;
+          });
+        if (saveNoteResult === -1) {
+          this.$toast("提交失败");
+          return;
         }
-        if(this.opinionConfig[0] && this.opinionConfig[0].noteContent){
-            debugger
-            let saveNoteResult = 0
-            await this.saveOpinion().then((results) => {
-                if(results[0].data.status !== "200" || (results[0].data.status === "200" && results[0].data.model.code === -1)){
-                    saveNoteResult = -1;
-                };
-                if(results[0].data.status === "200" && results[0].data.model.code === -2){
-                    saveNoteResult = -2;
-                };
-                // 处理第一个元素的结果
-            }).catch((error) => {
-                    // 处理错误
-                    saveNoteResult = -1;
-            });
-            if(saveNoteResult === -1){
-                this.$toast("提交失败");
-                return
-            }
-            if(saveNoteResult === -2){
-                this.$toast("由于您在PC端已经填过意见，需要重新进入页面加载该意见");
-                this.$router.replace({ path: '/home', force: true })
-                return
-            }
+        if (saveNoteResult === -2) {
+          this.$toast("由于您在PC端已经填过意见，需要重新进入页面加载该意见");
+          this.$router.replace({ path: "/home", force: true });
+          return;
         }
+      }
 
       api
         .sendBack({
@@ -1287,60 +1319,73 @@ export default {
         document.documentElement.scrollTop = this.$refs.detailWrap.clientHeight;
       }
     },
-    async hldNotShowNextActivities(data){
-        //必填生效
-        let saveNoteResult = 0;
-        if((this.noteRequired && this.opinionConfig[0]) || (!this.noteRequired &&  this.opinionConfig[0] && this.opinionConfig[0].noteContent)){
-            debugger
-            await this.saveOpinion().then((results) => {
-                if(results[0].data.status !== "200" || (results[0].data.status === "200" && results[0].data.model.code === -1)){
-                    saveNoteResult = -1;
-                };
-                if(results[0].data.status === "200" && results[0].data.model.code === -2){
-                    saveNoteResult = -2;
-                };
-                // 关闭提交loading
-                this.$toast.clear();
-                // 处理第一个元素的结果
-                }).catch((error) => {
-                    // 处理错误
-                    saveNoteResult = -1;
-            });
-            if(saveNoteResult === -1){
-                // 关闭提交loading
-                this.$toast.clear();
-                this.$toast("提交失败");
-                return
+    async hldNotShowNextActivities(data) {
+      //必填生效
+      let saveNoteResult = 0;
+      if (
+        (this.noteRequired && this.opinionConfig[0]) ||
+        (!this.noteRequired &&
+          this.opinionConfig[0] &&
+          this.opinionConfig[0].noteContent)
+      ) {
+        await this.saveOpinion()
+          .then((results) => {
+            if (
+              results[0].data.status !== "200" ||
+              (results[0].data.status === "200" &&
+                results[0].data.model.code === -1)
+            ) {
+              saveNoteResult = -1;
             }
-            if(saveNoteResult === -2){
-                // 关闭提交loading
-                this.$toast.clear();
-                this.$toast("PC端已经填过意见，但未提交，请重新进入页面加载该意见");
-                this.$router.replace({ path: '/home', force: true })
-                return
+            if (
+              results[0].data.status === "200" &&
+              results[0].data.model.code === -2
+            ) {
+              saveNoteResult = -2;
             }
+            // 关闭提交loading
+            this.$toast.clear();
+            // 处理第一个元素的结果
+          })
+          .catch((error) => {
+            // 处理错误
+            saveNoteResult = -1;
+          });
+        if (saveNoteResult === -1) {
+          // 关闭提交loading
+          this.$toast.clear();
+          this.$toast("提交失败");
+          return;
         }
-        setTimeout(() => {
-            api.completeWorkitem(data).then((res) => {
-                this.$toast.clear();
-                if (res.data.status === "200" && res.data.model.code === 0) {
-                    this.$store.commit("setRefresh", true);
-                    Dialog.alert({
-                        message: "提交成功",
-                        width: "200px",
-                        confirmButtonColor: "#ff4444",
-                        closeOnClickOverlay: false,
-                    }).then(() => {
-                        this.$router.replace({
-                            name: 'home',
-                        });
-                    });
-                } else {
-                    this.$toast("提交失败");
-                }
+        if (saveNoteResult === -2) {
+          // 关闭提交loading
+          this.$toast.clear();
+          this.$toast("PC端已经填过意见，但未提交，请重新进入页面加载该意见");
+          this.$router.replace({ path: "/home", force: true });
+          return;
+        }
+      }
+      setTimeout(() => {
+        api.completeWorkitem(data).then((res) => {
+          this.$toast.clear();
+          if (res.data.status === "200" && res.data.model.code === 0) {
+            this.$store.commit("setRefresh", true);
+            Dialog.alert({
+              message: "提交成功",
+              width: "200px",
+              confirmButtonColor: "#ff4444",
+              closeOnClickOverlay: false,
+            }).then(() => {
+              this.$router.replace({
+                name: "home",
+              });
             });
-        }, 500);
-    }
+          } else {
+            this.$toast("提交失败");
+          }
+        });
+      }, 500);
+    },
   },
 };
 </script>
