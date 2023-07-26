@@ -1759,3 +1759,16 @@ export function isBatchBusinessHandler(data) {
         })
     })
 }
+
+export function getCurrentWorkItemType(data) {
+    return new Promise((resolve, reject) => {
+        resolve({
+            data: {
+                model: {
+                    code: 0
+                },
+                status: '200'
+            }
+        })
+    })
+}

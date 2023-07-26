@@ -51,70 +51,81 @@
                   v-for="(item_, index_) in item.noteData"
                   :key="index_"
                 >
-                    <div v-if="item_.isSubmitAfter === 'Y'">
-                        <div class="opinion-info">
-                            <div class="name">{{ item_.createUserName.indexOf("_") < 0 ?
-                                 item_.createUserName :
-                                 item_.createUserName.substring(0, item_.createUserName.indexOf("_"))
-                                 + item_.createUserName.substring(item_.createUserName.indexOf("( "))
-                                 +" 代 )"
-                                }}
-                            </div>
-                            <div class="date-time">{{ formatDate(item_.createTime) }}</div>
-                        </div>
-                        <div class="opinion-content">
-                            <p v-html="item_.noteContent"></p>
-                        </div>
+                  <div v-if="item_.isSubmitAfter === 'Y'">
+                    <div class="opinion-info">
+                      <div class="name">
+                        {{
+                          item_.createUserName.indexOf("_") < 0
+                            ? item_.createUserName
+                            : item_.createUserName.substring(
+                                0,
+                                item_.createUserName.indexOf("_")
+                              ) +
+                              item_.createUserName.substring(
+                                item_.createUserName.indexOf("( ")
+                              ) +
+                              " 代 )"
+                        }}
+                      </div>
+                      <div class="date-time">
+                        {{ formatDate(item_.createTime) }}
+                      </div>
                     </div>
+                    <div class="opinion-content">
+                      <p v-html="item_.noteContent"></p>
+                    </div>
+                  </div>
                 </div>
               </template>
             </van-collapse-item>
           </div>
         </template>
       </van-collapse>
-      <div
-        class="opinion-field card"
-        v-if="
-          opinionConfig.length > 0 &&
-          (currentList === 'todo' ||
-            currentList === 'seal' ||
-            currentList === 'toread')
-        "
-      >
-        <div id="showNoteText" v-if="showNote">
-          <div class="header-wrap">
-            <div class="header">
-              <div class="vertical-divider"></div>
-              <div class="field-title">填写意见</div>
+      <div class="round-card">
+        <div
+          class="opinion-field card"
+          v-if="
+            opinionConfig.length > 0 &&
+            (currentList === 'todo' ||
+              currentList === 'seal' ||
+              currentList === 'toread')
+          "
+        >
+          <div id="showNoteText" v-if="showNote">
+            <div class="header-wrap">
+              <div class="header">
+                <div class="vertical-divider"></div>
+                <div class="field-title">填写意见</div>
+              </div>
+              <div>
+                <van-button
+                  class="auto-fill"
+                  color="#ff4444"
+                  round
+                  size="small"
+                  @click="autoFill"
+                  >常用意见</van-button
+                >
+              </div>
             </div>
-            <div>
-              <van-button
-                class="auto-fill"
-                color="#ff4444"
-                round
-                size="small"
-                @click="autoFill"
-                >常用意见</van-button
-              >
+            <van-divider />
+            <div
+              class="field-wrap"
+              v-for="item in opinionConfig"
+              :key="item.noteId"
+            >
+              <div class="field-title">{{ item.noteName }}</div>
+              <van-field
+                v-model="item.noteContent"
+                rows="4"
+                type="textarea"
+                maxlength="500"
+                :placeholder="notePlaceHolder"
+                @click-input="onClickInput"
+                show-word-limit
+                ref="textarea"
+              />
             </div>
-          </div>
-          <van-divider />
-          <div
-            class="field-wrap"
-            v-for="item in opinionConfig"
-            :key="item.noteId"
-          >
-            <div class="field-title">{{ item.noteName }}</div>
-            <van-field
-              v-model="item.noteContent"
-              rows="4"
-              type="textarea"
-              maxlength="500"
-              :placeholder="notePlaceHolder"
-              @click-input="onClickInput"
-              show-word-limit
-              ref="textarea"
-            />
           </div>
         </div>
       </div>
@@ -152,7 +163,7 @@ import {
 import { api } from "../core/api/index";
 import SealList from "./SealList.vue";
 import CommonOpinions from "./CommonOpinions.vue";
-import moment from "moment"
+import moment from "moment";
 export default {
   name: "opinion",
   components: {
@@ -169,7 +180,7 @@ export default {
   },
   data() {
     return {
-      notePlaceHolder:"请输入意见，最多500字",
+      notePlaceHolder: "请输入意见，最多500字",
       activeNames: [],
       message: "",
       opinionData: [], // 意见内容
@@ -214,9 +225,9 @@ export default {
   },
   methods: {
     formatDate(item) {
-        const format = "YYYY-MM-DD HH:mm"
-        let dateTime = moment(item).format(format);
-        return item ? dateTime:"";
+      const format = "YYYY-MM-DD HH:mm";
+      let dateTime = moment(item).format(format);
+      return item ? dateTime : "";
     },
     init() {
       this.getOpinion();
@@ -243,10 +254,9 @@ export default {
         .getOpinionData({
           proInstId: this.currentProcess.proInstId,
           configCode: this.currentProcess.configCode,
-          userUuid: this.$store.state.userInfo.userId
+          userUuid: this.$store.state.userInfo.userId,
         })
         .then((res) => {
-            
           if (res.data.status === "200") {
             let obj = {};
             this.opinionData = res.data.model;
@@ -302,7 +312,7 @@ export default {
           workitemId: this.currentProcess.workitemId,
           wfmRoleTypes: "todo,drafter",
         })
-        .then( (res) => {
+        .then((res) => {
           Toast.clear();
           console.log("getEditOpinion()_res.data.model:", res.data.model);
           if (res.data.status === "200") {
@@ -314,15 +324,19 @@ export default {
               };
             });
             let obj = {}; // 提取可编辑意见的回显数据
-            console.log(this.opinionData)
+            console.log(this.opinionData);
             let objDrawback = {}; //单独提取最新的意见
-            console.log("________________________")
+            console.log("________________________");
             this.opinionData.forEach((item) => {
-                if(item.isSubmitAfter === "N"){
-                    console.log(item.actDefId, "-----",this.currentProcess.actDefId )
-                }
+              if (item.isSubmitAfter === "N") {
+                console.log(
+                  item.actDefId,
+                  "-----",
+                  this.currentProcess.actDefId
+                );
+              }
 
-                if (
+              if (
                 item.actDefId === this.currentProcess.actDefId &&
                 item.isSubmitAfter === "N" &&
                 item.createUser === this.userInfo.userId
@@ -334,15 +348,17 @@ export default {
                   id: item.id,
                 };
               }
-              if(item.actDefId === this.currentProcess.actDefId &&
-              item.isSubmitAfter === "Y" &&
-              item.createUser === this.userInfo.userId){
+              if (
+                item.actDefId === this.currentProcess.actDefId &&
+                item.isSubmitAfter === "Y" &&
+                item.createUser === this.userInfo.userId
+              ) {
                 objDrawback[item.type] = {
-                    value: item.noteContent,
-                    type: item.type,
-                    id: item.id,
-                    createTime : item.createTime
-                }
+                  value: item.noteContent,
+                  type: item.type,
+                  id: item.id,
+                  createTime: item.createTime,
+                };
               }
             });
             console.log("清空opinionConfig", this.opinionConfig);
@@ -352,46 +368,47 @@ export default {
             console.log("res.data.model.noteEdit", res.data.model.noteEdit); //比如yydbyj
             //判断收回
             let queryIsDrawbackParam = {
-                workitemId: this.currentProcess.workitemId
-            }
-            
-            api.getCurrentWorkItemType(queryIsDrawbackParam).then(typeRes=>{
-                //是收回
-                if(typeRes.data.model.code === 0){
-                    if (res.data.model.noteEdit) {
-                        let arr = res.data.model.noteEdit.split(",");
-                        arr.forEach((item) => {
-                            this.opinionConfig.push({
-                                noteId: item, //比如yydbyj
-                                noteName: eum[item].noteName, //比如"用印督办意见"
-                                noteContent: objDrawback[item] ? objDrawback[item].value : "",
-                                id: objDrawback[item] ? objDrawback[item].id : "",
-                            });
-                        });
-                        console.log("currentList", this.currentList);
-                    }
-                }else{
-                    if (res.data.model.noteEdit) {
-                        let arr = res.data.model.noteEdit.split(",");
-                        arr.forEach((item) => {
-                            this.opinionConfig.push({
-                                noteId: item, //比如yydbyj
-                                noteName: eum[item].noteName, //比如"用印督办意见"
-                                noteContent: obj[item] ? obj[item].value : "",
-                                id: obj[item] ? obj[item].id : "",
-                            });
-                        });
-                        console.log("currentList", this.currentList);
-                    }
+              workitemId: this.currentProcess.workitemId,
+            };
+            api.getCurrentWorkItemType(queryIsDrawbackParam).then((typeRes) => {
+              //是收回
+              if (typeRes.data.model.code === 0) {
+                if (res.data.model.noteEdit) {
+                  let arr = res.data.model.noteEdit.split(",");
+                  arr.forEach((item) => {
+                    this.opinionConfig.push({
+                      noteId: item, //比如yydbyj
+                      noteName: eum[item].noteName, //比如"用印督办意见"
+                      noteContent: objDrawback[item]
+                        ? objDrawback[item].value
+                        : "",
+                      id: objDrawback[item] ? objDrawback[item].id : "",
+                    });
+                  });
+                  console.log("currentList", this.currentList);
                 }
-                console.log("可编辑意见opinionConfig_push", this.opinionConfig);
-                var showNoteDom = document.getElementById("showNoteText");
-                if (
-                  showNoteDom != null &&
-                  this.currentProcess.state == "closed.completed"
-                ) {
-                  showNoteDom.hidden = true;
+              } else {
+                if (res.data.model.noteEdit) {
+                  let arr = res.data.model.noteEdit.split(",");
+                  arr.forEach((item) => {
+                    this.opinionConfig.push({
+                      noteId: item, //比如yydbyj
+                      noteName: eum[item].noteName, //比如"用印督办意见"
+                      noteContent: obj[item] ? obj[item].value : "",
+                      id: obj[item] ? obj[item].id : "",
+                    });
+                  });
+                  console.log("currentList", this.currentList);
                 }
+              }
+              console.log("可编辑意见opinionConfig_push", this.opinionConfig);
+              var showNoteDom = document.getElementById("showNoteText");
+              if (
+                showNoteDom != null &&
+                this.currentProcess.state == "closed.completed"
+              ) {
+                showNoteDom.hidden = true;
+              }
             });
           }
         });
@@ -430,21 +447,25 @@ export default {
     onClickInput() {
       this.$emit("onClickInput");
     },
-    changeNotePlaceHolder(){
-        let params = {
-            extendKey: "noteRemind",
-            actDefId: this.currentProcess.actDefId,
-            configId: this.currentProcess.configId,
-            proDirId: this.currentProcess.proDirId
+    changeNotePlaceHolder() {
+      let params = {
+        extendKey: "noteRemind",
+        actDefId: this.currentProcess.actDefId,
+        configId: this.currentProcess.configId,
+        proDirId: this.currentProcess.proDirId,
+      };
+      api.getActivityExtendConfigByName(params).then((res) => {
+        if (res.data.status === "200") {
+          if (
+            res.data.model &&
+            res.data.model.noteRemind &&
+            res.data.model.noteRemind
+          ) {
+            this.notePlaceHolder = res.data.model.noteRemind;
+          }
         }
-        api.getActivityExtendConfigByName(params).then((res) => {
-            if(res.data.status === "200"){
-                if(res.data.model && res.data.model.noteRemind && res.data.model.noteRemind){
-                    this.notePlaceHolder = res.data.model.noteRemind;
-                }
-            }
-        })
-    }
+      });
+    },
   },
 };
 </script>
@@ -454,6 +475,9 @@ export default {
 
 .opinion-wrap {
   // background-color: #ffffff;
+  .card {
+    margin-bottom: 0;
+  }
   /deep/.van-collapse-item {
     margin-bottom: 16px;
     box-shadow: 0px 2px 6px 0px rgba(97, 101, 105, 0.08);
