@@ -21,7 +21,7 @@
         <div class="tab-wrap" ref="detailWrap">
           <wu-feedback v-if="loading" />
           <template v-else>
-            <DetailForm :formConfig="formConfig" />
+            <DetailForm :formConfig="formConfig" @sendDeptVerify="getSendDeptVerify" @businessTypeVerify="getBusinessTypeVerify"/>
             <Opinion
               :noteConfig="noteConfig"
               :opinionConfig.sync="opinionConfig"
@@ -213,14 +213,8 @@ export default {
     currentList(){
       return this.$store.state.currentList;
     },
-    sendDeptVerify(){
-      return this.$store.state.sendDeptVerify
-    },
     sendDeptText(){
       return this.$store.state.sendDeptText
-    },
-    businessTypeVerify(){
-      return this.$store.state.businessTypeVerify
     },
     businessTypeText(){
       return this.$store.state.businessTypeText
@@ -305,6 +299,12 @@ export default {
 
   },
   methods: {
+    getSendDeptVerify(sendDeptVerify){
+      this.sendDeptVerify = sendDeptVerify
+    },
+    getBusinessTypeVerify(businessTypeVerify){
+      this.businessTypeVerify = businessTypeVerify
+    },
     isSubProcess(){
       console.log("isSubProcess被调用")
       console.log(this.currentProcess.actDefId)

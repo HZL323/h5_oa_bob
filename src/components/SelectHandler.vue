@@ -159,6 +159,14 @@ export default {
       type: Boolean,
       required: true
     },
+    sendDeptVerify:{
+      type: Boolean,
+      required: true
+    },
+    businessTypeVerify:{
+      type: Boolean,
+      required: true
+    },
     currentRadio: {
       // navbar标题
       type: String,
@@ -190,12 +198,6 @@ export default {
     },
     dataForm() {
       return this.$store.state.dataForm;
-    },
-    businesssTypeVerify() {
-      return this.$store.state.businessTypeVerify;
-    },
-    sendDeptVerify() {
-      return this.$store.state.sendDeptVerify;
     },
     noteRequired() {
       return this.$store.state.noteRequired;
@@ -384,9 +386,7 @@ export default {
         }
       }
       //校验是否是支行用印副中心流程
-      console.log("this.businesssTypeVerify", this.businesssTypeVerify);
-      console.log("this.dataForm.businessTyp", this.dataForm.businessType);
-      if (this.businesssTypeVerify == true) {
+      if (this.businessTypeVerify == true) {
         //校验是否填写了业务类型
         if (
           this.dataForm.businessType === "" ||
