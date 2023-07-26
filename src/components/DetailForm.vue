@@ -19,7 +19,7 @@
         <div class="title">
           <div class="vertical-divider"></div>
           <div class="process-title">{{ processTitle }}</div>
-          <div v-if="!!sendDeptverify && ifSendDept">
+          <div v-if="!!sendDeptVerify && ifSendDept">
             <van-button
               class="send-dept"
               color="#ff4444"
@@ -146,8 +146,8 @@ export default {
       processTitle: "", // 流程标题
       show: false,
       showBusinessType: false,
-      sendDeptverify: null,
-      businessTypeVerify: null,
+      sendDeptVerify: false,
+      businessTypeVerify: false,
       columns: [],
       businessTypeColumns: [],
       gwCode: "",
@@ -409,10 +409,10 @@ export default {
         .then((res) => {
           if (res.data.status === "200") {
             if (res.data.model && res.data.model.sendDeptVerify) {
-              this.sendDeptverify = true;
-              this.$store.commit("setSendDeptVerify", this.sendDeptverify);
+              this.sendDeptVerify = true;
+              this.$emit('sendDeptVerify', this.sendDeptVerify)
             }
-            if (this.sendDeptverify === true) {
+            if (this.sendDeptVerify === true) {
               let assignGwParameter = {
                 extendKey: "assignGw",
                 actDefId: this.currentProcess.actDefId,
@@ -458,11 +458,8 @@ export default {
             res.data.model.isCanEditField == "businessTypeText"
           ) {
             this.businessTypeVerify = true;
-            this.$store.commit(
-              "setBusinessTypeVerify",
-              this.businessTypeVerify
-            );
-            this.businessTypeColumns = [];
+            this.$emit('businessTypeVerify', this.businessTypeVerify)
+            this.businessTypeColumns = []
             // this.businessTypeColumns.push({
             //   key:888,
             //   value:"hhh",

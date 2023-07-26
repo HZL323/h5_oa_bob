@@ -22,7 +22,7 @@
           <div class="tab-wrap" id="tabWrap" ref="detailWrap">
             <wu-feedback v-if="loading" />
             <template v-else>
-              <DetailForm :formConfig="formConfig" @sendDeptVerify="getSendDeptVerify" @businessTypeVerify="getBusinessTypeVerify"/>
+              <DetailForm :formConfig="formConfig" @sendDeptVerify="getSendDeptVerify" @businessTypeVerify="getBusinessTypeVerify"@sendDeptVerify="getSendDeptVerify" @businessTypeVerify="getBusinessTypeVerify"/>
               <div v-if="showOpinion">
                 <Opinion
                   :noteConfig="noteConfig"
@@ -470,6 +470,12 @@ export default {
     });
   },
   methods: {
+    getSendDeptVerify(sendDeptVerify){
+      this.sendDeptVerify = sendDeptVerify
+    },
+    getBusinessTypeVerify(businessTypeVerify){
+      this.businessTypeVerify = businessTypeVerify
+    },
     getSendDeptVerify(sendDeptVerify){
       this.sendDeptVerify = sendDeptVerify
     },
@@ -1134,6 +1140,8 @@ export default {
                             name: "selectlink",
                             params: {
                                 backRoute: this.preRoute,
+                                sendDeptVerify:this.sendDeptVerify,
+                                businessTypeVerify:this.businessTypeVerify
                             },
                         });
                     }
