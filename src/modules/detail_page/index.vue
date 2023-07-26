@@ -53,7 +53,7 @@
         round
         @click="show = true"
         :disabled="loading"
-        v-if="showBackbar"
+        v-if="showSendbackButton"
         >退回</van-button
       >
       <van-button
@@ -183,6 +183,7 @@ export default {
       //yinyanhong
       isRouterAlive: true,
       showOpinion: true,
+      showSendbackButton:false,
     };
   },
   computed: {
@@ -218,29 +219,7 @@ export default {
         return false;
       }
     },
-    showBackbar() {
-      //console.log("----显示退回与否---",this.$store.state.currentProcess.workitemName)
-      if (
-        this.$store.state.currentProcess.editFlag === "1" ||
-        this.$store.state.currentProcess.workitemName.indexOf("会签") !== -1 ||
-        this.$store.state.currentProcess.workitemName === "相关人员办理" ||
-        this.$store.state.currentProcess.workitemName === "收文经办" ||
-        this.$store.state.currentProcess.workitemName === "送相关支行" ||
-        this.$store.state.currentProcess.workitemName.indexOf("行领导传阅") !==
-          -1 ||
-        this.$store.state.currentProcess.workitemName ===
-          "技术可行性及业务测试评估" ||
-        this.$store.state.currentProcess.workitemName ===
-          "技术可行性评估结果审核" ||
-        this.$store.state.currentProcess.workitemName === "结果确认" ||
-        this.$store.state.currentProcess.workitemName === "业务测试" ||
-        this.$store.state.currentProcess.workitemName === "确认数据销毁"
-      ) {
-        return false;
-      } else {
-        return true;
-      }
-    },
+
     fromOut() {
       // 是否从外部跳转进OA
       return this.$store.state.fromOut;
@@ -453,7 +432,6 @@ export default {
         this.isSubProcess();
       }
     }
-
     setTimeout(() => {
       var showText = document.getElementById("showTextArea");
       if (showText != null) {
@@ -462,6 +440,7 @@ export default {
     }, 1500);
   },
   mounted() {
+    this.showBackbar() 
     this.$nextTick(() => {
       console.log(this.showTabbar);
       if (!this.showTabbar) {
@@ -470,6 +449,18 @@ export default {
     });
   },
   methods: {
+    showBackbar() {
+      let params = {
+        configId: this.currentProcess.configId,
+        proDirId: this.currentProcess.proDirId,
+        actDefId: this.currentProcess.actDefId,
+      }
+      api.getSendbackPrivilige(params).then(res=>{
+        if(res.data.model.code === 0){
+          this.showSendbackButton = true;
+        }
+      })
+    },
     getSendDeptVerify(sendDeptVerify){
       this.sendDeptVerify = sendDeptVerify
     },

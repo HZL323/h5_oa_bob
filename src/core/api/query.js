@@ -229,4 +229,6 @@ export function  showFwqqList(data){
 export function  batchCompleteWorkitem(data){
     return ajaxPost(`${URL}/mob/wfm/ApplicationServiceContainer/batchCompleteWorkitem`, data)
 }
-
+export function  getSendbackPrivilige(data){
+    return ajaxPost(`${URL}/mob/publicService/getSendbackPrivilige`, data)
+}
