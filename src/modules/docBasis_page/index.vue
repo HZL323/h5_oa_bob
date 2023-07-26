@@ -454,9 +454,6 @@ export default {
             actDefId: this.currentProcess.actDefId,
             userId: this.userInfo.userId,
           },
-          wfmActivityConfig: {
-            sendbackType: "pass",
-          },
         })
         .then((res) => {
           if (res.data.status === "200") {

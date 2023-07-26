@@ -51,7 +51,7 @@
         plain
         block
         round
-        @click="show = true"
+        @click="clickSendbackEvent"
         :disabled="loading"
         v-if="showSendbackButton"
         >退回</van-button
@@ -449,6 +449,13 @@ export default {
     });
   },
   methods: {
+    clickSendbackEvent(){
+      if(this.SubmitPermission === false){
+        Toast("请前往PC端退回!")
+      }else{
+        this.show = true;
+      }
+    },
     showBackbar() {
       let params = {
         configId: this.currentProcess.configId,
@@ -636,11 +643,8 @@ export default {
         .then((res) => {
           if (res.data.status === "200") {
             res.data.model.forEach((item) => {
-              //console.log("itemContent",item)
               if (
                 item.extendKey === "isMustEditField" ||
-                //item.extendKey === "wordNoEdit" ||
-                //item.extendKey === "subProcess" ||
                 item.extendKey === "isMustSealField" || //填写申请
                 item.actDefId === "pb" || //排版
                 item.extendKey === "isFjSeal" //商务用印申请 具体说明查询explainExtendAttrDialog
@@ -710,9 +714,6 @@ export default {
             proDirId: this.currentProcess.proDirId,
             actDefId: this.currentProcess.actDefId,
             userId: this.userInfo.userId,
-          },
-          wfmActivityConfig: {
-            sendbackType: "pass",
           },
         })
         .then((res) => {
