@@ -18,6 +18,8 @@
         :currentRadio="radio"
         :currentSelectData="selectData"
         :selectIsSubProcess="selectIsSubProcess"
+        :sendDeptVerify="sendDeptVerify"
+        :businessTypeVerify="businessTypeVerify"
       />
     </div>
     <div class="selet-ling-wrap" v-else>
@@ -131,6 +133,8 @@ export default {
       selectIsSubProcess: false, //所选的是不是子流程
       isZhyyjh: false, //当前环节是不是支行用印校核
       subProcessName: "", //子流程的名称
+      sendDeptVerify: this.$route.params.sendDeptVerify, 
+      businessTypeVerify: this.$route.params.businessTypeVerify
     };
   },
   computed: {
@@ -154,12 +158,6 @@ export default {
     },
     dataForm() {
       return this.$store.state.dataForm;
-    },
-    businesssTypeVerify() {
-      return this.$store.state.businessTypeVerify;
-    },
-    sendDeptVerify() {
-      return this.$store.state.sendDeptVerify;
     },
   },
   created() {
@@ -328,9 +326,7 @@ export default {
         }
       }
       //校验是否是支行用印副中心流程
-      console.log("this.businesssTypeVerify", this.businesssTypeVerify);
-      console.log("this.dataForm.businessTyp", this.dataForm.businessType);
-      if (this.businesssTypeVerify == true) {
+      if (this.businessTypeVerify == true) {
         //校验是否填写了业务类型
         if (
           this.dataForm.businessType === "" ||

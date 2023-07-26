@@ -190,20 +190,6 @@ export function sealDetail(data) {
     // console.log(`参数`,data)
     return Axios.post(`${URL}/mob/taskDetailService/getPrintAttachInfo`, data)
 }
-//判断该活动环节是否有配置发送部门的扩展字段
-//
-//   let hasSendDeptFlag = {
-//     extendKey: "sendDeptVerify",
-//     actDefId: this.currentLink.actDefId,
-//     configId: this.currentProcess.configId,
-//     proDirId: this.currentProcess.proDirId,
-//   }
-//   api.getActivityExtendConfigByName(hasSendDeptFlag).then((res) => {
-//     console.log("是否有配置发送部门res：" + res);
-//     if(res.data.model && res.data.model.sendDeptVerify){
-//
-//     };
-//   });
 //获取扩展字段的值
 export function getActivityExtendConfigByName(data){
     return Axios.post(`${URL}/mob/activity/ExtendServiceAttribute/getActivityExtendConfigByName`, data);

@@ -22,7 +22,7 @@
           <div class="tab-wrap" id="tabWrap" ref="detailWrap">
             <wu-feedback v-if="loading" />
             <template v-else>
-              <DetailForm :formConfig="formConfig" />
+              <DetailForm :formConfig="formConfig" @sendDeptVerify="getSendDeptVerify" @businessTypeVerify="getBusinessTypeVerify"/>
               <div v-if="showOpinion">
                 <Opinion
                   :noteConfig="noteConfig"
@@ -248,14 +248,8 @@ export default {
     currentList() {
       return this.$store.state.currentList;
     },
-    sendDeptVerify() {
-      return this.$store.state.sendDeptVerify;
-    },
     sendDeptText() {
       return this.$store.state.sendDeptText;
-    },
-    businessTypeVerify() {
-      return this.$store.state.businessTypeVerify;
     },
     businessTypeText() {
       return this.$store.state.businessTypeText;
@@ -476,6 +470,12 @@ export default {
     });
   },
   methods: {
+    getSendDeptVerify(sendDeptVerify){
+      this.sendDeptVerify = sendDeptVerify
+    },
+    getBusinessTypeVerify(businessTypeVerify){
+      this.businessTypeVerify = businessTypeVerify
+    },
     isShowOpinion() {
       console.log("hideOpinion --------------");
       let params = {
@@ -1015,153 +1015,131 @@ export default {
           }).then(() => {
             console.log("detailPage 961行的提交成功");
 
-            this.$router.replace({
-              name: "home",
-            });
-          });
-          return;
+                    this.$router.replace({
+                        name: 'home',
+                    });
+                });
+                return
+            }
+            if(commited === 2){
+                this.$toast("提交失败");
+                return
+            }
         }
-        if (commited === 2) {
-          this.$toast("提交失败");
-          return;
+        if (this.sendDeptVerify && (this.$store.state.currentList === "todo" || this.$store.state.currentList === "seal")) {
+            if (this.dataForm.sendDeptText == null ||this.dataForm.sendDeptText == "") {
+                Toast("请选择发送部门");
+                return;
+            }
         }
-      }
-      if (
-        this.sendDeptVerify &&
-        (this.$store.state.currentList === "todo" ||
-          this.$store.state.currentList === "seal")
-      ) {
-        if (
-          this.dataForm.sendDeptText == null ||
-          this.dataForm.sendDeptText == ""
-        ) {
-          Toast("请选择发送部门");
-          return;
+        if (this.businessTypeVerify && (this.$store.state.currentList === "todo" || this.$store.state.currentList === "seal")) {
+            if (this.dataForm.businessType == null ||this.dataForm.businessType == "") {
+                Toast("请选择业务类型");
+                return;
+            }
         }
-      }
-      if (
-        this.businessTypeVerify &&
-        (this.$store.state.currentList === "todo" ||
-          this.$store.state.currentList === "seal")
-      ) {
-        if (
-          this.dataForm.businessType == null ||
-          this.dataForm.businessType == ""
-        ) {
-          Toast("请选择业务类型");
-          return;
-        }
-      }
-      // 提交
-      if (!this.SubmitPermission) {
-        Toast("请前往PC端提交!");
-        return;
-      }
-      var u = navigator.userAgent,
-        app = navigator.appVersion;
-      var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
-      //console.log("isiOS", isiOS);
-      for (let i = 0; i < this.opinionConfig.length; i++) {
-        //意见必填时再进行意见填写  20220714
-        console.log(this.noteRequired);
-        if (this.noteRequired) {
-          //如果输入框内容是空的
-          if (
-            !this.opinionConfig[i].noteContent ||
-            this.opinionConfig[i].noteContent.trim().length === 0
-          ) {
-            // if (isiOS) {
-            //   document.documentElement.scrollTop =
-            //     this.$refs.detailWrap.clientHeight - 255;
-            // } else {
-            //   window.scrollTo(0, 9999);
-            // }
-            let scrollEle = document.querySelector(".van-tabs__content");
-            let elH = document.querySelector("#tabWrap").clientHeight;
-            let scrollH = elH - scrollEle.clientHeight;
-            scrollEle.scrollTop = scrollH;
-            Toast("请填写审批意见");
+        // 提交
+        if (!this.SubmitPermission) {
+            Toast("请前往PC端提交!");
             return;
-          } else {
-            if (this.opinionConfig[i].noteContent.length > 500) {
-              Toast("意见内容已超过500字限制");
-              return;
-            }
-          }
         }
-      }
-      //保存意见是否必填  20220714
-      this.$store.commit("setNoteRequired", this.noteRequired);
-      this.$store.commit("setOpinionData", this.opinionConfig);
-      //如果多人会签环节，并且不是最后一个人提交则直接提交
-      api
-        .queryNextLink({
-          wfmData: {
-            actInstId: this.currentProcess.actInstId,
-            proInstId: this.currentProcess.proInstId,
-            workitemId: this.currentProcess.workitemId,
-            configId: this.currentProcess.configId,
-            configCode: this.currentProcess.configCode,
-            proDirId: this.currentProcess.proDirId,
-            actDefId: this.currentProcess.actDefId,
-            userId: this.userInfo.userId,
-            // sendUserIds: this.currentProcess.sendUserIds ? this.currentProcess.sendUserIds:"",
-          },
-        })
-        .then((res) => {
-          if (res.data.status === "200") {
-            console.log("----detail_page下一环节返回内容----", res.data);
-            if (res.data.model.flag == false) {
-              this.onMultiCommit();
+        var u = navigator.userAgent,
+            app = navigator.appVersion;
+        var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+        //console.log("isiOS", isiOS);
+        for (let i = 0; i < this.opinionConfig.length; i++) {
+
+            //意见必填时再进行意见填写  20220714
+            console.log(this.noteRequired);
+            if (this.noteRequired) {
+            //如果输入框内容是空的
+                if (!this.opinionConfig[i].noteContent  || this.opinionConfig[i].noteContent.trim().length === 0) {
+                    // if (isiOS) {
+                    //   document.documentElement.scrollTop =
+                    //     this.$refs.detailWrap.clientHeight - 255;
+                    // } else {
+                    //   window.scrollTo(0, 9999);
+                    // }
+                    let scrollEle = document.querySelector(".van-tabs__content");
+                    let elH = document.querySelector("#tabWrap").clientHeight;
+                    let scrollH = elH - scrollEle.clientHeight;
+                    scrollEle.scrollTop = scrollH;
+                    Toast("请填写审批意见");
+                    return;
+                } else {
+                    if (this.opinionConfig[i].noteContent.length > 500) {
+                        Toast("意见内容已超过500字限制");
+                        return;
+                    }
+                }
             }
-            //勾选了不弹出选人的复选框
-            else if (
-              res.data.model.flag == true &&
-              res.data.model.wfmData.isShowCompleteDialog == false
-            ) {
-              let data = {};
-              data.wfmData = {
-                actInstId: this.currentProcess.actInstId,
-                proInstId: this.currentProcess.proInstId,
-                workitemId: this.currentProcess.workitemId,
-                configId: this.currentProcess.configId,
-                proDirId: this.currentProcess.proDirId,
-                actDefId: res.data.model.wfmData.nextActivities[0].actDefId,
-                processName: this.currentProcess.processName || "",
-                userId: this.userInfo.userId,
-                nextActivities: [
-                  {
-                    actDefId:
-                      res.data.model.wfmData.nextActivities[0].actDefId || "",
-                    actDefName: "",
-                    proDefId:
-                      res.data.model.wfmData.nextActivities[0].proDefId || "",
-                    actDefPath:
-                      res.data.model.wfmData.nextActivities[0].actDefPath || "",
-                    proDirId:
-                      res.data.model.wfmData.nextActivities[0].proDirId || "",
-                    actInstId: "",
-                    participants:
-                      res.data.model.wfmData.nextActivities[0].participants,
-                    returnSelect: false,
-                  },
-                ],
-              };
-              this.hldNotShowNextActivities(data);
-            } else {
-              //if(this.currentProcess.)
-              //进入选择环节页面
-              this.$toast.clear();
-              this.$router.replace({
-                name: "selectlink",
-                params: {
-                  backRoute: this.preRoute,
+        }
+        //保存意见是否必填  20220714
+        this.$store.commit("setNoteRequired", this.noteRequired);
+        this.$store.commit("setOpinionData", this.opinionConfig);
+        //如果多人会签环节，并且不是最后一个人提交则直接提交
+        api
+            .queryNextLink({
+                wfmData: {
+                    actInstId: this.currentProcess.actInstId,
+                    proInstId: this.currentProcess.proInstId,
+                    workitemId: this.currentProcess.workitemId,
+                    configId: this.currentProcess.configId,
+                    configCode: this.currentProcess.configCode,
+                    proDirId: this.currentProcess.proDirId,
+                    actDefId: this.currentProcess.actDefId,
+                    userId: this.userInfo.userId,
+                    // sendUserIds: this.currentProcess.sendUserIds ? this.currentProcess.sendUserIds:"",
                 },
-              });
-            }
-          }
-          this.loading = false;
-        });
+            })
+            .then((res) => {
+                if (res.data.status === "200") {
+                    console.log("----detail_page下一环节返回内容----", res.data);
+                    if (res.data.model.flag == false) {
+                        this.onMultiCommit();
+                    }
+                    //勾选了不弹出选人的复选框
+                    else if(res.data.model.flag == true && res.data.model.wfmData.isShowCompleteDialog == false){
+                        debugger
+                        let data = {};
+                        data.wfmData = {
+                            actInstId: this.currentProcess.actInstId,
+                            proInstId: this.currentProcess.proInstId,
+                            workitemId: this.currentProcess.workitemId,
+                            configId: this.currentProcess.configId,
+                            proDirId: this.currentProcess.proDirId,
+                            actDefId: res.data.model.wfmData.nextActivities[0].actDefId,
+                            processName: this.currentProcess.processName || "",
+                            userId: this.userInfo.userId,
+                            nextActivities: [
+                                {
+                                    actDefId: res.data.model.wfmData.nextActivities[0].actDefId || "",
+                                    actDefName:  "",
+                                    proDefId: res.data.model.wfmData.nextActivities[0].proDefId || "",
+                                    actDefPath: res.data.model.wfmData.nextActivities[0].actDefPath || "",
+                                    proDirId: res.data.model.wfmData.nextActivities[0].proDirId || "",
+                                    actInstId: "",
+                                    participants:res.data.model.wfmData.nextActivities[0].participants,
+                                    returnSelect: false,
+                                },
+                            ],
+                        };
+                        this.hldNotShowNextActivities(data);
+                    }
+                     else {
+                        //if(this.currentProcess.)
+                        //进入选择环节页面
+                        this.$toast.clear();
+                        this.$router.replace({
+                            name: "selectlink",
+                            params: {
+                                backRoute: this.preRoute,
+                            },
+                        });
+                    }
+                }
+                this.loading = false;
+            });
     },
     async onCommitFinishCy() {
       const res = await api.finishCy({

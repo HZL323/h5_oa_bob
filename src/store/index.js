@@ -31,11 +31,9 @@ export default new Vuex.Store({
         noteRequired: null, // 意见是否必填
         count: 0, // 页面加载数量
         dataForm: {}, //表单详情
-        sendDeptVerify : false, //岗位有发送部门的标识
         sendDeptText: null ,
         businessTypeText: null,
         fwqqProcess:null,
-        businessTypeVerify: false
     },
     mutations: {
         setDataForm(state, payload){
@@ -75,9 +73,6 @@ export default new Vuex.Store({
         setNoteRequired(state, payload) {
             state.noteRequired = payload
         },
-        setSendDeptVerify(state, payload){
-            state.sendDeptVerify = payload
-        },
         setSendDeptText(state, payload){
             state.sendDeptText = payload
         },
@@ -86,9 +81,6 @@ export default new Vuex.Store({
         },
         setFwqqProcess(state, payload){
             state.fwqqProcess = payload
-        },
-        setBusinessTypeVerify(state, payload){
-            state.businessTypeVerify = payload
         },
         //wulianjia  2022/8/19
         updateCount(state, payload) {
