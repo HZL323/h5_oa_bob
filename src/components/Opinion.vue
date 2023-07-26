@@ -246,7 +246,7 @@ export default {
           userUuid: this.$store.state.userInfo.userId
         })
         .then((res) => {
-            debugger
+            
           if (res.data.status === "200") {
             let obj = {};
             this.opinionData = res.data.model;
@@ -354,7 +354,7 @@ export default {
             let queryIsDrawbackParam = {
                 workitemId: this.currentProcess.workitemId
             }
-            debugger
+            
             api.getCurrentWorkItemType(queryIsDrawbackParam).then(typeRes=>{
                 //是收回
                 if(typeRes.data.model.code === 0){
