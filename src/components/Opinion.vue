@@ -53,23 +53,8 @@
                 >
                   <div v-if="item_.isSubmitAfter === 'Y'">
                     <div class="opinion-info">
-                      <div class="name">
-                        {{
-                          item_.createUserName.indexOf("_") < 0
-                            ? item_.createUserName
-                            : item_.createUserName.substring(
-                                0,
-                                item_.createUserName.indexOf("_")
-                              ) +
-                              item_.createUserName.substring(
-                                item_.createUserName.indexOf("( ")
-                              ) +
-                              " 代 )"
-                        }}
-                      </div>
-                      <div class="date-time">
-                        {{ formatDate(item_.createTime) }}
-                      </div>
+                      <div class="name">{{item_.createUserName.indexOf("_") < 0 ? item_.createUserName : item_.createUserName.substring(0,item_.createUserName.indexOf("_")) +item_.createUserName.substring(item_.createUserName.indexOf("( ")) +" 代 )"}}</div>
+                      <div class="date-time">{{ formatDate(item_.createTime) }}</div>
                     </div>
                     <div class="opinion-content">
                       <p v-html="item_.noteContent"></p>
@@ -513,11 +498,12 @@ export default {
 
       &::before {
         content: "";
-        width: 6px;
-        height: 6px;
-        background: #ffffff;
-        border: 2px solid #a7afbf;
-        border-radius: 6px;
+        width: 8px;
+        height: 8px;
+        background: url('../assets/img/dot.png');
+        background-size: contain;
+        // border: 2px solid #a7afbf;
+        // border-radius: 6px;
         margin-right: 8px;
         display: inline-block;
       }
@@ -529,7 +515,7 @@ export default {
 
     .opinion-content {
       background: #fafafa;
-      border-radius: 2px;
+      // border-radius: 2px;
       padding: 16px;
       font-size: 14px;
       color: #323233;
