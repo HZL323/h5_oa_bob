@@ -53,8 +53,23 @@
                 >
                   <div v-if="item_.isSubmitAfter === 'Y'">
                     <div class="opinion-info">
-                      <div class="name">{{item_.createUserName.indexOf("_") < 0 ? item_.createUserName : item_.createUserName.substring(0,item_.createUserName.indexOf("_")) +item_.createUserName.substring(item_.createUserName.indexOf("( ")) +" 代 )"}}</div>
-                      <div class="date-time">{{ formatDate(item_.createTime) }}</div>
+                      <div class="name">
+                        {{
+                          item_.createUserName.indexOf("_") < 0
+                            ? item_.createUserName
+                            : item_.createUserName.substring(
+                                0,
+                                item_.createUserName.indexOf("_")
+                              ) +
+                              item_.createUserName.substring(
+                                item_.createUserName.indexOf("( ")
+                              ) +
+                              " 代 )"
+                        }}
+                      </div>
+                      <div class="date-time">
+                        {{ formatDate(item_.createTime) }}
+                      </div>
                     </div>
                     <div class="opinion-content">
                       <p v-html="item_.noteContent"></p>
@@ -82,15 +97,16 @@
                 <div class="vertical-divider"></div>
                 <div class="field-title">填写意见</div>
               </div>
-              <div>
-                <van-button
+              <div class="header-right">
+                <!-- <van-button
                   class="auto-fill"
-                  color="#ff4444"
-                  round
                   size="small"
                   @click="autoFill"
                   >常用意见</van-button
-                >
+                > -->
+                <div class="button-wrap" @click="autoFill">
+                  <div class="custom-button">常用意见</div>
+                </div>
               </div>
             </div>
             <van-divider />
@@ -500,7 +516,7 @@ export default {
         content: "";
         width: 8px;
         height: 8px;
-        background: url('../assets/img/dot.png');
+        background: url("../assets/img/dot.png");
         background-size: contain;
         // border: 2px solid #a7afbf;
         // border-radius: 6px;
@@ -528,6 +544,26 @@ export default {
 
     .header-wrap {
       display: flex;
+      
+      .header-right {
+        display: flex;
+        align-items: center;
+        height: 100%;
+      }
+      .button-wrap {
+        border-radius: 16px;
+        overflow: hidden;
+
+        .custom-button {
+          height: 32px;
+          width: 100px;
+          color: #ffffff;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: #ff4444;
+        }
+      }
     }
 
     .header {
