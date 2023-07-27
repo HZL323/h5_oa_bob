@@ -53,23 +53,8 @@
                 >
                   <div v-if="item_.isSubmitAfter === 'Y'">
                     <div class="opinion-info">
-                      <div class="name">
-                        {{
-                          item_.createUserName.indexOf("_") < 0
-                            ? item_.createUserName
-                            : item_.createUserName.substring(
-                                0,
-                                item_.createUserName.indexOf("_")
-                              ) +
-                              item_.createUserName.substring(
-                                item_.createUserName.indexOf("( ")
-                              ) +
-                              " 代 )"
-                        }}
-                      </div>
-                      <div class="date-time">
-                        {{ formatDate(item_.createTime) }}
-                      </div>
+                      <div class="name">{{ formatCreateUserName(item_.createUserName) }}</div>
+                      <div class="date-time">{{ formatDate(item_.createTime) }}</div>
                     </div>
                     <div class="opinion-content">
                       <p v-html="item_.noteContent"></p>
@@ -225,6 +210,13 @@ export default {
     this.getSealList();
   },
   methods: {
+    formatCreateUserName(name) {
+      let formatName =
+        name.indexOf("_") < 0
+          ? name
+          : `${name.substring(0, name.indexOf("_"))}${name.substring(name.indexOf("( "))} 代 )`;
+      return formatName;
+    },
     formatDate(item) {
       const format = "YYYY-MM-DD HH:mm";
       let dateTime = moment(item).format(format);
@@ -544,7 +536,7 @@ export default {
 
     .header-wrap {
       display: flex;
-      
+
       .header-right {
         display: flex;
         align-items: center;
