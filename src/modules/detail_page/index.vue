@@ -22,7 +22,7 @@
           <div class="tab-wrap" id="tabWrap" ref="detailWrap">
             <wu-feedback v-if="loading" />
             <template v-else>
-              <DetailForm :formConfig="formConfig" @sendDeptVerify="getSendDeptVerify" @businessTypeVerify="getBusinessTypeVerify"@sendDeptVerify="getSendDeptVerify" @businessTypeVerify="getBusinessTypeVerify"/>
+              <DetailForm :formConfig="formConfig" @sendDeptVerify="getSendDeptVerify" @businessTypeVerify="getBusinessTypeVerify"/>
               <div v-if="showOpinion">
                 <Opinion
                   :noteConfig="noteConfig"
