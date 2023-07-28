@@ -1116,6 +1116,7 @@ export default {
                                 },
                             ],
                         };
+                        console.log("hldNotShowNextActivities被调用")
                         this.hldNotShowNextActivities(data);
                     }
                      else {
@@ -1312,6 +1313,15 @@ export default {
       }
     },
     async hldNotShowNextActivities(data) {
+      console.log("日期：", moment());
+      console.log("用户名", this.userInfo.userName)
+      console.log("hldNotShowNextActivities ---- this.noteRequired", this.noteRequired)
+      if(this.opinionConfig[0] !== null){
+        console.log("hldNotShowNextActivities ---- this.opinionConfig[0]", this.opinionConfig[0])
+        if(this.opinionConfig[0].noteContent!==null){
+          console.log("hldNotShowNextActivities ---- this.opinionConfig[0].noteContent", this.opinionConfig[0].noteContent)
+        }
+      }
       //必填生效
       let saveNoteResult = 0;
       if (
