@@ -26,7 +26,7 @@
               <div v-if="showOpinion">
                 <Opinion
                   :noteConfig="noteConfig"
-                  :opinionConfig.sync="opinionConfig"
+                  :opinionConfig.sync="opinionConfig"     
                   :fromOut="fromOut"
                   @onClickInput="onClickInput"
                   ref="opinion"
@@ -485,8 +485,7 @@ export default {
       api.getActivityExtendConfigByName(params).then((res) => {
         if (
           res.data.model &&
-          res.data.model.hideOpinion &&
-          res.data.model.hideOpinion
+          res.data.model.hideOpinion 
         ) {
           this.showOpinion = false;
           console.log("hideOpinion --------true-------");
@@ -1039,19 +1038,16 @@ export default {
             app = navigator.appVersion;
         var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
         //console.log("isiOS", isiOS);
+        console.log("for 外部???????????????????????????")
         for (let i = 0; i < this.opinionConfig.length; i++) {
 
             //意见必填时再进行意见填写  20220714
             console.log(this.noteRequired);
             if (this.noteRequired) {
             //如果输入框内容是空的
+                console.log("for 里面?????????????????????????")
+                console.log("this.opinionConfig[i]", this.opinionConfig[i])
                 if (!this.opinionConfig[i].noteContent  || this.opinionConfig[i].noteContent.trim().length === 0) {
-                    // if (isiOS) {
-                    //   document.documentElement.scrollTop =
-                    //     this.$refs.detailWrap.clientHeight - 255;
-                    // } else {
-                    //   window.scrollTo(0, 9999);
-                    // }
                     let scrollEle = document.querySelector(".van-tabs__content");
                     let elH = document.querySelector("#tabWrap").clientHeight;
                     let scrollH = elH - scrollEle.clientHeight;
@@ -1313,15 +1309,11 @@ export default {
       }
     },
     async hldNotShowNextActivities(data) {
-      console.log("日期：", moment());
+      //console.log("日期：", moment());
       console.log("用户名", this.userInfo.userName)
       console.log("hldNotShowNextActivities ---- this.noteRequired", this.noteRequired)
-      if(this.opinionConfig[0] !== null){
-        console.log("hldNotShowNextActivities ---- this.opinionConfig[0]", this.opinionConfig[0])
-        if(this.opinionConfig[0].noteContent!==null){
-          console.log("hldNotShowNextActivities ---- this.opinionConfig[0].noteContent", this.opinionConfig[0].noteContent)
-        }
-      }
+      console.log("hldNotShowNextActivities ---- this.opinionConfig[0]", this.opinionConfig[0])
+      console.log("hldNotShowNextActivities ---- this.opinionConfig[0].noteContent", this.opinionConfig[0].noteContent)
       //必填生效
       let saveNoteResult = 0;
       if (

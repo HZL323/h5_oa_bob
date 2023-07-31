@@ -249,7 +249,6 @@ export default {
               if (res.data.status === "200") {
                 if (
                   res.data.model &&
-                  res.data.model.hideOpinion &&
                   res.data.model.hideOpinion
                 ) {
                   this.processTitle = res.data.model.hideOpinion;
