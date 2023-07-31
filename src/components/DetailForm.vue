@@ -278,6 +278,7 @@ export default {
             }
 
             this.loading = false;
+            this.$emit('updateCount')
             this.$nextTick(() => {
               this.initHeight();
             });

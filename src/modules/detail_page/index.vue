@@ -22,13 +22,19 @@
           <div class="tab-wrap" id="tabWrap" ref="detailWrap">
             <wu-feedback v-if="loading" />
             <template v-else>
-              <DetailForm :formConfig="formConfig" @sendDeptVerify="getSendDeptVerify" @businessTypeVerify="getBusinessTypeVerify"/>
+              <DetailForm
+                :formConfig="formConfig"
+                @sendDeptVerify="getSendDeptVerify"
+                @businessTypeVerify="getBusinessTypeVerify"
+                @updateCount="updateCount"
+              />
               <div v-if="showOpinion">
                 <Opinion
                   :noteConfig="noteConfig"
-                  :opinionConfig.sync="opinionConfig"     
+                  :opinionConfig.sync="opinionConfig"
                   :fromOut="fromOut"
                   @onClickInput="onClickInput"
+                  @updateCount="updateCount"
                   ref="opinion"
                 />
               </div>
@@ -52,7 +58,7 @@
         block
         round
         @click="clickSendbackEvent"
-        :disabled="loading"
+        :disabled="buttonDisabled"
         v-if="showSendbackButton"
         >退回</van-button
       >
@@ -61,7 +67,7 @@
         block
         round
         @click="onCommit"
-        :disabled="loading"
+        :disabled="buttonDisabled"
         >提交</van-button
       >
     </div>
@@ -174,6 +180,8 @@ export default {
       opinionConfig: [], // 编辑意见
       preRoute: this.$route.params.preRoute || "home",
       loading: true, // 等待加载
+      buttonDisabled: true, // 按钮是否可点击，用于等待接口加载完成
+      count: 0, // 记载表单和意见是否加载完成
       SubmitPermission: true, // 提交权限 true: 可提交，false: 不可提交
       noteRequired: true, //意见必填  true: 必填, false: 非必填   20220714
       //fromOut: true, // 是否从外部跳转进OA
@@ -183,7 +191,7 @@ export default {
       //yinyanhong
       isRouterAlive: true,
       showOpinion: true,
-      showSendbackButton:false,
+      showSendbackButton: false,
     };
   },
   computed: {
@@ -219,7 +227,6 @@ export default {
         return false;
       }
     },
-
     fromOut() {
       // 是否从外部跳转进OA
       return this.$store.state.fromOut;
@@ -234,6 +241,7 @@ export default {
       return this.$store.state.businessTypeText;
     },
   },
+  watch: {},
   created() {
     console.log("生产版本号--1.4.1");
     this.$store.commit("setCurrentList", this.$route.query.queryKind);
@@ -440,7 +448,7 @@ export default {
     }, 1500);
   },
   mounted() {
-    this.showBackbar() 
+    this.showBackbar();
     this.$nextTick(() => {
       console.log(this.showTabbar);
       if (!this.showTabbar) {
@@ -449,10 +457,10 @@ export default {
     });
   },
   methods: {
-    clickSendbackEvent(){
-      if(this.SubmitPermission === false){
-        Toast("请前往PC端退回!")
-      }else{
+    clickSendbackEvent() {
+      if (this.SubmitPermission === false) {
+        Toast("请前往PC端退回!");
+      } else {
         this.show = true;
       }
     },
@@ -461,18 +469,18 @@ export default {
         configId: this.currentProcess.configId,
         proDirId: this.currentProcess.proDirId,
         actDefId: this.currentProcess.actDefId,
-      }
-      api.getSendbackPrivilige(params).then(res=>{
-        if(res.data.model.code === 0){
+      };
+      api.getSendbackPrivilige(params).then((res) => {
+        if (res.data.model.code === 0) {
           this.showSendbackButton = true;
         }
-      })
+      });
     },
-    getSendDeptVerify(sendDeptVerify){
-      this.sendDeptVerify = sendDeptVerify
+    getSendDeptVerify(sendDeptVerify) {
+      this.sendDeptVerify = sendDeptVerify;
     },
-    getBusinessTypeVerify(businessTypeVerify){
-      this.businessTypeVerify = businessTypeVerify
+    getBusinessTypeVerify(businessTypeVerify) {
+      this.businessTypeVerify = businessTypeVerify;
     },
     isShowOpinion() {
       console.log("hideOpinion --------------");
@@ -483,10 +491,7 @@ export default {
         proDirId: this.currentProcess.proDirId,
       };
       api.getActivityExtendConfigByName(params).then((res) => {
-        if (
-          res.data.model &&
-          res.data.model.hideOpinion 
-        ) {
+        if (res.data.model && res.data.model.hideOpinion) {
           this.showOpinion = false;
           console.log("hideOpinion --------true-------");
           return;
@@ -1006,129 +1011,152 @@ export default {
           }).then(() => {
             console.log("detailPage 961行的提交成功");
 
-                    this.$router.replace({
-                        name: 'home',
-                    });
-                });
-                return
-            }
-            if(commited === 2){
-                this.$toast("提交失败");
-                return
-            }
-        }
-        if (this.sendDeptVerify && (this.$store.state.currentList === "todo" || this.$store.state.currentList === "seal")) {
-            if (this.dataForm.sendDeptText == null ||this.dataForm.sendDeptText == "") {
-                Toast("请选择发送部门");
-                return;
-            }
-        }
-        if (this.businessTypeVerify && (this.$store.state.currentList === "todo" || this.$store.state.currentList === "seal")) {
-            if (this.dataForm.businessType == null ||this.dataForm.businessType == "") {
-                Toast("请选择业务类型");
-                return;
-            }
-        }
-        // 提交
-        if (!this.SubmitPermission) {
-            Toast("请前往PC端提交!");
-            return;
-        }
-        var u = navigator.userAgent,
-            app = navigator.appVersion;
-        var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
-        //console.log("isiOS", isiOS);
-        console.log("for 外部???????????????????????????")
-        for (let i = 0; i < this.opinionConfig.length; i++) {
-
-            //意见必填时再进行意见填写  20220714
-            console.log(this.noteRequired);
-            if (this.noteRequired) {
-            //如果输入框内容是空的
-                console.log("for 里面?????????????????????????")
-                console.log("this.opinionConfig[i]", this.opinionConfig[i])
-                if (!this.opinionConfig[i].noteContent  || this.opinionConfig[i].noteContent.trim().length === 0) {
-                    let scrollEle = document.querySelector(".van-tabs__content");
-                    let elH = document.querySelector("#tabWrap").clientHeight;
-                    let scrollH = elH - scrollEle.clientHeight;
-                    scrollEle.scrollTop = scrollH;
-                    Toast("请填写审批意见");
-                    return;
-                } else {
-                    if (this.opinionConfig[i].noteContent.length > 500) {
-                        Toast("意见内容已超过500字限制");
-                        return;
-                    }
-                }
-            }
-        }
-        //保存意见是否必填  20220714
-        this.$store.commit("setNoteRequired", this.noteRequired);
-        this.$store.commit("setOpinionData", this.opinionConfig);
-        //如果多人会签环节，并且不是最后一个人提交则直接提交
-        api
-            .queryNextLink({
-                wfmData: {
-                    actInstId: this.currentProcess.actInstId,
-                    proInstId: this.currentProcess.proInstId,
-                    workitemId: this.currentProcess.workitemId,
-                    configId: this.currentProcess.configId,
-                    configCode: this.currentProcess.configCode,
-                    proDirId: this.currentProcess.proDirId,
-                    actDefId: this.currentProcess.actDefId,
-                    userId: this.userInfo.userId,
-                    // sendUserIds: this.currentProcess.sendUserIds ? this.currentProcess.sendUserIds:"",
-                },
-            })
-            .then((res) => {
-                if (res.data.status === "200") {
-                    console.log("----detail_page下一环节返回内容----", res.data);
-                    if (res.data.model.flag == false) {
-                        this.onMultiCommit();
-                    }
-                    //勾选了不弹出选人的复选框
-                    else if(res.data.model.flag == true && res.data.model.wfmData.isShowCompleteDialog == false){
-                        debugger
-                        let data = {};
-                        data.wfmData = {
-                            actInstId: this.currentProcess.actInstId,
-                            proInstId: this.currentProcess.proInstId,
-                            workitemId: this.currentProcess.workitemId,
-                            configId: this.currentProcess.configId,
-                            proDirId: this.currentProcess.proDirId,
-                            actDefId: res.data.model.wfmData.nextActivities[0].actDefId,
-                            processName: this.currentProcess.processName || "",
-                            userId: this.userInfo.userId,
-                            nextActivities: [
-                                {
-                                    actDefId: res.data.model.wfmData.nextActivities[0].actDefId || "",
-                                    actDefName:  "",
-                                    proDefId: res.data.model.wfmData.nextActivities[0].proDefId || "",
-                                    actDefPath: res.data.model.wfmData.nextActivities[0].actDefPath || "",
-                                    proDirId: res.data.model.wfmData.nextActivities[0].proDirId || "",
-                                    actInstId: "",
-                                    participants:res.data.model.wfmData.nextActivities[0].participants,
-                                    returnSelect: false,
-                                },
-                            ],
-                        };
-                        console.log("hldNotShowNextActivities被调用")
-                        this.hldNotShowNextActivities(data);
-                    }
-                     else {
-                        //if(this.currentProcess.)
-                        //进入选择环节页面
-                        this.$toast.clear();
-                        this.$router.replace({
-                            name: "selectlink",
-                            params: {
-                                backRoute: this.preRoute,
-                            },
-                        });
-                    }
-                }
-                this.loading = false;
+            this.$router.replace({
+              name: "home",
             });
+          });
+          return;
+        }
+        if (commited === 2) {
+          this.$toast("提交失败");
+          return;
+        }
+      }
+      if (
+        this.sendDeptVerify &&
+        (this.$store.state.currentList === "todo" ||
+          this.$store.state.currentList === "seal")
+      ) {
+        if (
+          this.dataForm.sendDeptText == null ||
+          this.dataForm.sendDeptText == ""
+        ) {
+          Toast("请选择发送部门");
+          return;
+        }
+      }
+      if (
+        this.businessTypeVerify &&
+        (this.$store.state.currentList === "todo" ||
+          this.$store.state.currentList === "seal")
+      ) {
+        if (
+          this.dataForm.businessType == null ||
+          this.dataForm.businessType == ""
+        ) {
+          Toast("请选择业务类型");
+          return;
+        }
+      }
+      // 提交
+      if (!this.SubmitPermission) {
+        Toast("请前往PC端提交!");
+        return;
+      }
+      var u = navigator.userAgent,
+        app = navigator.appVersion;
+      var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+      //console.log("isiOS", isiOS);
+      console.log("for 外部???????????????????????????");
+      for (let i = 0; i < this.opinionConfig.length; i++) {
+        //意见必填时再进行意见填写  20220714
+        console.log(this.noteRequired);
+        if (this.noteRequired) {
+          //如果输入框内容是空的
+          console.log("for 里面?????????????????????????");
+          console.log("this.opinionConfig[i]", this.opinionConfig[i]);
+          if (
+            !this.opinionConfig[i].noteContent ||
+            this.opinionConfig[i].noteContent.trim().length === 0
+          ) {
+            let scrollEle = document.querySelector(".van-tabs__content");
+            let elH = document.querySelector("#tabWrap").clientHeight;
+            let scrollH = elH - scrollEle.clientHeight;
+            scrollEle.scrollTop = scrollH;
+            Toast("请填写审批意见");
+            return;
+          } else {
+            if (this.opinionConfig[i].noteContent.length > 500) {
+              Toast("意见内容已超过500字限制");
+              return;
+            }
+          }
+        }
+      }
+      //保存意见是否必填  20220714
+      this.$store.commit("setNoteRequired", this.noteRequired);
+      this.$store.commit("setOpinionData", this.opinionConfig);
+      //如果多人会签环节，并且不是最后一个人提交则直接提交
+      api
+        .queryNextLink({
+          wfmData: {
+            actInstId: this.currentProcess.actInstId,
+            proInstId: this.currentProcess.proInstId,
+            workitemId: this.currentProcess.workitemId,
+            configId: this.currentProcess.configId,
+            configCode: this.currentProcess.configCode,
+            proDirId: this.currentProcess.proDirId,
+            actDefId: this.currentProcess.actDefId,
+            userId: this.userInfo.userId,
+            // sendUserIds: this.currentProcess.sendUserIds ? this.currentProcess.sendUserIds:"",
+          },
+        })
+        .then((res) => {
+          if (res.data.status === "200") {
+            console.log("----detail_page下一环节返回内容----", res.data);
+            if (res.data.model.flag == false) {
+              this.onMultiCommit();
+            }
+            //勾选了不弹出选人的复选框
+            else if (
+              res.data.model.flag == true &&
+              res.data.model.wfmData.isShowCompleteDialog == false
+            ) {
+              debugger;
+              let data = {};
+              data.wfmData = {
+                actInstId: this.currentProcess.actInstId,
+                proInstId: this.currentProcess.proInstId,
+                workitemId: this.currentProcess.workitemId,
+                configId: this.currentProcess.configId,
+                proDirId: this.currentProcess.proDirId,
+                actDefId: res.data.model.wfmData.nextActivities[0].actDefId,
+                processName: this.currentProcess.processName || "",
+                userId: this.userInfo.userId,
+                nextActivities: [
+                  {
+                    actDefId:
+                      res.data.model.wfmData.nextActivities[0].actDefId || "",
+                    actDefName: "",
+                    proDefId:
+                      res.data.model.wfmData.nextActivities[0].proDefId || "",
+                    actDefPath:
+                      res.data.model.wfmData.nextActivities[0].actDefPath || "",
+                    proDirId:
+                      res.data.model.wfmData.nextActivities[0].proDirId || "",
+                    actInstId: "",
+                    participants:
+                      res.data.model.wfmData.nextActivities[0].participants,
+                    returnSelect: false,
+                  },
+                ],
+              };
+              console.log("hldNotShowNextActivities被调用");
+              this.hldNotShowNextActivities(data);
+            } else {
+              //if(this.currentProcess.)
+              //进入选择环节页面
+              this.$toast.clear();
+              this.$router.replace({
+                name: "selectlink",
+                params: {
+                  backRoute: this.preRoute,
+                },
+              });
+            }
+          }
+          this.loading = false;
+        });
     },
     async onCommitFinishCy() {
       const res = await api.finishCy({
@@ -1310,10 +1338,19 @@ export default {
     },
     async hldNotShowNextActivities(data) {
       //console.log("日期：", moment());
-      console.log("用户名", this.userInfo.userName)
-      console.log("hldNotShowNextActivities ---- this.noteRequired", this.noteRequired)
-      console.log("hldNotShowNextActivities ---- this.opinionConfig[0]", this.opinionConfig[0])
-      console.log("hldNotShowNextActivities ---- this.opinionConfig[0].noteContent", this.opinionConfig[0].noteContent)
+      console.log("用户名", this.userInfo.userName);
+      console.log(
+        "hldNotShowNextActivities ---- this.noteRequired",
+        this.noteRequired
+      );
+      console.log(
+        "hldNotShowNextActivities ---- this.opinionConfig[0]",
+        this.opinionConfig[0]
+      );
+      console.log(
+        "hldNotShowNextActivities ---- this.opinionConfig[0].noteContent",
+        this.opinionConfig[0].noteContent
+      );
       //必填生效
       let saveNoteResult = 0;
       if (
@@ -1379,6 +1416,11 @@ export default {
           }
         });
       }, 500);
+    },
+    updateCount() {
+      // 表单详情以及意见加载完成触发
+      this.count++;
+      this.count === 2 && (this.buttonDisabled = false);
     },
   },
 };

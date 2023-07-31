@@ -53,8 +53,12 @@
                 >
                   <div v-if="item_.isSubmitAfter === 'Y'">
                     <div class="opinion-info">
-                      <div class="name">{{ formatCreateUserName(item_.createUserName) }}</div>
-                      <div class="date-time">{{ formatDate(item_.createTime) }}</div>
+                      <div class="name">
+                        {{ formatCreateUserName(item_.createUserName) }}
+                      </div>
+                      <div class="date-time">
+                        {{ formatDate(item_.createTime) }}
+                      </div>
                     </div>
                     <div class="opinion-content">
                       <p v-html="item_.noteContent"></p>
@@ -214,7 +218,9 @@ export default {
       let formatName =
         name.indexOf("_") < 0
           ? name
-          : `${name.substring(0, name.indexOf("_"))}${name.substring(name.indexOf("( "))} 代 )`;
+          : `${name.substring(0, name.indexOf("_"))}${name.substring(
+              name.indexOf("( ")
+            )} 代 )`;
       return formatName;
     },
     formatDate(item) {
@@ -282,6 +288,7 @@ export default {
               this.activeNames
             );
             this.loading = false;
+            this.$emit("updateCount");
             this.getEditOpinion();
           }
         });
