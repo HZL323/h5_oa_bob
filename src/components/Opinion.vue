@@ -53,12 +53,8 @@
                 >
                   <div v-if="item_.isSubmitAfter === 'Y'">
                     <div class="opinion-info">
-                      <div class="name">
-                        {{ formatCreateUserName(item_.createUserName) }}
-                      </div>
-                      <div class="date-time">
-                        {{ formatDate(item_.createTime) }}
-                      </div>
+                      <div class="name">{{ formatCreateUserName(item_.createUserName) }}</div>
+                      <div class="date-time">{{ formatDate(item_.createTime) }}</div>
                     </div>
                     <div class="opinion-content">
                       <p v-html="item_.noteContent"></p>
@@ -288,8 +284,8 @@ export default {
               this.activeNames
             );
             this.loading = false;
-            this.$emit("updateCount");
             this.getEditOpinion();
+            this.$emit("updateCount");
           }
         });
     },
