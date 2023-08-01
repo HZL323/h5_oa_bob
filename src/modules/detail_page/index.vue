@@ -1231,7 +1231,7 @@ export default {
             ) {
               saveNoteResult = -2;
             }
-            // 处理第一个元素的结果
+            
           })
           .catch((error) => {
             // 处理错误
@@ -1385,7 +1385,7 @@ export default {
         if (saveNoteResult === -1) {
           // 关闭提交loading
           this.$toast.clear();
-          this.$toast("提交失败");
+          this.$toast("意见保存失败，请关闭页面重试");
           return;
         }
         if (saveNoteResult === -2) {
@@ -1395,8 +1395,6 @@ export default {
           this.$router.replace({ path: "/home", force: true });
           return;
         }
-      }
-      setTimeout(() => {
         api.completeWorkitem(data).then((res) => {
           this.$toast.clear();
           if (res.data.status === "200" && res.data.model.code === 0) {
@@ -1412,10 +1410,16 @@ export default {
               });
             });
           } else {
-            this.$toast("提交失败");
+            this.$toast("提交失败，请关闭页面重试");
           }
         });
-      }, 500);
+      }else{
+        this.$toast("提交失败，请关闭页面重试");//方便排查问题
+        console.log("用户名", this.userInfo.userName);
+        console.log("else hldNotShowNextActivities ---- this.noteRequired",this.noteRequired);
+        console.log("else hldNotShowNextActivities ---- this.opinionConfig[0]",this.opinionConfig[0]);
+        console.log("else hldNotShowNextActivities ---- this.opinionConfig[0].noteContent",this.opinionConfig[0].noteContent);
+      }
     },
     updateCount() {
       // 表单详情以及意见加载完成触发
