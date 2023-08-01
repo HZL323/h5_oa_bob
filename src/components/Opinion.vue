@@ -285,7 +285,6 @@ export default {
             );
             this.loading = false;
             this.getEditOpinion();
-            this.$emit("updateCount");
           }
         });
     },
@@ -398,7 +397,9 @@ export default {
                 }
               }
               console.log("可编辑意见opinionConfig_push", this.opinionConfig);
+              this.$emit("updateCount");
             });
+            
           }
         });
     },
