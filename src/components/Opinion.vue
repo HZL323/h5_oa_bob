@@ -398,13 +398,6 @@ export default {
                 }
               }
               console.log("可编辑意见opinionConfig_push", this.opinionConfig);
-              var showNoteDom = document.getElementById("showNoteText");
-              if (
-                showNoteDom != null &&
-                this.currentProcess.state == "closed.completed"
-              ) {
-                showNoteDom.hidden = true;
-              }
             });
           }
         });
