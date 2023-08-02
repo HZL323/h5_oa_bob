@@ -148,7 +148,8 @@ export default {
           api
             .Preview({
               fileid: file.attachmentId,
-              userid: this.$store.state.userInfo.userId
+              userid: this.$store.state.userInfo.userId,
+              proInstId : this.currentProcess.proInstId
             })
             .then((res) => {
               if (res.data.status === "200") {
