@@ -93,7 +93,7 @@ export function queryAttachment(data) {
 export function Preview(data) {
     // console.log(`附件预览`,URL+`/mob/bob/PreviewToZt/preview`)
     // console.log(`参数`,data)
-    return ajaxPost(`${URL}/mob/bob/PreviewToZt/preview`, data)
+    return ajaxPost(`${URL}/mob/bob/PreviewToZtV6/preview`, data)
 }
 
 // 查询未盖章附件是否有对应的已盖章附件
