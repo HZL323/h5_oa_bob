@@ -241,7 +241,6 @@ export default {
       return this.$store.state.businessTypeText;
     },
   },
-  watch: {},
   created() {
     console.log("生产版本号--1.4.1");
     this.$store.commit("setCurrentList", this.$route.query.queryKind);
@@ -1424,7 +1423,11 @@ export default {
     updateCount() {
       // 表单详情以及意见加载完成触发
       this.count++;
-      this.count === 2 && (this.buttonDisabled = false);
+      if(this.showOpinion){
+        this.count === 2 && (this.buttonDisabled = false);
+      }else{
+        this.count === 1 && (this.buttonDisabled = false);
+      }
     },
   },
 };
