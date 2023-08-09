@@ -80,6 +80,8 @@ export default {
           return "待阅列表";
         case "seal":
           return "用印待办列表";
+        case "sendback":
+          return "退回待办列表";
         default:
           return "";
       }
