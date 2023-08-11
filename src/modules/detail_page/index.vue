@@ -163,6 +163,7 @@ export default {
   },
   watch: {
     dataForm(newVal, oldVal) {
+      console.log("监听dataForm, newVal:", newVal)
       if (JSON.stringify(newVal) !== {}) {
         this.getBackLink();
       }
@@ -331,7 +332,7 @@ export default {
                     }
                     let data = res.data.model.curPageData[0];
                     this.$store.commit("setCurrentProcess", data);
-                    //this.getBackLink();
+                    this.showBackbar();
                     this.getFromConfig();
                     this.isSubmmit();
                     this.isShowOpinion();
@@ -414,7 +415,7 @@ export default {
           }
           let data = res.data.model.curPageData[0];
           this.$store.commit("setCurrentProcess", data);
-          //this.getBackLink();
+          this.showBackbar();
           this.getFromConfig();
           this.isSubmmit();
           this.isShowOpinion();
@@ -431,7 +432,7 @@ export default {
       if (this.$store.state.currentList !== "doing") {
         this.updateProcessState();
       }
-      //this.getBackLink();
+      this.showBackbar();
       this.getFromConfig();
       this.isSubmmit();
       this.isShowOpinion();
@@ -447,8 +448,8 @@ export default {
     }, 1500);
   },
   mounted() {
-    this.showBackbar();
     this.$nextTick(() => {
+      console.log("进入到nextTick")
       console.log(this.showTabbar);
       if (!this.showTabbar) {
         this.$refs.tabsWrap.style.bottom = 0;
@@ -464,12 +465,17 @@ export default {
       }
     },
     showBackbar() {
+      console.log("********this.showBackbar();")
+      console.log("this.currentProcess.configId",this.currentProcess.configId)
+      console.log("this.currentProcess.proDirId",this.currentProcess.proDirId)
+      console.log("this.currentProcess.actDefId",this.currentProcess.actDefId)
       let params = {
         configId: this.currentProcess.configId,
         proDirId: this.currentProcess.proDirId,
         actDefId: this.currentProcess.actDefId,
       };
       api.getSendbackPrivilige(params).then((res) => {
+        console.log("getSendbackPrivilige res", res)
         if (res.data.model.code === 0) {
           this.showSendbackButton = true;
         }
