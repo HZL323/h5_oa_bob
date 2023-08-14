@@ -87,7 +87,8 @@
               <div class="vertical-divider"></div>
               <div class="field-title">填写意见</div>
             </div>
-            <div>
+            
+            <!-- <div>
               <van-button
                 class="auto-fill"
                 color="#ff4444"
@@ -96,7 +97,13 @@
                 @click="autoFill"
                 >常用意见</van-button
               >
-            </div>
+            </div> -->
+            
+          </div >
+          <div class="parentOpinion">
+            <div class="sub" @click="choose(1)" :class="another1">同意</div>
+            <div class="sub" @click="choose(2)" :class="another2">不同意</div>
+            <div class="sub" @click="choose(3)" :class="another3">已阅</div>
           </div>
           <van-divider />
           <div
@@ -180,6 +187,9 @@ export default {
       columns: ["同意", "已阅"], // TODO 这块要去后端获取意见列表
       sealList: [], // 用印申请明细列表
       placeholder: false,
+      another1:"",
+      another2:"",
+      another3:"",
     };
   },
   props: {
@@ -416,6 +426,32 @@ export default {
       // this.show = true;
       this.$refs.CommonOpinions.show = true;
     },
+    choose(num){
+      if(num === 1){
+          this.another1 = "sub2"
+          this.another2 = ""
+          this.another3 = ""
+          this.opinionConfig.forEach((e)=>{
+            e.noteContent = "同意。"
+          })
+      }
+      if(num === 2){
+          this.another1 = ""
+          this.another2 = "sub2"
+          this.another3 = ""
+          this.opinionConfig.forEach((e)=>{
+            e.noteContent = "不同意。"
+          })
+      }
+      if(num === 3){
+          this.another1 = ""
+          this.another2 = ""
+          this.another3 = "sub2"
+          this.opinionConfig.forEach((e)=>{
+            e.noteContent = "已阅。"
+          })
+      }    
+    },
     onConfirm(value) {
       this.opinionConfig.forEach((item) => {
         if (item.noteId !== "bz") {
@@ -518,6 +554,23 @@ export default {
 
     .header-wrap {
       display: flex;
+      
+    }
+    .parentOpinion{
+      display: flex;
+      padding-top: 10px;
+      .sub{
+        border:1px solid #ff4444;
+        border-radius: 5px;
+        padding: 5px 14px;
+        margin-left:15px;
+        font-size: 14px;
+        color: #ff4444;
+      }
+      .sub2{
+        color: #ffffff;
+        background-color: #ff4444;
+      }
     }
 
     .header {
