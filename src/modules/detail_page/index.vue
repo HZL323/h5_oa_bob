@@ -1323,16 +1323,36 @@ export default {
                 this.$toast.clear();
                 if (res.data.status === "200" && res.data.model.code === 0) {
                     this.$store.commit("setRefresh", true);
-                    Dialog.alert({
-                        message: "提交成功",
-                        width: "200px",
-                        confirmButtonColor: "#ff4444",
-                        closeOnClickOverlay: false,
-                    }).then(() => {
-                        this.$router.replace({
-                            name: 'home',
-                        });
+                    // Dialog.alert({
+                    //     message: "提交成功",
+                    //     width: "200px",
+                    //     confirmButtonColor: "#ff4444",
+                    //     closeOnClickOverlay: false,
+                    // }).then(() => {
+                    //     this.$router.replace({
+                    //         name: 'home',
+                    //     });
+                    // });
+                    const toast = Toast.loading({
+                      duration: 0, // 持续展示 toast
+                      forbidClick: true,
+                      message: "3 秒后返回首页",
                     });
+
+                    let second = 3;
+                    const timer = setInterval(() => {
+                      second--;
+                      if (second) {
+                        toast.message = `${second} 秒后返回首页`;
+                      } else {
+                        clearInterval(timer);
+                        // 手动清除 Toast
+                        Toast.clear();
+                        this.$router.replace({
+                          name: "home",
+                        });
+                      }
+                    }, 1000);
                 } else {
                     this.$toast("提交失败");
                 }
