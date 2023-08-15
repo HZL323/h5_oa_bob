@@ -421,6 +421,9 @@ export default {
       //   }
       // });
       // this.show = true;
+      window.scroll(0, 0);
+      let ele = document.documentElement || document.body;
+      ele.scrollTop = 0;
       this.$refs.CommonOpinions.show = true;
     },
     onConfirm(value) {

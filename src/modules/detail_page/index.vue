@@ -458,6 +458,9 @@ export default {
   },
   methods: {
     clickSendbackEvent() {
+      window.scroll(0, 0);
+      let ele = document.documentElement || document.body;
+      ele.scrollTop = 0;
       if (this.SubmitPermission === false) {
         Toast("请前往PC端退回!");
       } else {
@@ -958,6 +961,9 @@ export default {
     },
 
     async onCommit() {
+      window.scroll(0, 0);
+      let ele = document.documentElement || document.body;
+      ele.scrollTop = 0;
       this.$toast.loading({
         message: "提交中...",
         forbidClick: true,
