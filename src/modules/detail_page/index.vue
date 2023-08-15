@@ -163,6 +163,7 @@ export default {
   },
   watch: {
     dataForm(newVal, oldVal) {
+      console.log("监听dataForm, newVal:", newVal)
       if (JSON.stringify(newVal) !== {}) {
         this.getBackLink();
       }
@@ -241,7 +242,6 @@ export default {
       return this.$store.state.businessTypeText;
     },
   },
-  watch: {},
   created() {
     console.log("生产版本号--1.4.1");
     this.$store.commit("setCurrentList", this.$route.query.queryKind);
@@ -332,7 +332,7 @@ export default {
                     }
                     let data = res.data.model.curPageData[0];
                     this.$store.commit("setCurrentProcess", data);
-                    //this.getBackLink();
+                    this.showBackbar();
                     this.getFromConfig();
                     this.isSubmmit();
                     this.isShowOpinion();
@@ -415,7 +415,7 @@ export default {
           }
           let data = res.data.model.curPageData[0];
           this.$store.commit("setCurrentProcess", data);
-          //this.getBackLink();
+          this.showBackbar();
           this.getFromConfig();
           this.isSubmmit();
           this.isShowOpinion();
@@ -432,7 +432,7 @@ export default {
       if (this.$store.state.currentList !== "doing") {
         this.updateProcessState();
       }
-      //this.getBackLink();
+      this.showBackbar();
       this.getFromConfig();
       this.isSubmmit();
       this.isShowOpinion();
@@ -448,8 +448,8 @@ export default {
     }, 1500);
   },
   mounted() {
-    this.showBackbar();
     this.$nextTick(() => {
+      console.log("进入到nextTick")
       console.log(this.showTabbar);
       if (!this.showTabbar) {
         this.$refs.tabsWrap.style.bottom = 0;
@@ -458,6 +458,9 @@ export default {
   },
   methods: {
     clickSendbackEvent() {
+      window.scroll(0, 0);
+      let ele = document.documentElement || document.body;
+      ele.scrollTop = 0;
       if (this.SubmitPermission === false) {
         Toast("请前往PC端退回!");
       } else {
@@ -465,12 +468,17 @@ export default {
       }
     },
     showBackbar() {
+      console.log("********this.showBackbar();")
+      console.log("this.currentProcess.configId",this.currentProcess.configId)
+      console.log("this.currentProcess.proDirId",this.currentProcess.proDirId)
+      console.log("this.currentProcess.actDefId",this.currentProcess.actDefId)
       let params = {
         configId: this.currentProcess.configId,
         proDirId: this.currentProcess.proDirId,
         actDefId: this.currentProcess.actDefId,
       };
       api.getSendbackPrivilige(params).then((res) => {
+        console.log("getSendbackPrivilige res", res)
         if (res.data.model.code === 0) {
           this.showSendbackButton = true;
         }
@@ -953,6 +961,9 @@ export default {
     },
 
     async onCommit() {
+      window.scroll(0, 0);
+      let ele = document.documentElement || document.body;
+      ele.scrollTop = 0;
       this.$toast.loading({
         message: "提交中...",
         forbidClick: true,
@@ -1424,7 +1435,11 @@ export default {
     updateCount() {
       // 表单详情以及意见加载完成触发
       this.count++;
-      this.count === 2 && (this.buttonDisabled = false);
+      if(this.showOpinion){
+        this.count === 2 && (this.buttonDisabled = false);
+      }else{
+        this.count === 1 && (this.buttonDisabled = false);
+      }
     },
   },
 };
