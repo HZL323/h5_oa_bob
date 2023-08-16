@@ -211,7 +211,7 @@ export default {
   },
   data() {
     return {
-      activeNames: ["1", "2", "3", "4"],
+      activeNames: ["1", "2", "3", "4", "5"],
       collapseList: [
         {
           title: "公文待办",
@@ -243,7 +243,7 @@ export default {
         },
         {
           title: "退回待办",
-          type: "sendBack",
+          type: "toback",
           name: "5",
           loading: true,
           list: [],
@@ -362,7 +362,7 @@ export default {
             },
             {
               title: "退回待办",
-              type: "sendBack",
+              type: "toback",
               name: "5",
               loading: true,
               list: [],
@@ -449,7 +449,7 @@ export default {
           curPage: 1,
           pageSize: 5,
           userCode: this.$store.state.userInfo.userCode,
-          queryKind: "sendback",
+          queryKind: "toback",
         })
         .then((res) => {
           this.collapseList[index+4].list = res.data.model.curPageData;
