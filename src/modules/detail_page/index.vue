@@ -1162,6 +1162,8 @@ export default {
                 name: "selectlink",
                 params: {
                   backRoute: this.preRoute,
+                  sendDeptVerify: this.sendDeptVerify, 
+                  businessTypeVerify: this.businessTypeVerify,
                 },
               });
             }
