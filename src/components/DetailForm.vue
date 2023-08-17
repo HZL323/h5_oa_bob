@@ -287,6 +287,11 @@ export default {
     },
     formMatData(item) {
       const format = "YYYY-MM-DD HH:mm";
+      const format2 = "YYYY-MM-DD";
+      if (item.colName === "优化完成时间") {
+        let dateTime = moment(this.formData[item.colCode]).format(format2);
+        return this.formData[item.colCode] ? dateTime : "";
+      }
       if (/日期|时间/g.test(item.colName)) {
         let dateTime = moment(this.formData[item.colCode]).format(format);
         return this.formData[item.colCode] ? dateTime : "";
