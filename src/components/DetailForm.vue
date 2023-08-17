@@ -283,7 +283,7 @@ export default {
               this.initHeight();
             });
           }
-        });
+        }); 
     },
     formMatData(item) {
       const format = "YYYY-MM-DD HH:mm";
@@ -410,8 +410,8 @@ export default {
           if (res.data.status === "200") {
             if(res.data.model && res.data.model.sendDeptVerify){
             this.sendDeptVerify = true;
-            this.$emit('sendDeptVerify', this.sendDeptVerify)
           };
+          this.$emit('sendDeptVerify', this.sendDeptVerify)
           if(this.sendDeptVerify === true){
               let assignGwParameter = {
                 extendKey: "assignGw",
@@ -458,7 +458,6 @@ export default {
             res.data.model.isCanEditField == "businessTypeText"
           ) {
             this.businessTypeVerify = true;
-            this.$emit('businessTypeVerify', this.businessTypeVerify)
             this.businessTypeColumns = [];
             // this.businessTypeColumns.push({
             //   key:888,
@@ -488,6 +487,7 @@ export default {
             }
             this.businessTypeColumns.sort(compare("sortNum"));
           }
+          this.$emit('businessTypeVerify', this.businessTypeVerify)
         }
       });
     },
