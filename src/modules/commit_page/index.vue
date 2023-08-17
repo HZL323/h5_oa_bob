@@ -312,7 +312,7 @@ export default {
           return;
         }
       }
-      //校验是否支行用印流程
+            //校验是否支行用印流程
       if (this.sendDeptVerify == true) {
         //校验是否填写了发送部门
         if (
