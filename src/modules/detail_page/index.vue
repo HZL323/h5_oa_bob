@@ -1213,8 +1213,8 @@ export default {
 
       if (
         this.currentProcess.processName === "业务数据处理申请流程" ||
-        this.currentProcess.processName === "支行业务数据处理流程" ||
-        this.currentProcess.processName === "分行业务数据处理流程" ||
+        this.currentProcess.processName === "支行业务数据处理申请流程" ||
+        this.currentProcess.processName === "分行业务数据处理申请流程" ||
         this.currentProcess.processName === "总行办公自动化用户维护申请流程" ||
         this.currentProcess.processName === "通用流程" ||
         this.currentProcess.processName === "总分行办公检法查询申请流程" ||
