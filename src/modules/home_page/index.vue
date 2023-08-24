@@ -211,7 +211,7 @@ export default {
   },
   data() {
     return {
-      activeNames: ["1", "2", "3", "4"],
+      activeNames: ["1", "2", "3", "4", "5"],
       collapseList: [
         {
           title: "公文待办",
@@ -238,6 +238,13 @@ export default {
           title: "待阅",
           type: "toread",
           name: "4",
+          loading: true,
+          list: [],
+        },
+        {
+          title: "退回待办",
+          type: "toback",
+          name: "5",
           loading: true,
           list: [],
         },
@@ -352,6 +359,13 @@ export default {
               name: "4",
               loading: true,
               list: [],
+            },
+            {
+              title: "退回待办",
+              type: "toback",
+              name: "5",
+              loading: true,
+              list: [],
             }]
       }
       api
@@ -430,6 +444,23 @@ export default {
           }
           this.collapseList[index+3].loading = false;
         });
+      api
+        .queryList({
+          curPage: 1,
+          pageSize: 5,
+          userCode: this.$store.state.userInfo.userCode,
+          queryKind: "toback",
+        })
+        .then((res) => {
+          this.collapseList[index+4].list = res.data.model.curPageData;
+          if (res.data.model.allDataCount > 99) {
+            this.collapseList[index+4].title = "退回待办(99+)";
+          } else {
+            this.collapseList[index+4].title =
+              "退回待办(" + res.data.model.allDataCount + ")";
+          }
+          this.collapseList[index+4].loading = false;
+        });
     },
     getTimeState() {
       // 获取当前时间
@@ -472,6 +503,7 @@ export default {
       return false;
     },
     getMore(type) {
+      console.log("***************",type)
       this.$store.commit("setCurrentList", type);
       this.$store.commit("setRefresh", true);
       if(type === "fwqqTodo"){

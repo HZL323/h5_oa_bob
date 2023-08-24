@@ -183,16 +183,20 @@ export default {
             //}
           });
       } else {
-        if (this.currentList === "todo") {
-          document.querySelectorAll("div.van-nav-bar__title")[0].innerHTML =
-            "我的公文待办";
-        } else if (this.currentList === "seal") {
-          document.querySelectorAll("div.van-nav-bar__title")[0].innerHTML =
-            "我的用印待办";
-        } else {
-          document.querySelectorAll("div.van-nav-bar__title")[0].innerHTML =
-            "我的待阅";
-        }
+          if (this.currentList === "todo") {
+            document.querySelectorAll("div.van-nav-bar__title")[0].innerHTML =
+              "我的公文待办";
+          } else if (this.currentList === "seal") {
+            document.querySelectorAll("div.van-nav-bar__title")[0].innerHTML =
+              "我的用印待办";
+          } else if (this.currentList === "toback") {
+            document.querySelectorAll("div.van-nav-bar__title")[0].innerHTML =
+              "我的退回待办";
+          }else {
+            document.querySelectorAll("div.van-nav-bar__title")[0].innerHTML =
+              "我的待阅";
+          }
+      
         api
           .queryList({
             ...this.params,
@@ -219,6 +223,9 @@ export default {
             }
             if (this.currentList === "seal") {
               this.navTitle = "我的用印待办";
+            }
+            if(this.currentList === 'toback'){
+              this.navTitle = "我的退回待办";
             }
             //if(this.allDataCount>0){
             //    document.querySelectorAll("div.van-nav-bar__title")[0].innerHTML=
