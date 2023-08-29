@@ -73,6 +73,7 @@
             opinionConfig.length > 0 &&
             (currentList === 'todo' ||
               currentList === 'seal' ||
+              currentList === 'toback' ||
               currentList === 'toread')
           "
         >

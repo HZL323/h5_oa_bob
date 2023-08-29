@@ -614,7 +614,7 @@ export default {
         });
       }
       console.log("queryKind !=== doing getData api.queryList");
-
+      
       return api.queryList({
         curPage: 1,
         pageSize: 1,
