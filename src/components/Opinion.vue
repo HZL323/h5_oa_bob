@@ -106,7 +106,7 @@
                 v-model="item.noteContent"
                 rows="4"
                 type="textarea"
-                maxlength="500"
+                maxlength="1000"
                 :placeholder="notePlaceHolder"
                 @click-input="onClickInput"
                 show-word-limit
@@ -167,7 +167,7 @@ export default {
   },
   data() {
     return {
-      notePlaceHolder: "请输入意见，最多500字",
+      notePlaceHolder: "请输入意见，最多1000字",
       activeNames: [],
       message: "",
       opinionData: [], // 意见内容

@@ -623,8 +623,8 @@ export default {
             Toast("请填写审批意见");
             return;
           } else {
-            if (this.opinionConfig[i].noteContent.length > 500) {
-              Toast("意见内容已超过500字限制");
+            if (this.opinionConfig[i].noteContent.length > 1000) {
+              Toast("意见内容已超过1000字限制");
               return;
             }
           }
