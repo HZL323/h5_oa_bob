@@ -89,26 +89,23 @@
         <van-radio-group class="sendback-content" v-model="radio" v-else>
           <van-cell-group>
             <template v-for="(item, index) in backLink">
-              <div :key="index">
+              <div :key="index" v-if="item.handler.length > 0">
                 <div class="backlink-title">{{ item.name }}</div>
-                <template v-if="item.handler.length > 0">
-                  <div v-for="item_ in item.handler" :key="item_.orgId">
-                    <van-cell
-                      :title="item_.orgName"
-                      clickable
-                      @click="onClick(item, item_)"
-                    >
-                      <template slot="right-icon">
-                        <van-radio
-                          :name="item_"
-                          icon-size="16"
-                          checked-color="#ff4444"
-                        />
-                      </template>
-                    </van-cell>
-                  </div>
-                </template>
-                <div v-else class="empty-tips">暂无数据</div>
+                <div v-for="item_ in item.handler" :key="item_.orgId">
+                  <van-cell
+                    :title="item_.orgName"
+                    clickable
+                    @click="onClick(item, item_)"
+                  >
+                    <template slot="right-icon">
+                      <van-radio
+                        :name="item_"
+                        icon-size="16"
+                        checked-color="#ff4444"
+                      />
+                    </template>
+                  </van-cell>
+                </div>
               </div>
             </template>
           </van-cell-group>
