@@ -392,6 +392,8 @@ export default {
           return reg("isDataDelete", "isDataDelete");
         case "isMustTest":
           return reg("IsMustTest", "isMustTest");
+        case "smsPubType":
+          return reg("smsPubType", "smsPubType");
         default:
           return this.formData[item.colCode] || "";
       }
