@@ -288,7 +288,7 @@ export default {
     formMatData(item) {
       const format = "YYYY-MM-DD HH:mm";
       const format2 = "YYYY-MM-DD";
-      if (item.colName === "优化完成时间") {
+      if (item.colName === "优化完成时间" || item.colName === "短信发布时间") {
         let dateTime = moment(this.formData[item.colCode]).format(format2);
         return this.formData[item.colCode] ? dateTime : "";
       }
