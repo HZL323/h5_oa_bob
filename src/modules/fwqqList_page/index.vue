@@ -230,7 +230,7 @@ export default {
       this.columns = [
         {
           processName: "全部",
-          configCode: "qq_zhgjfcx_process,fh_ywsjcl_process,zh_ywsjcl_process,qq_zhbgzdhyhwh_process,qq_ywsjcl_process,qq_ty_process,qq_dxfb_process",
+          configCode: "qq_zfhgjfcx_process,fh_ywsjcl_process,zh_ywsjcl_process,qq_ywsjcl_process,qq_ty_process,qq_dxfb_process,qq_bm_process",
         },
         {
           processName: "业务数据处理申请流程",
@@ -245,35 +245,35 @@ export default {
           configCode: "zh_ywsjcl_process",
         },
         {
-          processName: "通用申请流程",
+          processName: "通用标准申请流程",
           configCode: "qq_ty_process",
         },
         {
-          processName: "总分行公检法查询申请流程",
-          configCode: "qq_zhgjfcx_process",
+          processName: "公检法查询申请流程",
+          configCode: "qq_zfhgjfcx_process",
         },
         {
           processName: "短信发布申请流程",
           configCode: "qq_dxfb_process",
         },
         {
-          processName: "总行办公自动化用户维护申请流程",
-          configCode: "qq_zhbgzdhyhwh_process",
+          processName: "部门主管业务清单维护申请流程",
+          configCode: "qq_bm_process",
         },
       ];
       let actDefIdAndConfigCode = {
-        qq_zhgjfcx_process: "hgjfcx_process_act5",
-        qq_zhbgzdhyhwh_process: "dhyhwh_pkg_wp1_act3",
-        qq_ywsjcl_process: "wsjcl_process_act10",
-        qq_ty_process: "qq_ty_process_act8",
-        qq_dxfb_process: "q_dxfb_process_act6",
         fh_ywsjcl_process:"wsjcl_process_act10",
         zh_ywsjcl_process:"wsjcl_process_act10",
+        qq_ywsjcl_process: "wsjcl_process_act10",
+        qq_zfhgjfcx_process: "hgjfcx_process_act5",
+        qq_ty_process: "qq_ty_process_act8",
+        qq_dxfb_process: "q_dxfb_process_act6",
+        qq_bm_process:"qq_bm_process_act8"
       };
       let actDefId =
-        "hgjfcx_process_act5,dhyhwh_pkg_wp1_act3,wsjcl_process_act10,qq_ty_process_act8,q_dxfb_process_act6,wsjcl_process_act10,wsjcl_process_act10";
+        "hgjfcx_process_act5,wsjcl_process_act10,wsjcl_process_act10,wsjcl_process_act10,qq_ty_process_act8,q_dxfb_process_act6,qq_bm_process_act8";
       let configCode =
-        "qq_zhgjfcx_process,qq_zhbgzdhyhwh_process,qq_ywsjcl_process,qq_ty_process,qq_dxfb_process,fh_ywsjcl_process,zh_ywsjcl_process";
+        "qq_zfhgjfcx_process,fh_ywsjcl_process,zh_ywsjcl_process,qq_ywsjcl_process,qq_ty_process,qq_dxfb_process,qq_bm_process";
       let allProcess = configCode;
       if (this.$store.state.fwqqProcess !== null && this.$store.state.fwqqProcess !== allProcess) {
         configCode = this.$store.state.fwqqProcess;
@@ -356,7 +356,7 @@ export default {
     onClickLeft() {
       this.value = "";
       this.$store.commit("setRefresh", false);
-      this.$store.commit("setFwqqProcess", "qq_zhgjfcx_process,qq_zhbgzdhyhwh_process,qq_ywsjcl_process,qq_ty_process,qq_dxfb_process")
+      this.$store.commit("setFwqqProcess", "qq_zfhgjfcx_process,fh_ywsjcl_process,zh_ywsjcl_process,qq_ywsjcl_process,qq_ty_process,qq_dxfb_process,qq_bm_process")
       this.$router.replace({
         name: "home",
       });
