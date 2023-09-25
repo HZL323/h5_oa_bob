@@ -1209,13 +1209,13 @@ export default {
       console.log("sendBack:----", this.currentProcess.processName);
 
       if (
-        this.currentProcess.processName === "部门主管业务清单维护申请" ||
+        this.currentProcess.processName === "部门主管业务清单维护申请流程" ||
         this.currentProcess.processName === "业务数据处理申请（总行）" ||
         this.currentProcess.processName === "业务数据处理申请（分行）" ||
         this.currentProcess.processName === "业务数据处理申请（支行）" ||
-        this.currentProcess.processName === "通用标准申请" ||
+        this.currentProcess.processName === "通用申请流程" ||
         this.currentProcess.processName === "公检法查询申请" ||
-        this.currentProcess.processName === "短信发布申请"
+        this.currentProcess.processName === "短信发布申请流程"
       ) {
         if (
           this.opinionConfig[0] &&
