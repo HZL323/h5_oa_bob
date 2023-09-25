@@ -233,31 +233,31 @@ export default {
           configCode: "qq_zfhgjfcx_process,fh_ywsjcl_process,zh_ywsjcl_process,qq_ywsjcl_process,qq_ty_process,qq_dxfb_process,qq_bm_process",
         },
         {
-          processName: "业务数据处理申请流程",
+          processName: "业务数据处理申请（总行）",
           configCode: "qq_ywsjcl_process",
         },
         {
-          processName: "分行业务数据处理流程",
+          processName: "业务数据处理申请（分行）",
           configCode: "fh_ywsjcl_process",
         },
         {
-          processName: "支行业务数据处理流程",
+          processName: "业务数据处理申请（支行）",
           configCode: "zh_ywsjcl_process",
         },
         {
-          processName: "通用标准申请流程",
+          processName: "通用标准申请",
           configCode: "qq_ty_process",
         },
         {
-          processName: "公检法查询申请流程",
+          processName: "公检法查询申请",
           configCode: "qq_zfhgjfcx_process",
         },
         {
-          processName: "短信发布申请流程",
+          processName: "短信发布申请",
           configCode: "qq_dxfb_process",
         },
         {
-          processName: "部门主管业务清单维护申请流程",
+          processName: "部门主管业务清单维护申请",
           configCode: "qq_bm_process",
         },
       ];
