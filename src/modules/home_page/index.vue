@@ -307,6 +307,7 @@ export default {
       this.loadData();
     },
     async loadData() {
+    
       let index = 0;
       this.refreshing = false;
       this.collapseList.forEach((item) => {
@@ -314,14 +315,12 @@ export default {
         item.loading = true;
       });
       let isBatchBusinessHandler = false;
-      console.log("服务请求")
       console.log("this.userInfo.userId", this.userInfo.userId)
       await api.isBatchBusinessHandler({resourceid : this.userInfo.userId}).then((res)=>{
         if(res.data.model.code === 0){
             isBatchBusinessHandler = true;
         }
       })
-      console.log("服务请求", isBatchBusinessHandler)
       if(isBatchBusinessHandler === true){
         index = 1;
         this.collapseList = [
@@ -367,6 +366,43 @@ export default {
               loading: true,
               list: [],
             }]
+      }else{
+        this.collapseList = [
+            {
+              title: "公文待办",
+              type: "todo",
+              name: "1",
+              loading: true,
+              list: [],
+            },
+            {
+              title: "用印待办",
+              type: "seal",
+              name: "2",
+              loading: true,
+              list: [],
+            },
+            {
+              title: "已办",
+              type: "doing",
+              name: "3",
+              loading: true,
+              list: [],
+            },
+            {
+              title: "待阅",
+              type: "toread",
+              name: "4",
+              loading: true,
+              list: [],
+            },
+            {
+              title: "退回待办",
+              type: "toback",
+              name: "5",
+              loading: true,
+              list: [],
+            }]
       }
       api
         .queryList({
@@ -376,7 +412,6 @@ export default {
           queryKind: "todo",
         })
         .then((res) => {
-          //console.log("-------公文待办---------",res.data.model);
           this.collapseList[index].list = res.data.model.curPageData;
           if (res.data.model.allDataCount > 99) {
             this.collapseList[index].title = "公文待办(99+)";
