@@ -394,6 +394,68 @@ export default {
           return reg("IsMustTest", "isMustTest");
         case "smsPubType":
           return reg("smsPubType", "smsPubType");
+        case "useSceneCode":
+          return reg("USE_SCENE_NAME", "useSceneCode");
+        case "dataTypeCode":
+          return reg("DATA_TYPE_NAME", "dataTypeCode");
+        case "isNeedManageCode":
+          return reg("IS_NEED_MANAGE_NAME", "isNeedManageCode");
+        case "operator1":
+          return reg("OPERATOR_DICT", "operator1");
+        case "operator2":
+          return reg("OPERATOR_DICT", "operator2");
+        case "operator3":
+          return reg("OPERATOR_DICT", "operator3");
+        case "operator4":
+          return reg("OPERATOR_DICT", "operator4");
+        case "data1":
+          return reg("DATA_TYPE_NAME", "data1");
+        case "data2":
+          return reg("DATA_TYPE_NAME", "data2");
+        case "data3":
+          return reg("DATA_TYPE_NAME", "data3");
+        case "data4":
+          return reg("DATA_TYPE_NAME", "data4");
+        case "money1":
+          return reg("PAYER_NAME", "money1");
+        case "money2":
+          return reg("PAYER_NAME", "money2");
+        case "money3":
+          return reg("PAYER_NAME", "money3");
+        case "money4":
+          return reg("PAYER_NAME", "money4");
+        case "mainPayerCode":
+          return reg("PAYER_NAME", "mainPayerCode");
+        case "bakPayerCode":
+          return reg("PAYER_NAME", "bakPayerCode");
+        case "bakPayerCode2":
+          return reg("PAYER_NAME", "bakPayerCode2");
+        case "testPayerCode":
+          return reg("PAYER_NAME", "testPayerCode");
+        case "scence1":
+          return reg("USE_SCENE_NAME", "scence1");
+        case "scence2":
+          return reg("USE_SCENE_NAME", "scence2");
+        case "scence3":
+          return reg("USE_SCENE_NAME", "scence3");
+        case "scence4":
+          return reg("USE_SCENE_NAME", "scence4");
+        case "accessType1":
+          return reg("ACCESSTYPE_DICT", "accessType1");
+        case "accessType2":
+          return reg("ACCESSTYPE_DICT", "accessType2");
+        case "accessType3":
+          return reg("ACCESSTYPE_DICT", "accessType3");
+        case "accessType4":
+          return reg("ACCESSTYPE_DICT", "accessType4");
+        case "accessTypeNew1":
+          return reg("ACCESSTYPE_DICT", "accessTypeNew1");
+        case "accessTypeNew2":
+          return reg("ACCESSTYPE_DICT", "accessTypeNew2");
+        case "accessTypeNew3":
+          return reg("ACCESSTYPE_DICT", "accessTypeNew3");
+        case "accessTypeNew4":
+          return reg("ACCESSTYPE_DICT", "accessTypeNew4");
         default:
           return this.formData[item.colCode] || "";
       }
