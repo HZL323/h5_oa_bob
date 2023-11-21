@@ -40,34 +40,215 @@
             >
           </div>
         </div>
-        <van-divider />
-        <div class="form-wrap">
-          <template v-for="(item, index) in formConfig">
-            <div
-              :class="{
-                'form-item': true,
-                'yyxx-row': item.colCode === 'yyxx',
-              }"
-              :key="index"
-            >
-              <div class="form-key">{{ item.colName }}</div>
+        <div v-if="!specialChangeOrRevoke && !specialRequest">
+          <van-divider />
+          <div class="form-wrap">
+            <template v-for="(item, index) in formConfig" >
               <div
-                style="margin-top: 6px"
-                v-if="item.colCode === 'yyxx' && formMatData(item) != ''"
-              ></div>
+                :class="{
+                  'form-item': true,
+                  'yyxx-row': item.colCode === 'yyxx',
+                }"
+                :key="index"
+              >
+                <div class="form-key">{{ item.colName }}</div>
+                <div
+                  style="margin-top: 6px"
+                  v-if="item.colCode === 'yyxx' && formMatData(item) != ''"
+                ></div>
+                <div
+                  class="formRemark-value"
+                  ref="formValue"
+                  v-if="item.colCode === 'yyxx' && formMatData(item) != ''"
+                >{{ formMatData(item) }}</div>
+                <div
+                  class="form-value"
+                  ref="formValue"
+                  v-if="item.colCode != 'yyxx'"
+                  @click="formClick(item)"
+                >{{ formMatData(item) }}</div>
+              </div>
+            </template>
+          </div>
+        </div>
+        <div v-if="specialChangeOrRevoke || specialRequest">
+          <van-divider />
+          <div class="form-wrap">
+            <template v-for="(item, index) in splitFormConfig" >
               <div
-                class="formRemark-value"
-                ref="formValue"
-                v-if="item.colCode === 'yyxx' && formMatData(item) != ''"
-              >{{ formMatData(item) }}</div>
+                :class="{
+                  'form-item': true,
+                  'yyxx-row': item.colCode === 'yyxx',
+                }"
+                :key="index"
+              >
+                <div class="form-key">{{ item.colName }}</div>
+                <div
+                  style="margin-top: 6px"
+                  v-if="item.colCode === 'yyxx' && formMatData(item) != ''"
+                ></div>
+                <div
+                  class="formRemark-value"
+                  ref="formValue"
+                  v-if="item.colCode === 'yyxx' && formMatData(item) != ''"
+                >{{ formMatData(item) }}</div>
+                <div
+                  class="form-value"
+                  ref="formValue"
+                  v-if="item.colCode != 'yyxx'"
+                  @click="formClick(item)"
+                >{{ formMatData(item) }}</div>
+              </div>
+            </template>
+          </div>
+        </div>
+        <div v-if="specialChangeOrRevoke">
+          <van-divider :style="{ color: 'red', borderColor: 'red'}" content-position="center" v-if="split1" >{{ changeRevokeLineNames[0] }}</van-divider>
+          <div class="form-wrap"  v-if="split1">
+            <template v-for="(item, index) in formConfig" v-if="item.colCode.endsWith('1')">
               <div
-                class="form-value"
-                ref="formValue"
-                v-if="item.colCode != 'yyxx'"
-                @click="formClick(item)"
-              >{{ formMatData(item) }}</div>
-            </div>
-          </template>
+                :class="{
+                  'form-item': true,
+                }"
+                :key="index"
+              >
+                <div class="form-key">{{ item.colName }}</div>
+                <div
+                  class="form-value"
+                  ref="formValue"
+                  @click="formClick(item)"
+                >{{ formMatData(item) }}</div>
+              </div>
+            </template>
+          </div>
+          <van-divider :style="{ color: 'red', borderColor: 'red'}" content-position="center" v-if="split2" >{{ changeRevokeLineNames[1] }}</van-divider>
+          <div class="form-wrap" v-if="split2" >
+            <template v-for="(item, index) in formConfig" v-if="item.colCode.endsWith('2')">
+              <div
+                :class="{
+                  'form-item': true,
+                }"
+                :key="index"
+              >
+                <div class="form-key">{{ item.colName }}</div>
+                <div
+                  class="form-value"
+                  ref="formValue"
+                  @click="formClick(item)"
+                >{{ formMatData(item) }}</div>
+              </div>
+            </template>
+          </div>
+          <van-divider :style="{ color: 'red', borderColor: 'red'}" content-position="center" v-if="split3">{{ changeRevokeLineNames[2] }}</van-divider>
+          <div class="form-wrap" v-if="split3">
+            <template v-for="(item, index) in formConfig" v-if="item.colCode.endsWith('3')">
+              <div
+                :class="{
+                  'form-item': true,
+                }"
+                :key="index"
+              >
+                <div class="form-key">{{ item.colName }}</div>
+                <div
+                  class="form-value"
+                  ref="formValue"
+                  @click="formClick(item)"
+                >{{ formMatData(item) }}</div>
+              </div>
+            </template>
+          </div>
+          <van-divider :style="{ color: 'red', borderColor: 'red'}" content-position="center" v-if="split4">{{ changeRevokeLineNames[3] }}</van-divider>
+          <div class="form-wrap" v-if="split4">
+            <template v-for="(item, index) in formConfig" v-if="item.colCode.endsWith('4')">
+              <div
+                :class="{
+                  'form-item': true,
+                }"
+                :key="index"
+              >
+                <div class="form-key">{{ item.colName }}</div>
+                <div
+                  class="form-value"
+                  ref="formValue"
+                  @click="formClick(item)"
+                >{{ formMatData(item) }}</div>
+              </div>
+            </template>
+          </div>
+        </div>
+        <div v-if="specialRequest">
+          <van-divider :style="{ color: 'red', borderColor: 'red'}" content-position="center" v-if="specialRequestSplit1" >{{ requestLineNames[0] }}</van-divider>
+          <div class="form-wrap"  v-if="specialRequestSplit1">
+            <template v-for="(item, index) in formConfig" v-if="item.colCode === 'mainPayerCode' || item.colCode === 'mainBandwidthCode'">
+              <div
+                :class="{
+                  'form-item': true,
+                }"
+                :key="index"
+              >
+                <div class="form-key">{{ item.colName }}</div>
+                <div
+                  class="form-value"
+                  ref="formValue"
+                  @click="formClick(item)"
+                >{{ formMatData(item) }}</div>
+              </div>
+            </template>
+          </div>
+          <van-divider :style="{ color: 'red', borderColor: 'red'}" content-position="center" v-if="specialRequestSplit2" >{{ requestLineNames[1] }}</van-divider>
+          <div class="form-wrap" v-if="specialRequestSplit2" >
+            <template v-for="(item, index) in formConfig" v-if="item.colCode === 'bakPayerCode' || item.colCode === 'bakBandwidthCode'">
+              <div
+                :class="{
+                  'form-item': true,
+                }"
+                :key="index"
+              >
+                <div class="form-key">{{ item.colName }}</div>
+                <div
+                  class="form-value"
+                  ref="formValue"
+                  @click="formClick(item)"
+                >{{ formMatData(item) }}</div>
+              </div>
+            </template>
+          </div>
+          <van-divider :style="{ color: 'red', borderColor: 'red'}" content-position="center" v-if="specialRequestSplit3">{{ requestLineNames[2] }}</van-divider>
+          <div class="form-wrap" v-if="specialRequestSplit3">
+            <template v-for="(item, index) in formConfig" v-if="item.colCode === 'bakPayerCode2' || item.colCode === 'bakBandwidthCode2'">
+              <div
+                :class="{
+                  'form-item': true,
+                }"
+                :key="index"
+              >
+                <div class="form-key">{{ item.colName }}</div>
+                <div
+                  class="form-value"
+                  ref="formValue"
+                  @click="formClick(item)"
+                >{{ formMatData(item) }}</div>
+              </div>
+            </template>
+          </div>
+          <van-divider :style="{ color: 'red', borderColor: 'red'}" content-position="center" v-if="specialRequestSplit4">{{ requestLineNames[3] }}</van-divider>
+          <div class="form-wrap" v-if="specialRequestSplit4">
+            <template v-for="(item, index) in formConfig" v-if="item.colCode === 'testPayerCode' || item.colCode === 'testBandwidthCode'">
+              <div
+                :class="{
+                  'form-item': true,
+                }"
+                :key="index"
+              >
+                <div class="form-key">{{ item.colName }}</div>
+                <div
+                  class="form-value"
+                  ref="formValue"
+                  @click="formClick(item)"
+                >{{ formMatData(item) }}</div>
+              </div>
+            </template>
+          </div>
         </div>
       </div>
     </div>
@@ -154,6 +335,9 @@ export default {
       //yinyanhong
       showDocumentBasis: false, //办文依据
       documentBasisColumns: [], //办文依据列表
+      splitFormConfig:[],//分割后的（上部分）表单配置
+      changeRevokeLineNames:['','','',''],
+      requestLineNames:['','','','']
     };
   },
   props: {
@@ -184,6 +368,70 @@ export default {
         this.$store.state.currentList === "seal"
       );
     },
+    split1() {
+      return this.formData["isUse1"] === "1";
+    },
+    split2(){
+      return this.formData["isUse2"] === "1";
+    },
+    split3(){
+      return this.formData["isUse3"] === "1";
+    },
+    split4(){
+      return this.formData["isUse4"] === "1";
+    },
+    specialRequestSplit1(){
+      console.log("useSceneName",this.formData["useSceneName"]) 
+      return this.formData["useSceneName"].indexOf("生产") != -1
+    },
+    specialRequestSplit2(){
+      return this.formData["useSceneName"].indexOf("生产") != -1
+    },
+    specialRequestSplit3(){
+      return this.formData["useSceneName"].indexOf("生产") != -1
+    },
+    specialRequestSplit4(){
+      return this.formData["useSceneName"].indexOf("测试") != -1
+    },
+
+    specialChangeOrRevoke(){
+      let isSpecialChangeOrRevoke = (this.processTitle.indexOf("专线变更") != -1 || this.processTitle.indexOf("专线撤销") != -1);
+      if(isSpecialChangeOrRevoke){
+        this.splitFormConfig = this.formConfig;
+        if(this.formData["isUse1"] === "1"){
+          this.splitFormConfig = this.splitFormConfig.filter(item => !item.colCode.endsWith('1'))
+        }
+        if(this.formData["isUse2"] === "1"){
+          this.splitFormConfig = this.splitFormConfig.filter(item => !item.colCode.endsWith('2'))
+        }
+        if(this.formData["isUse3"] === "1"){
+          this.splitFormConfig = this.splitFormConfig.filter(item => !item.colCode.endsWith('3'))
+        }
+        if(this.formData["isUse4"] === "1"){
+          this.splitFormConfig = this.splitFormConfig.filter(item => !item.colCode.endsWith('4'))
+        }
+        this.changeRevokeLineNames[0] = (this.enumerationData["changeRevokeLineName"]["line1"].value)
+        this.changeRevokeLineNames[1] = (this.enumerationData["changeRevokeLineName"]["line2"].value)
+        this.changeRevokeLineNames[2] = (this.enumerationData["changeRevokeLineName"]["line3"].value)
+        this.changeRevokeLineNames[3] = (this.enumerationData["changeRevokeLineName"]["line4"].value)
+      }
+      return isSpecialChangeOrRevoke;
+    },
+    specialRequest(){
+      let isSpecialRequest = (this.processTitle.indexOf("专线申请") != -1);
+      console.log("isSpecialRequest", isSpecialRequest)
+      if(isSpecialRequest){
+        this.splitFormConfig = this.formConfig;
+        //生产与测试
+        let column = "mainPayerCode,mainBandwidthCode,bakPayerCode,bakBandwidthCode,bakPayerCode2,bakBandwidthCode2,testPayerCode,testBandwidthCode"
+        this.splitFormConfig = this.splitFormConfig.filter(item => !(column.indexOf(item.colCode) != -1))
+        this.requestLineNames[0] = (this.enumerationData["requestLineName"]["mainLine"].value)
+        this.requestLineNames[1] = (this.enumerationData["requestLineName"]["bakLine1"].value)
+        this.requestLineNames[2] = (this.enumerationData["requestLineName"]["bakLine2"].value)
+        this.requestLineNames[3] = (this.enumerationData["requestLineName"]["testLine"].value)
+      }
+      return isSpecialRequest;
+    }
   },
   created() {
     this.getFormData();
@@ -432,14 +680,14 @@ export default {
           return reg("PAYER_NAME", "bakPayerCode2");
         case "testPayerCode":
           return reg("PAYER_NAME", "testPayerCode");
-        case "scence1":
-          return reg("USE_SCENE_NAME", "scence1");
-        case "scence2":
-          return reg("USE_SCENE_NAME", "scence2");
-        case "scence3":
-          return reg("USE_SCENE_NAME", "scence3");
-        case "scence4":
-          return reg("USE_SCENE_NAME", "scence4");
+        case "zhuanxian1":
+          return reg("ZHUANXIAN_NAME", "zhuanxian1");
+        case "zhuanxian2":
+          return reg("ZHUANXIAN_NAME", "zhuanxian2");
+        case "zhuanxian3":
+          return reg("ZHUANXIAN_NAME", "zhuanxian3");
+        case "zhuanxian4":
+          return reg("ZHUANXIAN_NAME", "zhuanxian4");
         case "accessType1":
           return reg("ACCESSTYPE_DICT", "accessType1");
         case "accessType2":

@@ -7,8 +7,8 @@
  * @FilePath: \bjbank-xcoa\src\core\api\query.js
  */
 import { ajaxGet, ajaxPost } from '../mxApi'
-//const URL = `http://oa.bj.bob` // 生产
-const URL = `http://10.51.228.84:8080` // 新oa测试
+const URL = `http://oa.bj.bob` // 生产
+//const URL = `http://10.51.228.84:8080` // 新oa测试
 //const URL = `http://app.xcoa.bj.bob.test` // 新oa/准生产
 
 export function queryMessage(data) {
@@ -50,7 +50,7 @@ export function queryKeyValueByTypes() {
     // console.log(`参数`,`DOC_PRIORITY,DOC_SECURITY_LEVEL,FILE_TYPE,is_direct,send_method,PRESERVATION_PERIOD,sys_file_position,HOST_DEP,APPLY_CHANGE_TYPE,DOC_TYPE,ARCHIVE_YEAR,OPEN_STATE,RESPON_PERSON,AUDIO_VISUAL_TYPE,TEXT_SOURCE,PRINT_WAY`)
     return ajaxPost(`${URL}/mob/oa/DictServiceContainer/queryKeyValueByTypes`,
         {
-            dictTypes: `DOC_PRIORITY,DOC_SECURITY_LEVEL,FILE_TYPE,is_direct,send_method,PRESERVATION_PERIOD,sys_file_position,HOST_DEP,APPLY_CHANGE_TYPE,DOC_TYPE,ARCHIVE_YEAR,OPEN_STATE,RESPON_PERSON,AUDIO_VISUAL_TYPE,TEXT_SOURCE,PRINT_WAY,BUSINESS_TYPE,BusinessDataType,DemandType,IsEffectClient,IsInvolveInfo,IsClientRequire,EstimateResult,DemandScreen,IsSearchSynDept,testResult,confirmResult,IsMustTest,isDataDelete,smsPubType,OPERATOR_DICT,PAYER_NAME,USE_SCENE_NAME,IS_NEED_MANAGE_NAME,ACCESSTYPE_DICT,DATA_TYPE_NAME`
+            dictTypes: `DOC_PRIORITY,DOC_SECURITY_LEVEL,FILE_TYPE,is_direct,send_method,PRESERVATION_PERIOD,sys_file_position,HOST_DEP,APPLY_CHANGE_TYPE,DOC_TYPE,ARCHIVE_YEAR,OPEN_STATE,RESPON_PERSON,AUDIO_VISUAL_TYPE,TEXT_SOURCE,PRINT_WAY,BUSINESS_TYPE,BusinessDataType,DemandType,IsEffectClient,IsInvolveInfo,IsClientRequire,EstimateResult,DemandScreen,IsSearchSynDept,testResult,confirmResult,IsMustTest,isDataDelete,smsPubType,OPERATOR_DICT,PAYER_NAME,ZHUANXIAN_NAME,IS_NEED_MANAGE_NAME,ACCESSTYPE_DICT,DATA_TYPE_NAME,USE_SCENE_NAME,requestLineName,changeRevokeLineName`
         })
 }
 
