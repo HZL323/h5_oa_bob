@@ -186,7 +186,10 @@ export default {
           if (this.currentList === "todo") {
             document.querySelectorAll("div.van-nav-bar__title")[0].innerHTML =
               "我的公文待办";
-          } else if (this.currentList === "seal") {
+          }else if(this.currentList === "fwtodo"){
+            document.querySelectorAll("div.van-nav-bar__title")[0].innerHTML =
+              "我的发文待办";
+          }else if (this.currentList === "seal") {
             document.querySelectorAll("div.van-nav-bar__title")[0].innerHTML =
               "我的用印待办";
           } else if (this.currentList === "toback") {
@@ -220,6 +223,9 @@ export default {
             this.navTitle = "我的待阅";
             if (this.currentList === "todo") {
               this.navTitle = "我的公文待办";
+            }
+            if (this.currentList === "fwtodo") {
+              this.navTitle = "我的发文待办";
             }
             if (this.currentList === "seal") {
               this.navTitle = "我的用印待办";

@@ -74,8 +74,8 @@
             (currentList === 'todo' ||
               currentList === 'seal' ||
               currentList === 'toback' ||
-              currentList === 'toread')
-          "
+              currentList === 'toread' || 
+              currentList === 'fwtodo')"
         >
           <div id="showNoteText" v-if="showNote">
             <div class="header-wrap">

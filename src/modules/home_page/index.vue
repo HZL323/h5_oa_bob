@@ -211,40 +211,47 @@ export default {
   },
   data() {
     return {
-      activeNames: ["1", "2", "3", "4", "5"],
+      activeNames: ["1", "2", "3", "4", "5","6"],
       collapseList: [
+        {
+          title: "发文待办",
+          type: "fwtodo",
+          name: "1",
+          loading: true,
+          list: [],
+        },
         {
           title: "公文待办",
           type: "todo",
-          name: "1",
+          name: "2",
           loading: true,
           list: [],
         },
         {
           title: "用印待办",
           type: "seal",
-          name: "2",
+          name: "3",
           loading: true,
           list: [],
         },
         {
           title: "已办",
           type: "doing",
-          name: "3",
+          name: "4",
           loading: true,
           list: [],
         },
         {
           title: "待阅",
           type: "toread",
-          name: "4",
+          name: "5",
           loading: true,
           list: [],
         },
         {
           title: "退回待办",
           type: "toback",
-          name: "5",
+          name: "6",
           loading: true,
           list: [],
         },
@@ -332,74 +339,88 @@ export default {
                 list: [],
             },
             {
+              title: "发文待办",
+              type: "fwtodo",
+              name: "1",
+              loading: true,
+              list: [],
+            },
+            {
               title: "公文待办",
               type: "todo",
-              name: "1",
+              name: "2",
               loading: true,
               list: [],
             },
             {
               title: "用印待办",
               type: "seal",
-              name: "2",
+              name: "3",
               loading: true,
               list: [],
             },
             {
               title: "已办",
               type: "doing",
-              name: "3",
+              name: "4",
               loading: true,
               list: [],
             },
             {
               title: "待阅",
               type: "toread",
-              name: "4",
+              name: "5",
               loading: true,
               list: [],
             },
             {
               title: "退回待办",
               type: "toback",
-              name: "5",
+              name: "6",
               loading: true,
               list: [],
             }]
       }else{
         this.collapseList = [
             {
+              title: "发文待办",
+              type: "fwtodo",
+              name: "1",
+              loading: true,
+              list: [],
+            },
+            {
               title: "公文待办",
               type: "todo",
-              name: "1",
+              name: "2",
               loading: true,
               list: [],
             },
             {
               title: "用印待办",
               type: "seal",
-              name: "2",
+              name: "3",
               loading: true,
               list: [],
             },
             {
               title: "已办",
               type: "doing",
-              name: "3",
+              name: "4",
               loading: true,
               list: [],
             },
             {
               title: "待阅",
               type: "toread",
-              name: "4",
+              name: "5",
               loading: true,
               list: [],
             },
             {
               title: "退回待办",
               type: "toback",
-              name: "5",
+              name: "6",
               loading: true,
               list: [],
             }]
@@ -409,18 +430,35 @@ export default {
           curPage: 1,
           pageSize: 5,
           userCode: this.$store.state.userInfo.userCode,
-          queryKind: "todo",
+          queryKind: "fwtodo",
         })
         .then((res) => {
           this.collapseList[index].list = res.data.model.curPageData;
           if (res.data.model.allDataCount > 99) {
-            this.collapseList[index].title = "公文待办(99+)";
+            this.collapseList[index].title = "发文待办(99+)";
           } else {
             this.collapseList[index].title =
+              "发文待办(" + res.data.model.allDataCount + ")";
+          }
+          this.collapseList[index].loading = false;
+        });
+      api
+        .queryList({
+          curPage: 1,
+          pageSize: 5,
+          userCode: this.$store.state.userInfo.userCode,
+          queryKind: "todo",
+        })
+        .then((res) => {
+          this.collapseList[index+1].list = res.data.model.curPageData;
+          if (res.data.model.allDataCount > 99) {
+            this.collapseList[index+1].title = "公文待办(99+)";
+          } else {
+            this.collapseList[index+1].title =
               "公文待办(" + res.data.model.allDataCount + ")";
           }
           //this.collapseList[index].title = '待办('+res.data.model.allDataCount+')';
-          this.collapseList[index].loading = false;
+          this.collapseList[index+1].loading = false;
         });
       api
         .queryList({
@@ -431,15 +469,15 @@ export default {
         })
         .then((res) => {
           //console.log("-------用印待办---------",res.data.model);
-          this.collapseList[index+1].list = res.data.model.curPageData;
+          this.collapseList[index+2].list = res.data.model.curPageData;
           if (res.data.model.allDataCount > 99) {
-            this.collapseList[index+1].title = "用印待办(99+)";
+            this.collapseList[index+2].title = "用印待办(99+)";
           } else {
-            this.collapseList[index+1].title =
+            this.collapseList[index+2].title =
               "用印待办(" + res.data.model.allDataCount + ")";
           }
           //this.collapseList[index+1].title = '待办('+res.data.model.allDataCount+')';
-          this.collapseList[index+1].loading = false;
+          this.collapseList[index+2].loading = false;
         });
       api
         .list({
@@ -453,14 +491,14 @@ export default {
               // item.actCreateTime = this.$format("YYYY-mm-dd", item.createTime);
             });
           }
-          this.collapseList[index+2].list = res.data.model.curPageData;
+          this.collapseList[index+3].list = res.data.model.curPageData;
           if (res.data.model.allDataCount > 99) {
-            this.collapseList[index+2].title = "已办(99+)";
+            this.collapseList[index+3].title = "已办(99+)";
           } else {
-            this.collapseList[index+2].title =
+            this.collapseList[index+3].title =
               "已办(" + res.data.model.allDataCount + ")";
           }
-          this.collapseList[index+2].loading = false;
+          this.collapseList[index+3].loading = false;
         });
       api
         .queryList({
@@ -470,14 +508,14 @@ export default {
           queryKind: "toread",
         })
         .then((res) => {
-          this.collapseList[index+3].list = res.data.model.curPageData;
+          this.collapseList[index+4].list = res.data.model.curPageData;
           if (res.data.model.allDataCount > 99) {
-            this.collapseList[index+3].title = "待阅(99+)";
+            this.collapseList[index+4].title = "待阅(99+)";
           } else {
-            this.collapseList[index+3].title =
+            this.collapseList[index+4].title =
               "待阅(" + res.data.model.allDataCount + ")";
           }
-          this.collapseList[index+3].loading = false;
+          this.collapseList[index+4].loading = false;
         });
       api
         .queryList({
@@ -487,14 +525,14 @@ export default {
           queryKind: "toback",
         })
         .then((res) => {
-          this.collapseList[index+4].list = res.data.model.curPageData;
+          this.collapseList[index+5].list = res.data.model.curPageData;
           if (res.data.model.allDataCount > 99) {
-            this.collapseList[index+4].title = "退回待办(99+)";
+            this.collapseList[index+5].title = "退回待办(99+)";
           } else {
-            this.collapseList[index+4].title =
+            this.collapseList[index+5].title =
               "退回待办(" + res.data.model.allDataCount + ")";
           }
-          this.collapseList[index+4].loading = false;
+          this.collapseList[index+5].loading = false;
         });
     },
     getTimeState() {

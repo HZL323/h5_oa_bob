@@ -250,7 +250,7 @@ export default {
                       this.getFromConfig();
                       this.isSubmmit();
                       this.updateProcessState();
-                      if(this.currentList === "todo" || this.currentList === "seal"){
+                      if(this.currentList === "todo" || this.currentList === "seal" || this.currentList === "fwtodo"){
                         this.isSubProcess();
                       }
                     });
@@ -273,7 +273,7 @@ export default {
             this.getFromConfig();
             this.isSubmmit();
             this.updateProcessState();
-            if(this.currentList === "todo" || this.currentList === "seal"){
+            if(this.currentList === "todo" || this.currentList === "seal" || this.currentList === "fwtodo"){
               this.isSubProcess();
             }
           });
@@ -285,7 +285,7 @@ export default {
       this.getBackLink();
       this.getFromConfig();
       this.isSubmmit();
-      if(this.currentList === "todo" || this.currentList === "seal"){
+      if(this.currentList === "todo" || this.currentList === "seal" || this.currentList === "fwtodo"){
         this.isSubProcess();
       }
     }
@@ -588,13 +588,13 @@ export default {
     },
     onCommit() {
 
-      if(this.sendDeptVerify && (this.$store.state.currentList === 'todo' || this.$store.state.currentList === 'seal')){
+      if(this.sendDeptVerify && (this.$store.state.currentList === 'todo' || this.$store.state.currentList === 'seal' || this.$store.state.currentList === 'fwtodo')){
         if(this.dataForm.sendDeptText == null || this.dataForm.sendDeptText == ""){
             Toast("请选择发送部门");
             return;
         }
       }
-      if(this.businessTypeVerify && (this.$store.state.currentList === 'todo' || this.$store.state.currentList === 'seal')){
+      if(this.businessTypeVerify && (this.$store.state.currentList === 'todo' || this.$store.state.currentList === 'seal' || this.$store.state.currentList === 'fwtodo')){
         if(this.dataForm.businessType == null || this.dataForm.businessType == ""){
           Toast("请选择业务类型");
           return;

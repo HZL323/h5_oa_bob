@@ -359,13 +359,13 @@ export default {
     ifBusinessType() {
       return (
         this.$store.state.currentList === "todo" ||
-        this.$store.state.currentList === "seal"
+        this.$store.state.currentList === "seal" || this.$store.state === "fwtodo"
       );
     },
     ifSendDept() {
       return (
         this.$store.state.currentList === "todo" ||
-        this.$store.state.currentList === "seal"
+        this.$store.state.currentList === "seal" || this.$store.state === "fwtodo"
       );
     },
     split1() {

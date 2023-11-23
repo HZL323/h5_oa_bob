@@ -338,7 +338,8 @@ export default {
                     }
                     if (
                       this.currentList === "todo" ||
-                      this.currentList === "seal"
+                      this.currentList === "seal" ||
+                      this.currentList === "fwtodo"
                     ) {
                       this.isSubProcess();
                     }
@@ -419,7 +420,7 @@ export default {
           if (this.$store.state.currentList !== "doing") {
             this.updateProcessState();
           }
-          if (this.currentList === "todo" || this.currentList === "seal") {
+          if (this.currentList === "todo" || this.currentList === "seal" || this.currentList === "fwtodo") {
             this.isSubProcess();
           }
         });
@@ -433,7 +434,7 @@ export default {
       this.getFromConfig();
       this.isSubmmit();
       this.isShowOpinion();
-      if (this.currentList === "todo" || this.currentList === "seal") {
+      if (this.currentList === "todo" || this.currentList === "seal" || this.currentList === "fwtodo") {
         this.isSubProcess();
       }
     }
@@ -1033,7 +1034,8 @@ export default {
       if (
         this.sendDeptVerify &&
         (this.$store.state.currentList === "todo" ||
-          this.$store.state.currentList === "seal")
+          this.$store.state.currentList === "seal" || 
+          this.$store.state.currentList === "fwtodo")
       ) {
         if (
           this.dataForm.sendDeptText == null ||
@@ -1046,7 +1048,8 @@ export default {
       if (
         this.businessTypeVerify &&
         (this.$store.state.currentList === "todo" ||
-          this.$store.state.currentList === "seal")
+          this.$store.state.currentList === "seal" ||
+          this.$store.state.currentList === "fwtodo")
       ) {
         if (
           this.dataForm.businessType == null ||

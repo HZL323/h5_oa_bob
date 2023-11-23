@@ -72,6 +72,8 @@ export default {
   methods: {
     getNavTitle(type) {
       switch (type) {
+        case "fwtodo":
+          return "发文待办列表";
         case "todo":
           return "公文待办列表";
         case "doing":
