@@ -190,6 +190,8 @@ export default {
       isRouterAlive: true,
       showOpinion: true,
       showSendbackButton: false,
+      saveOpinionParams: []//意见参数
+
     };
   },
   computed: {
@@ -867,49 +869,31 @@ export default {
         userId: this.userInfo.userId,
       };
       //必填生效
-      let saveNoteResult = 0;
+      let saveOpinionRequire = false;
       if (
         (this.noteRequired && this.opinionConfig[0]) ||
         (!this.noteRequired &&
           this.opinionConfig[0] &&
           this.opinionConfig[0].noteContent)
       ) {
-        await this.saveOpinion()
-          .then((results) => {
-            if (
-              results[0].data.status !== "200" ||
-              (results[0].data.status === "200" &&
-                results[0].data.model.code === -1)
-            ) {
-              saveNoteResult = -1;
-            }
-            if (
-              results[0].data.status === "200" &&
-              results[0].data.model.code === -2
-            ) {
-              saveNoteResult = -2;
-            }
-            // 处理第一个元素的结果
-          })
-          .catch((error) => {
-            // 处理错误
-            saveNoteResult = -1;
-          });
-        if (saveNoteResult === -1) {
-          this.$toast.clear();
-          this.$toast("提交失败");
-          return;
-        }
-        if (saveNoteResult === -2) {
-          this.$toast.clear();
-          this.$toast("由于您在PC端已经填过意见，需要重新进入页面加载该意见");
-          this.$router.replace({ path: "/home", force: true });
-          return;
-        }
+        saveOpinionRequire = true;
+        this.getSaveOpinionParams();
+        data.saveOpinionParams = this.saveOpinionParams[0];
+        data.saveOpinionRequire = saveOpinionRequire;
       }
 
       setTimeout(() => {
         api.completeWorkitem(data).then((res) => {
+          if(res.data.status !== "200" || (res.data.status === "200" && res.data.model.code === -1)){
+              this.$toast("提交失败");
+              return
+            }
+            //处理保存意见相关的报错
+            if(res.data.status === "200" &&  res.data.model.code === -2){
+              this.$toast("由于您在PC端已经填过意见，需要重新进入页面加载该意见");
+              this.$router.replace({ path: '/home', force: true })
+              return
+            }
           console.log("detail_page 870行completeWorkitem被调用");
           this.$toast.clear();
           if (res.data.status === "200" && res.data.model.code === 0) {
@@ -1355,6 +1339,22 @@ export default {
         document.documentElement.scrollTop = this.$refs.detailWrap.clientHeight;
       }
     },
+    getSaveOpinionParams(){
+      this.opinionConfig.map((item) => {
+        item.noteContent = item.noteContent.replace(/&#13;/g, "<br/>");
+        item.noteContent = item.noteContent.replace(/\n/g, "<br/>");
+        this.saveOpinionParams.push({
+            id: item.id || "",
+            type: item.noteId,
+            noteContent: item.noteContent,
+            proInstId: this.currentProcess.proInstId,
+            createUser: this.userInfo.userId,
+            createUserName: this.userInfo.userName,
+            workitemId: this.currentProcess.workitemId,
+            actDefId: this.currentProcess.actDefId,
+        })
+      })
+    },
     async hldNotShowNextActivities(data) {
       //console.log("日期：", moment());
       console.log("用户名", this.userInfo.userName);
@@ -1371,50 +1371,28 @@ export default {
         this.opinionConfig[0].noteContent
       );
       //必填生效
-      let saveNoteResult = 0;
+      let saveOpinionRequire = false;
       if (
         (this.noteRequired && this.opinionConfig[0]) ||
         (!this.noteRequired &&
           this.opinionConfig[0] &&
           this.opinionConfig[0].noteContent)
       ) {
-        await this.saveOpinion()
-          .then((results) => {
-            if (
-              results[0].data.status !== "200" ||
-              (results[0].data.status === "200" &&
-                results[0].data.model.code === -1)
-            ) {
-              saveNoteResult = -1;
-            }
-            if (
-              results[0].data.status === "200" &&
-              results[0].data.model.code === -2
-            ) {
-              saveNoteResult = -2;
-            }
-            // 关闭提交loading
-            this.$toast.clear();
-            // 处理第一个元素的结果
-          })
-          .catch((error) => {
-            // 处理错误
-            saveNoteResult = -1;
-          });
-        if (saveNoteResult === -1) {
-          // 关闭提交loading
-          this.$toast.clear();
-          this.$toast("意见保存失败，请关闭页面重试");
-          return;
-        }
-        if (saveNoteResult === -2) {
-          // 关闭提交loading
-          this.$toast.clear();
-          this.$toast("PC端已经填过意见，但未提交，请重新进入页面加载该意见");
-          this.$router.replace({ path: "/home", force: true });
-          return;
-        }
+        saveOpinionRequire = true;
+        this.getSaveOpinionParams();
+        data.saveOpinionParams = this.saveOpinionParams[0];
+        data.saveOpinionRequire = saveOpinionRequire;
         api.completeWorkitem(data).then((res) => {
+          if(res.data.status !== "200" || (res.data.status === "200" && res.data.model.code === -1)){
+            this.$toast("提交失败");
+            return
+          }
+          //处理保存意见相关的报错
+          if(res.data.status === "200" &&  res.data.model.code === -2){
+            this.$toast("由于您在PC端已经填过意见，需要重新进入页面加载该意见");
+            this.$router.replace({ path: '/home', force: true })
+            return
+          }
           this.$toast.clear();
           if (res.data.status === "200" && res.data.model.code === 0) {
             this.$store.commit("setRefresh", true);

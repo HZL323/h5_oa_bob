@@ -146,6 +146,7 @@ export default {
       count: 0,
       selectData: [], // 已选择的数据
       subProcessName: "", //子流程的名称
+      saveOpinionParams: []//意见参数
     };
   },
   props: {
@@ -402,44 +403,33 @@ export default {
       //校验是否必填，必填的话调用意见保存方法 必填生效
       console.log("this.noteRequired---------", this.noteRequired)
       console.log("this.opinionConfig[0]---------", this.opinionConfig[0])
-      let saveNoteResult = 0;
+      let saveOpinionRequire = false;
       if((this.noteRequired && this.opinionConfig[0]) || (!this.noteRequired &&  this.opinionConfig[0] && this.opinionConfig[0].noteContent)){
-        await this.saveOpinion().then((results) => {
-            if(results[0].data.status !== "200" || (results[0].data.status === "200" && results[0].data.model.code === -1)){
-                saveNoteResult = -1;
-            };
-            if(results[0].data.status === "200" && results[0].data.model.code === -2){
-                saveNoteResult = -2;
-            };
-            // 处理第一个元素的结果
-            }).catch((error) => {
-                // 处理错误
-                saveNoteResult = -1;
-        });
-        if(saveNoteResult === -1){
-            this.$toast("提交失败");
-            return
-        }
-        if(saveNoteResult === -2){
-            this.$toast("由于您在PC端已经填过意见，需要重新进入页面加载该意见");
-            this.$router.replace({ path: '/home', force: true })
-            return
-        }
+        saveOpinionRequire = true;
+        this.getSaveOpinionParams();
+        data.saveOpinionParams = this.saveOpinionParams[0];
+        data.saveOpinionRequire = saveOpinionRequire;
       }
       //如果是子流程
       if (this.selectIsSubProcess) {
-        data.isMobile = true;
         data.dataForm = this.dataForm;
-        console.log("data.dataForm:", data.dataForm);
-        console.log("data.wfmData", data.wfmData);
         setTimeout(() => {
           console.log("-----------所选环节是部室经理会签选择，调用subProcessCompleteWorkItem---------------")
           api.subProcessCompleteWorkItem(data).then((res) => {
+            if(res.data.status !== "200" || (res.data.status === "200" && res.data.model.code === -1)){
+              this.$toast("提交失败");
+              return
+            }
+            //处理保存意见相关的报错
+            if(res.data.status === "200" &&  res.data.model.code === -2){
+              this.$toast("由于您在PC端已经填过意见，需要重新进入页面加载该意见");
+              this.$router.replace({ path: '/home', force: true })
+              return
+            }
             this.$toast.clear();
-            if (res.data.status === "200") {
+            if (res.data.status === "200" && res.data.model.code === 0) {
               this.$store.commit("setRefresh", true);
               if (this.fromOut) {
-
                 this.$dialog
                   .alert({
                     message: "提交成功",
@@ -477,6 +467,16 @@ export default {
         setTimeout(() => {
           console.log("-------------所选环节不是部室经理会签环节，调用completeWorkitem--------------");
           api.completeWorkitem(data).then((res) => {
+            if(res.data.status !== "200" || (res.data.status === "200" && res.data.model.code === -1)){
+              this.$toast("提交失败");
+              return
+            }
+            //处理保存意见相关的报错
+            if(res.data.status === "200" &&  res.data.model.code === -2){
+              this.$toast("由于您在PC端已经填过意见，需要重新进入页面加载该意见");
+              this.$router.replace({ path: '/home', force: true })
+              return
+            }
             console.log("selectHandler 473行completeWorkitem被调用")
             this.$toast.clear();
             debugger
@@ -536,6 +536,22 @@ export default {
           console.log("业务类型更新成功");
         }
       });
+    },
+    getSaveOpinionParams(){
+      this.opinionConfig.map((item) => {
+        item.noteContent = item.noteContent.replace(/&#13;/g, "<br/>");
+        item.noteContent = item.noteContent.replace(/\n/g, "<br/>");
+        this.saveOpinionParams.push({
+            id: item.id || "",
+            type: item.noteId,
+            noteContent: item.noteContent,
+            proInstId: this.currentProcess.proInstId,
+            createUser: this.userInfo.userId,
+            createUserName: this.userInfo.userName,
+            workitemId: this.currentProcess.workitemId,
+            actDefId: this.currentProcess.actDefId,
+        })
+      })
     },
     async saveOpinion() {
         debugger
