@@ -358,7 +358,7 @@ export default {
       let saveOpinionRequire = false;
       //校验是否必填，必填的话调用意见保存方法 20220714
       if((this.noteRequired && this.opinionConfig[0]) || (!this.noteRequired &&  this.opinionConfig[0] && this.opinionConfig[0].noteContent)){
-        saveOpinionRequire = true;
+        saveOpinionRequire = "true";
         this.getSaveOpinionParams();
         data.saveOpinionParams = this.saveOpinionParams[0];
         data.saveOpinionRequire = saveOpinionRequire;
@@ -484,7 +484,7 @@ export default {
       };
       let saveOpinionRequire = false;
       if((this.noteRequired && this.opinionConfig[0]) || (!this.noteRequired &&  this.opinionConfig[0] && this.opinionConfig[0].noteContent)){
-        saveOpinionRequire = true;
+        saveOpinionRequire = "true";
         this.getSaveOpinionParams();
         data.saveOpinionParams = this.saveOpinionParams[0];
         data.saveOpinionRequire = saveOpinionRequire;
@@ -557,7 +557,7 @@ export default {
       let saveOpinionRequire = false;
       //保存意见
       if((this.noteRequired && this.opinionConfig[0]) || (!this.noteRequired &&  this.opinionConfig[0] && this.opinionConfig[0].noteContent)){
-        saveOpinionRequire = true;
+        saveOpinionRequire = "true";
         this.getSaveOpinionParams();
         data.saveOpinionParams = this.saveOpinionParams[0];
         data.saveOpinionRequire = saveOpinionRequire;

@@ -876,7 +876,7 @@ export default {
           this.opinionConfig[0] &&
           this.opinionConfig[0].noteContent)
       ) {
-        saveOpinionRequire = true;
+        saveOpinionRequire = "true";
         this.getSaveOpinionParams();
         data.saveOpinionParams = this.saveOpinionParams[0];
         data.saveOpinionRequire = saveOpinionRequire;
@@ -1378,7 +1378,7 @@ export default {
           this.opinionConfig[0] &&
           this.opinionConfig[0].noteContent)
       ) {
-        saveOpinionRequire = true;
+        saveOpinionRequire = "true";
         this.getSaveOpinionParams();
         data.saveOpinionParams = this.saveOpinionParams[0];
         data.saveOpinionRequire = saveOpinionRequire;

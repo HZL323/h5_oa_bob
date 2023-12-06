@@ -405,7 +405,7 @@ export default {
       console.log("this.opinionConfig[0]---------", this.opinionConfig[0])
       let saveOpinionRequire = false;
       if((this.noteRequired && this.opinionConfig[0]) || (!this.noteRequired &&  this.opinionConfig[0] && this.opinionConfig[0].noteContent)){
-        saveOpinionRequire = true;
+        saveOpinionRequire = "true";
         this.getSaveOpinionParams();
         data.saveOpinionParams = this.saveOpinionParams[0];
         data.saveOpinionRequire = saveOpinionRequire;
