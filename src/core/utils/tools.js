@@ -176,5 +176,5 @@ const dateFormat = (fmt, date) => {
 
     return fmt;
 }
-
+Vue.prototype.$oaVersion = "1.4.2.3"
 Vue.prototype.$format = dateFormat

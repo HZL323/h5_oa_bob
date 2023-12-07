@@ -300,11 +300,18 @@ export default {
         }
         let isAndroid = /android/.test(userAgent) && !/iphone|ipad|ipod/.test(userAgent);
         let isIPad = /ipad/.test(userAgent);
-
+        PCType = (PCType == ""
+              ? isAndroid
+                ? "Android"
+                : isIPad
+                ? "iPad"
+                : "iPhone"
+              : PCType);
+        let type = PCType + " | oa版本:"+this.$oaVersion
         api
         .recordEnterOaLog({
           userUuid: this.$store.state.userInfo.userId,
-          userAgent: PCType == "" ? (isAndroid ? "Android" :  (isIPad ? "iPad" : "iPhone")) : PCType,
+          userAgent: type
         })
         .then((res) => {
             console.log("------记录进入OA的设备日志---------")

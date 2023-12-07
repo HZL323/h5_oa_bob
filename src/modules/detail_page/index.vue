@@ -242,7 +242,6 @@ export default {
     },
   },
   created() {
-    console.log("生产版本号--1.4.1");
     this.$store.commit("setCurrentList", this.$route.query.queryKind);
     this.dropListCurrentList = this.$route.query.queryKind;
     console.log("this.$route.query.queryKind:", this.$route.query.queryKind);
@@ -519,17 +518,18 @@ export default {
         /android/.test(userAgent) && !/iphone|ipad|ipod/.test(userAgent);
       let isIPad = /ipad/.test(userAgent);
       console.log("-----------调用recordEnterOaLog接口-----------");
-      api
-        .recordEnterOaLog({
-          userUuid: this.$store.state.userInfo.userId,
-          userAgent:
-            PCType == ""
+      PCType = (PCType == ""
               ? isAndroid
                 ? "Android"
                 : isIPad
                 ? "iPad"
                 : "iPhone"
-              : PCType,
+              : PCType);
+      let type = PCType + "|oa版本:"+this.$oaVersion
+      api
+        .recordEnterOaLog({
+          userUuid: this.$store.state.userInfo.userId,
+          userAgent: type
         })
         .then((res) => {
           console.log("------记录进入OA的设备日志---------");
