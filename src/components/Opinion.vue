@@ -57,7 +57,7 @@
                       <div class="date-time">{{ formatDate(item_.createTime) }}</div>
                     </div>
                     <div class="opinion-content">
-                      <p v-html="item_.noteContent"></p>
+                      <p v-html="formatNoteContent(item_.noteContent)"></p>
                     </div>
                   </div>
                 </div>
@@ -224,6 +224,10 @@ export default {
       const format = "YYYY-MM-DD HH:mm";
       let dateTime = moment(item).format(format);
       return item ? dateTime : "";
+    },
+    formatNoteContent(noteContent){
+      noteContent = noteContent.replace(/&#13;/g, "<br/>");
+      return noteContent
     },
     init() {
       this.getOpinion();
