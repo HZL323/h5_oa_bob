@@ -229,6 +229,10 @@ export default {
       noteContent = noteContent.replace(/&#13;/g, "<br/>");
       return noteContent
     },
+    formatNoteContent2(noteContent){
+      noteContent = noteContent.replace(/&#13;/g, "\n");
+      return noteContent
+    },
     init() {
       this.getOpinion();
       // this.getEditOpinion();
@@ -380,7 +384,7 @@ export default {
                       noteId: item, //比如yydbyj
                       noteName: eum[item].noteName, //比如"用印督办意见"
                       noteContent: objDrawback[item]
-                        ? objDrawback[item].value
+                        ? this.formatNoteContent2(objDrawback[item].value)
                         : "",
                       id: objDrawback[item] ? objDrawback[item].id : "",
                     });
@@ -394,7 +398,7 @@ export default {
                     this.opinionConfig.push({
                       noteId: item, //比如yydbyj
                       noteName: eum[item].noteName, //比如"用印督办意见"
-                      noteContent: obj[item] ? obj[item].value : "",
+                      noteContent: obj[item] ? this.formatNoteContent2(obj[item].value) : "",
                       id: obj[item] ? obj[item].id : "",
                     });
                   });
