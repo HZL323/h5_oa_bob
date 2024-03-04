@@ -41,6 +41,11 @@
             </template>
           </div>
         </van-tab>
+        <van-tab title="档案借阅列表" name="c"  v-if="archiveBorrowProcess">
+          <div class="tab-wrap">
+            <ArchiveList />
+          </div>
+        </van-tab>
         <van-tab title="附件" name="b">
           <div class="tab-wrap-attachment">
             <Attachment />
@@ -133,6 +138,7 @@ import {
 import DetailForm from "../../components/DetailForm.vue";
 import Opinion from "../../components/Opinion.vue";
 import Attachment from "../../components/Attachment.vue";
+import ArchiveList from "../../components/ArchiveList.vue";
 import { api } from "../../core/api/index";
 import { closeWindow } from "../../core/mxApi";
 export default {
@@ -151,6 +157,7 @@ export default {
     DetailForm,
     Opinion,
     Attachment,
+    ArchiveList
   },
   //yinyanhong
   provide() {
@@ -190,8 +197,8 @@ export default {
       isRouterAlive: true,
       showOpinion: true,
       showSendbackButton: false,
-      saveOpinionParams: []//意见参数
-
+      saveOpinionParams: [],//意见参数
+      archiveBorrowProcess: false,
     };
   },
   computed: {
@@ -445,6 +452,8 @@ export default {
         showText.hidden = true;
       }
     }, 1500);
+    console.log("mmmmmmmmmmmmmmmmmmmmmmmmmmmmm", this.$store.state.currentProcess.processName)
+    this.archiveBorrowProcess = (this.$store.state.currentProcess.processName === "档案借阅流程")
   },
   mounted() {
     this.$nextTick(() => {

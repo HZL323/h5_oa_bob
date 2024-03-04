@@ -232,3 +232,6 @@ export function  batchCompleteWorkitem(data){
 export function  getSendbackPrivilige(data){
     return ajaxPost(`${URL}/mob/publicService/getSendbackPrivilige`, data)
 }
+export function getArchiveBorrowList(data){
+    return ajaxPost(`${URL}/mob/archiveBorrow/archiveBorrowList`, data)
+}
