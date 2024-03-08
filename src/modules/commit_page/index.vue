@@ -416,6 +416,11 @@ export default {
         setTimeout(() => {
           console.log("-------------所选环节不是子流程，调用completeWorkitem--------------");
           api.completeWorkitem(data).then((res) => {
+            if(res.data.status === "200" && res.data.model.code === -3){
+              //针对意见定制的提示
+              this.$toast(res.data.model.msg);
+              return
+            }
             if(res.data.status !== "200" || (res.data.status === "200" && res.data.model.code === -1)){
               this.$toast("提交失败");
               return
@@ -491,6 +496,11 @@ export default {
       }
       setTimeout(() => {
         api.completeWorkitem(data).then((res) => {
+          if(res.data.status === "200" && res.data.model.code === -3){
+              //针对意见定制的提示
+              this.$toast(res.data.model.msg);
+              return
+          }
           if(res.data.status !== "200" || (res.data.status === "200" && res.data.model.code === -1)){
               this.$toast("提交失败");
               return
@@ -565,6 +575,11 @@ export default {
       //移动端完成工作项
       setTimeout(() => {
         api.completeWorkitem(data).then((res) => {
+          if(res.data.status === "200" && res.data.model.code === -3){
+              //针对意见定制的提示
+              this.$toast(res.data.model.msg);
+              return
+          }
           if(res.data.status !== "200" || (res.data.status === "200" && res.data.model.code === -1)){
             this.$toast("提交失败");
             return
@@ -718,6 +733,7 @@ export default {
         //因为forEach()方法不会等待异步操作的结果，它只是遍历数组中的每个元素并对其执行回调函数
         //异步操作是在回调函数中发生的，但是forEach()方法并不会等待它们完成。因此，在forEach()中返回的返回值是undefined
         //使用了map()方法替代了forEach()方法来生成一个包含多个Promise对象的数组。然后，我们使用Promise.all()方法来等待所有异步操作完成，最终返回一个新的Promise对象。
+        
         const promises = this.opinionConfig.map(async (item) => {
             item.noteContent = item.noteContent.replace(/&#13;/g, "<br/>");
             item.noteContent = item.noteContent.replace(/\n/g, "<br/>");
@@ -731,7 +747,6 @@ export default {
                 workitemId: this.currentProcess.workitemId,
                 actDefId: this.currentProcess.actDefId,
             };
-            const res = await api.saveOpinion(data);
             if (res.data.status === 200 && res.data.model.code === 0) item.id = res.data.data.id;
             return res;
         });

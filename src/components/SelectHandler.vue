@@ -467,6 +467,11 @@ export default {
         setTimeout(() => {
           console.log("-------------所选环节不是部室经理会签环节，调用completeWorkitem--------------");
           api.completeWorkitem(data).then((res) => {
+            if(res.data.status === "200" && res.data.model.code === -3){
+              //针对意见定制的提示
+              this.$toast(res.data.model.msg);
+              return
+          }
             if(res.data.status !== "200" || (res.data.status === "200" && res.data.model.code === -1)){
               this.$toast("提交失败");
               return
