@@ -34,7 +34,7 @@ router.beforeEach((to, from, next) => {
             loadingType: 'spinner',
         });
         getCurrentUser().then(user => {
-            console.log("获取当前用户信息", user);
+            //console.log("获取当前用户信息", user);
             api.checkUser({
                  id: user.login_name,//生产 - 新oa测试 - 新oa
                  uCode: ""//生产 - 新oa测试 - 新oa
@@ -120,7 +120,7 @@ router.beforeEach((to, from, next) => {
                 //  id:"007177",
                 // uCode :"liujiangtao"
             }).then(res => {
-                console.log("checkUser status", res)
+                //console.log("checkUser status", res)
                 if (res.data.status === '200') {
                     if (res.data.model.code === -1) {
                         Toast.clear()

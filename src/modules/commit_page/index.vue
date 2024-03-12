@@ -184,7 +184,7 @@ export default {
         .then((res) => {
             debugger
             if (res.data.status === "200") {
-                console.log("----commit_page下一环节返回内容----", res.data);
+                //console.log("----commit_page下一环节返回内容----", res.data);
                 if (res.data.model.flag == false) {
                     this.onMultiCommit();
                 } else {
@@ -250,9 +250,7 @@ export default {
           proDirId: this.currentProcess.proDirId,
         };
         api.isSubProcess(isSubProcessParameter).then((res) => {
-          console.log(
-            "是否是子流程接口返回值res：" + res.data.model.subProcess
-          );
+          //console.log("是否是子流程接口返回值res：" + res.data.model.subProcess);
           if (res.data.model && res.data.model.subProcess) {
             this.selectIsSubProcess = true;
             console.log("结果:", this.selectIsSubProcess);
@@ -434,7 +432,7 @@ export default {
             console.log("commit_page 409行completeWorkitem被调用")
             Toast.clear();
             if (res.data.status === "200" && res.data.model.code === 0) {
-              console.log("调用完成工作项接口返回值：" + res.data);
+              //console.log("调用完成工作项接口返回值：" + res.data);
               this.$store.commit("setRefresh", true);
               if (this.fromOut) {
                 Dialog.alert({
@@ -668,7 +666,7 @@ export default {
           ) {
             console.log("---------2---------");
             api.yyfhbmModifySendDeptAndUsers(params).then((res) => {
-              console.log(res.data.model.distinguishFhbmYyzhi);
+              //console.log(res.data.model.distinguishFhbmYyzhi);
               if (res.data.status === "200") {
                 console.log("分行部门发送部门以及指定人员更新成功");
               }
@@ -680,8 +678,8 @@ export default {
             res.data.model.distinguishFhbmYyzhi == "yyzhi"
           ) {
             console.log("----------3--------");
-            console.log(res.data.model.distinguishFhbmYyzhi);
-            console.log(params);
+            //console.log(res.data.model.distinguishFhbmYyzhi);
+            //console.log(params);
             // api.getActivityExtendConfigByName(distinguishFhbmYyzhiParameter).then((res) => {
 
             //   })
@@ -697,7 +695,7 @@ export default {
             res.data.model.distinguishFhbmYyzhi == "yyfzxzhi"
           ) {
             console.log("----------3--------");
-            console.log(res.data.model.distinguishFhbmYyzhi);
+            //console.log(res.data.model.distinguishFhbmYyzhi);
             console.log(params);
             // api.getActivityExtendConfigByName(distinguishFhbmYyzhiParameter).then((res) => {
 

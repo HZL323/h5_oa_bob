@@ -308,7 +308,7 @@ export default {
                     console.log(
                       "-------------!=oa this.$store.state.userInfo.userCode !== this.$route.query.userCode  checkUser 200 getData 200-------------"
                     );
-                    console.log("getData--res,", res);
+                    //console.log("getData--res,", res);
                     if (res.data.model == null) {
                       Dialog.confirm({
                         title:
@@ -390,7 +390,7 @@ export default {
         const pubFormDataId = this.$route.query.pubFormDataId;
         // 此处需调用接口获取数据
         this.getData(queryKind, workItemId, pubFormDataId).then((res) => {
-          console.log("getData--res,", res);
+          //console.log("getData--res,", res);
           console.log(
             "-------------!=oa this.$store.state.userInfo.userCode == this.$route.query.userCode getData 200 curPageData[0]-------------"
           );
@@ -486,7 +486,7 @@ export default {
         actDefId: this.currentProcess.actDefId,
       };
       api.getSendbackPrivilige(params).then((res) => {
-        console.log("getSendbackPrivilige res", res)
+        //console.log("getSendbackPrivilige res", res)
         if (res.data.model.code === 0) {
           this.showSendbackButton = true;
         }
@@ -713,7 +713,7 @@ export default {
           wfmRoleTypes: "todo,drafter",
         })
         .then((res) => {
-          console.log("formconfig", res);
+          //console.log("formconfig", res);
           if (res.data.status === "200") {
             this.formConfig = res.data.model.formMetaList;
             this.noteConfig = res.data.model.noteMetaList;
@@ -1112,7 +1112,7 @@ export default {
         })
         .then((res) => {
           if (res.data.status === "200") {
-            console.log("----detail_page下一环节返回内容----", res.data);
+            //console.log("----detail_page下一环节返回内容----", res.data);
             if (res.data.model.flag == false) {
               this.onMultiCommit();
             }

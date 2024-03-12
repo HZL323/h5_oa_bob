@@ -474,7 +474,7 @@ export default {
         })
         .then((res) => {
           Toast.clear();
-          console.log("获取dataForm", res.data.model.dataForm);
+          //console.log("获取dataForm", res.data.model.dataForm);
           if (res.data.status === "200") {
             this.formData = res.data.model.dataForm;
             this.$store.commit("setDataForm", res.data.model.dataForm);
@@ -752,14 +752,14 @@ export default {
                         if (res.data.status === "200") {
                           this.columns = [];
                           for (let i = 0; i < res.data.model.length; i++) {
-                            console.log(res.data.model[i]);
+                            //console.log(res.data.model[i]);
                             this.columns.push({
                               deptName: res.data.model[i].deptName,
                               deptId: res.data.model[i].deptId,
                               users: res.data.model[i].users,
                             });
                           }
-                          console.log("发送部门", res);
+                          //console.log("发送部门", res);
                         }
                       });
                     }

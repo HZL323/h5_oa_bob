@@ -319,8 +319,8 @@ export default {
 
       api.isSubProcess(isSubProcessParameter).then((res) => {
         if (res.data.status === "200") {
-          console.log("detail_page里面是否是子流程，接口返回值res：" + res);
-          console.log("res.data.model:"+res.data.model);
+          //console.log("detail_page里面是否是子流程，接口返回值res：" + res);
+          //console.log("res.data.model:"+res.data.model);
           //console.log("res.data.model.subProcess:"+res.data.model.subProcess)
           if(res.data.model && res.data.model.subProcess){
             this.selectIsSubProcess = true;
@@ -431,7 +431,7 @@ export default {
           wfmRoleTypes: "todo,drafter",
         })
         .then((res) => {
-          console.log("formconfig", res);
+          //console.log("formconfig", res);
           if (res.data.status === "200") {
             this.formConfig = res.data.model.formMetaList;
             this.noteConfig = res.data.model.noteMetaList;

@@ -264,10 +264,10 @@ export default {
           if (res.data.status === "200") {
             let obj = {};
             this.opinionData = res.data.model;
-            console.log(
-              "opinionData是后端返回的全部意见数据，包括必填和非必填",
-              this.opinionData
-            );
+            // console.log(
+            //   "opinionData是后端返回的全部意见数据，包括必填和非必填",
+            //   this.opinionData
+            // );
             this.opinionData.forEach((item) => {
               if (obj[item.type]) {
                 obj[item.type].push(item);
@@ -318,7 +318,7 @@ export default {
         })
         .then((res) => {
           Toast.clear();
-          console.log("getEditOpinion()_res.data.model:", res.data.model);
+          //console.log("getEditOpinion()_res.data.model:", res.data.model);
           if (res.data.status === "200") {
             let eum = {}; // 将意见元转换为枚举数据
             this.noteConfig.forEach((item) => {
@@ -369,7 +369,7 @@ export default {
             this.opinionConfig.forEach((item, i) => {
               this.opinionConfig.splice(i);
             });
-            console.log("res.data.model.noteEdit", res.data.model.noteEdit); //比如yydbyj
+            //console.log("res.data.model.noteEdit", res.data.model.noteEdit); //比如yydbyj
             //判断收回
             let queryIsDrawbackParam = {
               workitemId: this.currentProcess.workitemId,

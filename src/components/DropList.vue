@@ -159,7 +159,7 @@ export default {
             ...this.searchParams,
           })
           .then((res) => {
-            console.log("res", res);
+            //console.log("res", res);
             this.allDataCount = res.data.model.allDataCount;
             res.data.model.curPageData.forEach((item) => {
               //item.actCreateTime = this.$format("YYYY-mm-dd", item.createDate);
@@ -207,7 +207,7 @@ export default {
             ...this.searchParams,
           })
           .then((res) => {
-            console.log("res", res);
+            //console.log("res", res);
             this.allDataCount = res.data.model.allDataCount;
             res.data.model.curPageData.forEach((item) => {
               this.list.push(item);

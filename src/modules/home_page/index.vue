@@ -566,7 +566,7 @@ export default {
       api.loadUserDeptList({ userCode: this.userInfo.userCode }).then((res) => {
         if (res.data.status === "200") {
           this.columns = res.data.model;
-          console.log("this.columns", this.columns);
+          //console.log("this.columns", this.columns);
         }
       });
     },
