@@ -251,16 +251,9 @@ export default {
   created() {
     this.$store.commit("setCurrentList", this.$route.query.queryKind);
     this.dropListCurrentList = this.$route.query.queryKind;
-    console.log("this.$route.query.queryKind:", this.$route.query.queryKind);
-
     if (this.$route.query.from !== "oa") {
-      console.log("-------------recordEnterOaLog调用前-------------");
       this.recordEnterOaLog();
-      console.log("-------------recordEnterOaLog调用后-------------");
       if (this.$store.state.userInfo.userCode !== this.$route.query.userCode) {
-        console.log(
-          "-------------!=oa this.$store.state.userInfo.userCode !== this.$route.query.userCode-------------"
-        );
         //兼容旧版本的待办
         let resourceid = "";
         if (this.$route.query.hasOwnProperty("resourceid")) {
@@ -274,9 +267,6 @@ export default {
           })
           .then((res) => {
             if (res.data.status === "200") {
-              console.log(
-                "-------------!=oa this.$store.state.userInfo.userCode !== this.$route.query.userCode  checkUser 200-------------"
-              );
               if (res.data.model.code == 0) {
                 this.$store.commit("setUserInfo", {
                   userCode: res.data.model.data.usercode,
@@ -284,20 +274,6 @@ export default {
                   userName: res.data.model.data.username,
                   ou: res.data.model.data.ou,
                 });
-                console.log(
-                  "res.data.model.usercode:",
-                  res.data.model.data.usercode
-                );
-                console.log(
-                  "res.data.model.userId:",
-                  res.data.model.data.useruuid
-                );
-                console.log(
-                  "res.data.model.userName:",
-                  res.data.model.data.username
-                );
-                console.log("res.data.model.ou:", res.data.model.data.ou);
-
                 this.$store.commit("setFromOut", true);
                 const queryKind = this.$route.query.queryKind;
                 const workItemId = this.$route.query.workItemId;
@@ -305,10 +281,6 @@ export default {
                 // 此处需调用接口获取数据
                 this.getData(queryKind, workItemId, pubFormDataId).then(
                   (res) => {
-                    console.log(
-                      "-------------!=oa this.$store.state.userInfo.userCode !== this.$route.query.userCode  checkUser 200 getData 200-------------"
-                    );
-                    //console.log("getData--res,", res);
                     if (res.data.model == null) {
                       Dialog.confirm({
                         title:
@@ -381,19 +353,12 @@ export default {
             }
           });
       } else {
-        console.log(
-          "---------------!=oa this.$store.state.userInfo.userCode == this.$route.query.userCode---------------"
-        );
         this.$store.commit("setFromOut", true);
         const queryKind = this.$route.query.queryKind;
         const workItemId = this.$route.query.workItemId;
         const pubFormDataId = this.$route.query.pubFormDataId;
         // 此处需调用接口获取数据
         this.getData(queryKind, workItemId, pubFormDataId).then((res) => {
-          //console.log("getData--res,", res);
-          console.log(
-            "-------------!=oa this.$store.state.userInfo.userCode == this.$route.query.userCode getData 200 curPageData[0]-------------"
-          );
           if (res.data.model == null) {
             Dialog.confirm({
               title:
@@ -410,7 +375,6 @@ export default {
                 });
               })
               .catch((action) => {
-                //console.log("action", action);
                 if (action !== "overlay") {
                   setTimeout(() => {
                     closeWindow();
@@ -434,7 +398,6 @@ export default {
         });
       }
     } else {
-      console.log("-----------------------=oa------------------------");
       if (this.$store.state.currentList !== "doing") {
         this.updateProcessState();
       }
@@ -452,8 +415,7 @@ export default {
         showText.hidden = true;
       }
     }, 1500);
-    console.log("mmmmmmmmmmmmmmmmmmmmmmmmmmmmm", this.$store.state.currentProcess.processName)
-    this.archiveBorrowProcess = (this.$store.state.currentProcess.processName === "档案借阅流程")
+    this.archiveBorrowProcess = (this.$store.state.currentProcess.configCode === "da_jy_process")
   },
   mounted() {
     this.$nextTick(() => {
