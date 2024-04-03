@@ -1051,6 +1051,21 @@ export default {
               Toast("意见内容已超过1000字限制");
               return;
             }
+            let validateResult = "";
+            //验证是否有意见的定制配置
+            await api.validateNoteContent({
+              proInstId: this.currentProcess.proInstId,
+              noteContent:this.opinionConfig[i].noteContent,
+              actDefId:this.currentProcess.actDefId,
+            }).then((res) => {
+              if(res.data.model.code === -3 && res.data.model.msg !== ""){
+                validateResult = res.data.model.msg;
+              }
+            })
+            if(validateResult !== ""){
+              Toast(validateResult);
+              return;
+            }
           }
         }
       }

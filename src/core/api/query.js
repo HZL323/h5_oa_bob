@@ -235,3 +235,6 @@ export function  getSendbackPrivilige(data){
 export function getArchiveBorrowList(data){
     return ajaxPost(`${URL}/mob/archiveBorrow/archiveBorrowList`, data)
 }
+export function validateNoteContent(data){
+    return ajaxPost(`${URL}/mob/CustomizeNoteService/validateNoteContent`, data)
+}
