@@ -1196,8 +1196,8 @@ export default {
         this.currentProcess.processName === "短信发布申请流程"||
         this.currentProcess.processName === "网络专线申请流程"||
         this.currentProcess.processName === "网络专线变更流程"||
-        this.currentProcess.processName === "网络专线撤销流程"
-
+        this.currentProcess.processName === "网络专线撤销流程"||
+        this.currentProcess.processName === "档案借阅流程"
       ) {
         if (
           this.opinionConfig[0] &&
