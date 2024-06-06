@@ -33,7 +33,7 @@
       </van-tab>
       <van-tab title="附件" name="b">
         <div class="tab-wrap-attachment">
-          <Attachment />
+          <Attachment1 />
         </div>
       </van-tab>
     </van-tabs>
@@ -123,7 +123,7 @@ import {
 } from "vant";
 import DetailForm from "../../components/DetailForm.vue";
 import Opinion from "../../components/Opinion.vue";
-import Attachment from "../../components/Attachment.vue";
+import Attachment1 from "../../components/Attachment1.vue";
 import { api } from "../../core/api/index";
 import { closeWindow } from "../../core/mxApi";
 export default {
@@ -141,7 +141,7 @@ export default {
     [RadioGroup.name]: RadioGroup,
     DetailForm,
     Opinion,
-    Attachment,
+    Attachment1,
   },
   data() {
     return {

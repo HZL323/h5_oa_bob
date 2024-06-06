@@ -48,7 +48,8 @@
         </van-tab>
         <van-tab title="附件" name="b">
           <div class="tab-wrap-attachment">
-            <Attachment />
+            <Attachment1 v-if="attachmentChoose === 1"/>
+            <Attachment2 v-if="attachmentChoose === 2"/>
           </div>
         </van-tab>
       </van-tabs>
@@ -137,7 +138,8 @@ import {
 } from "vant";
 import DetailForm from "../../components/DetailForm.vue";
 import Opinion from "../../components/Opinion.vue";
-import Attachment from "../../components/Attachment.vue";
+import Attachment1 from "../../components/Attachment1.vue";
+import Attachment2 from "../../components/Attachment2.vue";
 import ArchiveList from "../../components/ArchiveList.vue";
 import { api } from "../../core/api/index";
 import { closeWindow } from "../../core/mxApi";
@@ -156,7 +158,8 @@ export default {
     [RadioGroup.name]: RadioGroup,
     DetailForm,
     Opinion,
-    Attachment,
+    Attachment1,
+    Attachment2,
     ArchiveList
   },
   //yinyanhong
@@ -199,6 +202,7 @@ export default {
       showSendbackButton: false,
       saveOpinionParams: [],//意见参数
       archiveBorrowProcess: false,
+      attachmentChoose:1
     };
   },
   computed: {
@@ -415,7 +419,21 @@ export default {
         showText.hidden = true;
       }
     }, 1500);
+    console.log("this.$store.state.currentProcess.configCode",this.$store.state.currentProcess.configCode)
     this.archiveBorrowProcess = (this.$store.state.currentProcess.configCode === "da_jy_process")
+    let chooseAttachment2ConfigCode = ["fw_zh_process","fw_bs_process","fw_zhdw_process","fw_jjz_process","fw_fh_process","fw_fhdw_process",
+      "sw_zh_process","sw_zhi_process","sw_fh_process","sw_zhzhi_process"
+    ];
+    if(this.$store.state.currentProcess.configCode.substring(0, 3) === "cy_"){
+        this.attachmentChoose = 2
+    }else{
+      for(let i = 0; i < chooseAttachment2ConfigCode.length; i++){
+        if(this.$store.state.currentProcess.configCode === chooseAttachment2ConfigCode[i]){
+          this.attachmentChoose = 2
+          break;
+        }
+      }
+    }
   },
   mounted() {
     this.$nextTick(() => {
