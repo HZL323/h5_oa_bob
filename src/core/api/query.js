@@ -7,9 +7,9 @@
  * @FilePath: \bjbank-xcoa\src\core\api\query.js
  */
 import { ajaxGet, ajaxPost } from '../mxApi'
-const URL = `http://oa.bj.bob` // 生产
+//const URL = `http://oa.bj.bob` // 生产
 //const URL = `http://10.51.228.84:8080` // 新oa测试
-//const URL = `http://app.xcoa.bj.bob.test` // 新oa/准生产
+const URL = `http://app.xcoa.bj.bob.test` // 新oa/准生产
 
 export function queryMessage(data) {
     //return ajaxGet('/api/v1/users?limit=1') //测试接口
@@ -136,7 +136,7 @@ export function isSubProcess(data){
 }
 //下一环节为子流程的提交接口——保存主流程和子流程的关联关系
 export function subProcessCompleteWorkItem(data){
-    return ajaxPost(`${URL}/mob/self/OperationService/getCurActivityInfo`,data)
+    return ajaxPost(`${URL}/mob/wfm/ApplicationServiceContainer/mobMainCommitToSub`,data)
 }
 // 查询退回节点
 export function queryBackLink(data) {
@@ -231,4 +231,10 @@ export function  batchCompleteWorkitem(data){
 }
 export function  getSendbackPrivilige(data){
     return ajaxPost(`${URL}/mob/publicService/getSendbackPrivilige`, data)
+}
+export function getArchiveBorrowList(data){
+    return ajaxPost(`${URL}/mob/archiveBorrow/archiveBorrowList`, data)
+}
+export function validateNoteContent(data){
+    return ajaxPost(`${URL}/mob/CustomizeNoteService/validateNoteContent`, data)
 }

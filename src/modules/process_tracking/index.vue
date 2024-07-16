@@ -23,7 +23,7 @@
               v-for="item_ in stepList"
               :key="item_.id"
             >
-              <div class="title van-hairline--right">{{ item_.key }}</div>
+              <div class="title van-hairline--right">{{ item_.name }}</div>
               <div class="value">{{ formatData(item, item_.id) }}</div>
             </div>
           </van-step>
@@ -47,37 +47,37 @@ export default {
     return {
       stepList: [
         {
-          key: "流程名称",
+          name: "流程名称",
           id: "proInstName",
           border: false,
         },
         {
-          key: "任务名称",
+          name: "任务名称",
           id: "name",
           border: false,
         },
         {
-          key: "部门",
+          name: "部门",
           id: "deptName",
           border: false,
         },
         {
-          key: "办理人",
+          name: "办理人",
           id: "userName",
           border: false,
         },
         {
-          key: "任务开始时间",
+          name: "任务开始时间",
           id: "createTime",
           border: false,
         },
         {
-          key: "任务结束时间",
+          name: "任务结束时间",
           id: "completeTime",
           border: false,
         },
         {
-          key: "办理状态",
+          name: "办理状态",
           id: "state",
           border: true,
         },

@@ -164,7 +164,6 @@ export default {
     return {
       refreshing: false,
       active: 0,
-      key: "bj",
       value: "",
       radio: "", // 单选办理人
       result: [], // 选择的多选办理人/部门

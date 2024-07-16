@@ -41,6 +41,11 @@
             </template>
           </div>
         </van-tab>
+        <van-tab title="档案借阅列表" name="c"  v-if="archiveBorrowProcess">
+          <div class="tab-wrap">
+            <ArchiveList />
+          </div>
+        </van-tab>
         <van-tab title="附件" name="b">
           <div class="tab-wrap-attachment">
             <Attachment />
@@ -133,6 +138,7 @@ import {
 import DetailForm from "../../components/DetailForm.vue";
 import Opinion from "../../components/Opinion.vue";
 import Attachment from "../../components/Attachment.vue";
+import ArchiveList from "../../components/ArchiveList.vue";
 import { api } from "../../core/api/index";
 import { closeWindow } from "../../core/mxApi";
 export default {
@@ -151,6 +157,7 @@ export default {
     DetailForm,
     Opinion,
     Attachment,
+    ArchiveList
   },
   //yinyanhong
   provide() {
@@ -190,6 +197,8 @@ export default {
       isRouterAlive: true,
       showOpinion: true,
       showSendbackButton: false,
+      saveOpinionParams: [],//意见参数
+      archiveBorrowProcess: false,
     };
   },
   computed: {
@@ -240,19 +249,11 @@ export default {
     },
   },
   created() {
-    console.log("生产版本号--1.4.1");
     this.$store.commit("setCurrentList", this.$route.query.queryKind);
     this.dropListCurrentList = this.$route.query.queryKind;
-    console.log("this.$route.query.queryKind:", this.$route.query.queryKind);
-
     if (this.$route.query.from !== "oa") {
-      console.log("-------------recordEnterOaLog调用前-------------");
       this.recordEnterOaLog();
-      console.log("-------------recordEnterOaLog调用后-------------");
       if (this.$store.state.userInfo.userCode !== this.$route.query.userCode) {
-        console.log(
-          "-------------!=oa this.$store.state.userInfo.userCode !== this.$route.query.userCode-------------"
-        );
         //兼容旧版本的待办
         let resourceid = "";
         if (this.$route.query.hasOwnProperty("resourceid")) {
@@ -266,9 +267,6 @@ export default {
           })
           .then((res) => {
             if (res.data.status === "200") {
-              console.log(
-                "-------------!=oa this.$store.state.userInfo.userCode !== this.$route.query.userCode  checkUser 200-------------"
-              );
               if (res.data.model.code == 0) {
                 this.$store.commit("setUserInfo", {
                   userCode: res.data.model.data.usercode,
@@ -276,20 +274,6 @@ export default {
                   userName: res.data.model.data.username,
                   ou: res.data.model.data.ou,
                 });
-                console.log(
-                  "res.data.model.usercode:",
-                  res.data.model.data.usercode
-                );
-                console.log(
-                  "res.data.model.userId:",
-                  res.data.model.data.useruuid
-                );
-                console.log(
-                  "res.data.model.userName:",
-                  res.data.model.data.username
-                );
-                console.log("res.data.model.ou:", res.data.model.data.ou);
-
                 this.$store.commit("setFromOut", true);
                 const queryKind = this.$route.query.queryKind;
                 const workItemId = this.$route.query.workItemId;
@@ -297,10 +281,6 @@ export default {
                 // 此处需调用接口获取数据
                 this.getData(queryKind, workItemId, pubFormDataId).then(
                   (res) => {
-                    console.log(
-                      "-------------!=oa this.$store.state.userInfo.userCode !== this.$route.query.userCode  checkUser 200 getData 200-------------"
-                    );
-                    console.log("getData--res,", res);
                     if (res.data.model == null) {
                       Dialog.confirm({
                         title:
@@ -338,7 +318,8 @@ export default {
                     }
                     if (
                       this.currentList === "todo" ||
-                      this.currentList === "seal"
+                      this.currentList === "seal" ||
+                      this.currentList === "fwtodo"
                     ) {
                       this.isSubProcess();
                     }
@@ -372,19 +353,12 @@ export default {
             }
           });
       } else {
-        console.log(
-          "---------------!=oa this.$store.state.userInfo.userCode == this.$route.query.userCode---------------"
-        );
         this.$store.commit("setFromOut", true);
         const queryKind = this.$route.query.queryKind;
         const workItemId = this.$route.query.workItemId;
         const pubFormDataId = this.$route.query.pubFormDataId;
         // 此处需调用接口获取数据
         this.getData(queryKind, workItemId, pubFormDataId).then((res) => {
-          console.log("getData--res,", res);
-          console.log(
-            "-------------!=oa this.$store.state.userInfo.userCode == this.$route.query.userCode getData 200 curPageData[0]-------------"
-          );
           if (res.data.model == null) {
             Dialog.confirm({
               title:
@@ -401,7 +375,6 @@ export default {
                 });
               })
               .catch((action) => {
-                //console.log("action", action);
                 if (action !== "overlay") {
                   setTimeout(() => {
                     closeWindow();
@@ -419,13 +392,12 @@ export default {
           if (this.$store.state.currentList !== "doing") {
             this.updateProcessState();
           }
-          if (this.currentList === "todo" || this.currentList === "seal") {
+          if (this.currentList === "todo" || this.currentList === "seal" || this.currentList === "fwtodo") {
             this.isSubProcess();
           }
         });
       }
     } else {
-      console.log("-----------------------=oa------------------------");
       if (this.$store.state.currentList !== "doing") {
         this.updateProcessState();
       }
@@ -433,7 +405,7 @@ export default {
       this.getFromConfig();
       this.isSubmmit();
       this.isShowOpinion();
-      if (this.currentList === "todo" || this.currentList === "seal") {
+      if (this.currentList === "todo" || this.currentList === "seal" || this.currentList === "fwtodo") {
         this.isSubProcess();
       }
     }
@@ -443,6 +415,7 @@ export default {
         showText.hidden = true;
       }
     }, 1500);
+    this.archiveBorrowProcess = (this.$store.state.currentProcess.configCode === "da_jy_process")
   },
   mounted() {
     this.$nextTick(() => {
@@ -475,7 +448,7 @@ export default {
         actDefId: this.currentProcess.actDefId,
       };
       api.getSendbackPrivilige(params).then((res) => {
-        console.log("getSendbackPrivilige res", res)
+        //console.log("getSendbackPrivilige res", res)
         if (res.data.model.code === 0) {
           this.showSendbackButton = true;
         }
@@ -516,17 +489,18 @@ export default {
         /android/.test(userAgent) && !/iphone|ipad|ipod/.test(userAgent);
       let isIPad = /ipad/.test(userAgent);
       console.log("-----------调用recordEnterOaLog接口-----------");
-      api
-        .recordEnterOaLog({
-          userUuid: this.$store.state.userInfo.userId,
-          userAgent:
-            PCType == ""
+      PCType = (PCType == ""
               ? isAndroid
                 ? "Android"
                 : isIPad
                 ? "iPad"
                 : "iPhone"
-              : PCType,
+              : PCType);
+      let type = PCType + "|oa版本:"+this.$oaVersion
+      api
+        .recordEnterOaLog({
+          userUuid: this.$store.state.userInfo.userId,
+          userAgent: type
         })
         .then((res) => {
           console.log("------记录进入OA的设备日志---------");
@@ -701,7 +675,7 @@ export default {
           wfmRoleTypes: "todo,drafter",
         })
         .then((res) => {
-          console.log("formconfig", res);
+          //console.log("formconfig", res);
           if (res.data.status === "200") {
             this.formConfig = res.data.model.formMetaList;
             this.noteConfig = res.data.model.noteMetaList;
@@ -866,49 +840,36 @@ export default {
         userId: this.userInfo.userId,
       };
       //必填生效
-      let saveNoteResult = 0;
+      let saveOpinionRequire = false;
       if (
         (this.noteRequired && this.opinionConfig[0]) ||
         (!this.noteRequired &&
           this.opinionConfig[0] &&
           this.opinionConfig[0].noteContent)
       ) {
-        await this.saveOpinion()
-          .then((results) => {
-            if (
-              results[0].data.status !== "200" ||
-              (results[0].data.status === "200" &&
-                results[0].data.model.code === -1)
-            ) {
-              saveNoteResult = -1;
-            }
-            if (
-              results[0].data.status === "200" &&
-              results[0].data.model.code === -2
-            ) {
-              saveNoteResult = -2;
-            }
-            // 处理第一个元素的结果
-          })
-          .catch((error) => {
-            // 处理错误
-            saveNoteResult = -1;
-          });
-        if (saveNoteResult === -1) {
-          this.$toast.clear();
-          this.$toast("提交失败");
-          return;
-        }
-        if (saveNoteResult === -2) {
-          this.$toast.clear();
-          this.$toast("由于您在PC端已经填过意见，需要重新进入页面加载该意见");
-          this.$router.replace({ path: "/home", force: true });
-          return;
-        }
+        saveOpinionRequire = "true";
+        this.getSaveOpinionParams();
+        data.saveOpinionParams = this.saveOpinionParams[0];
+        data.saveOpinionRequire = saveOpinionRequire;
       }
 
       setTimeout(() => {
         api.completeWorkitem(data).then((res) => {
+          if(res.data.status === "200" && res.data.model.code === -3){
+              //针对意见定制的提示
+              this.$toast(res.data.model.msg);
+              return
+          }
+          if(res.data.status !== "200" || (res.data.status === "200" && res.data.model.code === -1)){
+              this.$toast("提交失败");
+              return
+            }
+            //处理保存意见相关的报错
+            if(res.data.status === "200" &&  res.data.model.code === -2){
+              this.$toast("由于您在PC端已经填过意见，需要重新进入页面加载该意见");
+              this.$router.replace({ path: '/home', force: true })
+              return
+            }
           console.log("detail_page 870行completeWorkitem被调用");
           this.$toast.clear();
           if (res.data.status === "200" && res.data.model.code === 0) {
@@ -1033,7 +994,8 @@ export default {
       if (
         this.sendDeptVerify &&
         (this.$store.state.currentList === "todo" ||
-          this.$store.state.currentList === "seal")
+          this.$store.state.currentList === "seal" || 
+          this.$store.state.currentList === "fwtodo")
       ) {
         if (
           this.dataForm.sendDeptText == null ||
@@ -1046,7 +1008,8 @@ export default {
       if (
         this.businessTypeVerify &&
         (this.$store.state.currentList === "todo" ||
-          this.$store.state.currentList === "seal")
+          this.$store.state.currentList === "seal" ||
+          this.$store.state.currentList === "fwtodo")
       ) {
         if (
           this.dataForm.businessType == null ||
@@ -1088,6 +1051,21 @@ export default {
               Toast("意见内容已超过1000字限制");
               return;
             }
+            let validateResult = "";
+            //验证是否有意见的定制配置
+            await api.validateNoteContent({
+              proInstId: this.currentProcess.proInstId,
+              noteContent:this.opinionConfig[i].noteContent,
+              actDefId:this.currentProcess.actDefId,
+            }).then((res) => {
+              if(res.data.model.code === -3 && res.data.model.msg !== ""){
+                validateResult = res.data.model.msg;
+              }
+            })
+            if(validateResult !== ""){
+              Toast(validateResult);
+              return;
+            }
           }
         }
       }
@@ -1111,7 +1089,7 @@ export default {
         })
         .then((res) => {
           if (res.data.status === "200") {
-            console.log("----detail_page下一环节返回内容----", res.data);
+            //console.log("----detail_page下一环节返回内容----", res.data);
             if (res.data.model.flag == false) {
               this.onMultiCommit();
             }
@@ -1218,8 +1196,8 @@ export default {
         this.currentProcess.processName === "短信发布申请流程"||
         this.currentProcess.processName === "网络专线申请流程"||
         this.currentProcess.processName === "网络专线变更流程"||
-        this.currentProcess.processName === "网络专线撤销流程"
-
+        this.currentProcess.processName === "网络专线撤销流程"||
+        this.currentProcess.processName === "档案借阅流程"
       ) {
         if (
           this.opinionConfig[0] &&
@@ -1352,6 +1330,22 @@ export default {
         document.documentElement.scrollTop = this.$refs.detailWrap.clientHeight;
       }
     },
+    getSaveOpinionParams(){
+      this.opinionConfig.map((item) => {
+        item.noteContent = item.noteContent.replace(/&#13;/g, "<br/>");
+        item.noteContent = item.noteContent.replace(/\n/g, "<br/>");
+        this.saveOpinionParams.push({
+            id: item.id || "",
+            type: item.noteId,
+            noteContent: item.noteContent,
+            proInstId: this.currentProcess.proInstId,
+            createUser: this.userInfo.userId,
+            createUserName: this.userInfo.userName,
+            workitemId: this.currentProcess.workitemId,
+            actDefId: this.currentProcess.actDefId,
+        })
+      })
+    },
     async hldNotShowNextActivities(data) {
       //console.log("日期：", moment());
       console.log("用户名", this.userInfo.userName);
@@ -1368,50 +1362,33 @@ export default {
         this.opinionConfig[0].noteContent
       );
       //必填生效
-      let saveNoteResult = 0;
+      let saveOpinionRequire = false;
       if (
         (this.noteRequired && this.opinionConfig[0]) ||
         (!this.noteRequired &&
           this.opinionConfig[0] &&
           this.opinionConfig[0].noteContent)
       ) {
-        await this.saveOpinion()
-          .then((results) => {
-            if (
-              results[0].data.status !== "200" ||
-              (results[0].data.status === "200" &&
-                results[0].data.model.code === -1)
-            ) {
-              saveNoteResult = -1;
-            }
-            if (
-              results[0].data.status === "200" &&
-              results[0].data.model.code === -2
-            ) {
-              saveNoteResult = -2;
-            }
-            // 关闭提交loading
-            this.$toast.clear();
-            // 处理第一个元素的结果
-          })
-          .catch((error) => {
-            // 处理错误
-            saveNoteResult = -1;
-          });
-        if (saveNoteResult === -1) {
-          // 关闭提交loading
-          this.$toast.clear();
-          this.$toast("意见保存失败，请关闭页面重试");
-          return;
-        }
-        if (saveNoteResult === -2) {
-          // 关闭提交loading
-          this.$toast.clear();
-          this.$toast("PC端已经填过意见，但未提交，请重新进入页面加载该意见");
-          this.$router.replace({ path: "/home", force: true });
-          return;
-        }
+        saveOpinionRequire = "true";
+        this.getSaveOpinionParams();
+        data.saveOpinionParams = this.saveOpinionParams[0];
+        data.saveOpinionRequire = saveOpinionRequire;
         api.completeWorkitem(data).then((res) => {
+          if(res.data.status === "200" && res.data.model.code === -3){
+              //针对意见定制的提示
+              this.$toast(res.data.model.msg);
+              return
+          }
+          if(res.data.status !== "200" || (res.data.status === "200" && res.data.model.code === -1)){
+            this.$toast("提交失败");
+            return
+          }
+          //处理保存意见相关的报错
+          if(res.data.status === "200" &&  res.data.model.code === -2){
+            this.$toast("由于您在PC端已经填过意见，需要重新进入页面加载该意见");
+            this.$router.replace({ path: '/home', force: true })
+            return
+          }
           this.$toast.clear();
           if (res.data.status === "200" && res.data.model.code === 0) {
             this.$store.commit("setRefresh", true);

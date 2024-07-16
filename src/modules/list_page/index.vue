@@ -27,7 +27,7 @@
     </div>
 
     <div class="list-content content-wrap">
-      <DropList :key="key" ref="dropList" :searchParams="searchParams" />
+      <DropList :key="dateTime" ref="dropList" :searchParams="searchParams" />
     </div>
   </div>
 </template>
@@ -46,7 +46,7 @@ export default {
   data() {
     return {
       active: 0,
-      key: "bj",
+      dateTime: "bj",
       value: "",
       //searchParams: {}
     };
@@ -66,12 +66,14 @@ export default {
   },
   activated() {
     if (this.refresh) {
-      this.key = new Date().getTime();
+      this.dateTime = new Date().getTime();
     }
   },
   methods: {
     getNavTitle(type) {
       switch (type) {
+        case "fwtodo":
+          return "发文待办列表";
         case "todo":
           return "公文待办列表";
         case "doing":

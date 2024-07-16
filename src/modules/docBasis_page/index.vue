@@ -250,7 +250,7 @@ export default {
                       this.getFromConfig();
                       this.isSubmmit();
                       this.updateProcessState();
-                      if(this.currentList === "todo" || this.currentList === "seal"){
+                      if(this.currentList === "todo" || this.currentList === "seal" || this.currentList === "fwtodo"){
                         this.isSubProcess();
                       }
                     });
@@ -273,7 +273,7 @@ export default {
             this.getFromConfig();
             this.isSubmmit();
             this.updateProcessState();
-            if(this.currentList === "todo" || this.currentList === "seal"){
+            if(this.currentList === "todo" || this.currentList === "seal" || this.currentList === "fwtodo"){
               this.isSubProcess();
             }
           });
@@ -285,7 +285,7 @@ export default {
       this.getBackLink();
       this.getFromConfig();
       this.isSubmmit();
-      if(this.currentList === "todo" || this.currentList === "seal"){
+      if(this.currentList === "todo" || this.currentList === "seal" || this.currentList === "fwtodo"){
         this.isSubProcess();
       }
     }
@@ -319,8 +319,8 @@ export default {
 
       api.isSubProcess(isSubProcessParameter).then((res) => {
         if (res.data.status === "200") {
-          console.log("detail_page里面是否是子流程，接口返回值res：" + res);
-          console.log("res.data.model:"+res.data.model);
+          //console.log("detail_page里面是否是子流程，接口返回值res：" + res);
+          //console.log("res.data.model:"+res.data.model);
           //console.log("res.data.model.subProcess:"+res.data.model.subProcess)
           if(res.data.model && res.data.model.subProcess){
             this.selectIsSubProcess = true;
@@ -431,7 +431,7 @@ export default {
           wfmRoleTypes: "todo,drafter",
         })
         .then((res) => {
-          console.log("formconfig", res);
+          //console.log("formconfig", res);
           if (res.data.status === "200") {
             this.formConfig = res.data.model.formMetaList;
             this.noteConfig = res.data.model.noteMetaList;
@@ -588,13 +588,13 @@ export default {
     },
     onCommit() {
 
-      if(this.sendDeptVerify && (this.$store.state.currentList === 'todo' || this.$store.state.currentList === 'seal')){
+      if(this.sendDeptVerify && (this.$store.state.currentList === 'todo' || this.$store.state.currentList === 'seal' || this.$store.state.currentList === 'fwtodo')){
         if(this.dataForm.sendDeptText == null || this.dataForm.sendDeptText == ""){
             Toast("请选择发送部门");
             return;
         }
       }
-      if(this.businessTypeVerify && (this.$store.state.currentList === 'todo' || this.$store.state.currentList === 'seal')){
+      if(this.businessTypeVerify && (this.$store.state.currentList === 'todo' || this.$store.state.currentList === 'seal' || this.$store.state.currentList === 'fwtodo')){
         if(this.dataForm.businessType == null || this.dataForm.businessType == ""){
           Toast("请选择业务类型");
           return;
