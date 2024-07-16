@@ -60,7 +60,7 @@ import { api } from "../core/api/index";
 import { openUrlPage } from "../core/mxApi/index";
 
 export default {
-  name: "attachment1",
+  name: "attachment",
   components: {
     [Collapse.name]: Collapse,
     [CollapseItem.name]: CollapseItem,
@@ -89,13 +89,12 @@ export default {
         .then((res) => {
           if (res.data.status === "200") {
             this.list = res.data.model;
-            console.log("____",this.list)
+            //console.log(this.list)
             this.list.forEach((item) => {
               if (item.fileData.length > 0) {
                 this.activeNames.push(item.type);
               }
             });
-            console.log("________", this.activeNames)
             this.loading = false;
           }
         });
