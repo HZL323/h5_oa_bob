@@ -345,6 +345,14 @@ export default {
       type: Array,
       default: [],
     },
+    estimateFieldValue:{
+      type: String,
+      default:""
+    },
+    estimateRemark:{
+      type: String,
+      default: ""
+    }
   },
   computed: {
     enumerationData() {
@@ -437,8 +445,31 @@ export default {
     this.getFormData();
     this.getActivityExtendConfigByName();
   },
+  watch: {
+    estimateFieldValue(newVal, oldVal) {
+      let array = newVal.split("/")
+      let estimateResult = array[0]
+      if(estimateResult === "通过"){
+        this.$set(this.formData, "estimateResult", "Y");
+        let isMustTest = array[1]
+        if(isMustTest === "需要业务测试"){
+          this.$set(this.formData, "isMustTest", "Y");
+        }else{
+          this.$set(this.formData, "isMustTest", "N");
+        }
+      }else{
+        this.$set(this.formData, "estimateResult", "N");
+        this.$set(this.formData, "isMustTest", "");
+      }
+      this.$store.commit("setDataForm", this.formData);
+      console.log("linxiaoyan+++++^", this.formData)
+    },
+    estimateRemark(newVal, oldVal) {
+      this.$set(this.formData, "estimateResultInfo", newVal);
+      this.$store.commit("setDataForm", this.formData);
+    },
+  },
   methods: {
-    //yinyanhong
     refresh() {
       this.reload();
     },
@@ -524,7 +555,6 @@ export default {
             } else {
               this.showDocumentBasis = false;
             }
-
             this.loading = false;
             this.$emit('updateCount')
             this.$nextTick(() => {

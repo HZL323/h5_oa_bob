@@ -8,8 +8,8 @@
  */
 import { ajaxGet, ajaxPost } from '../mxApi'
 //const URL = `http://oa.bj.bob` // 生产
-//const URL = `http://10.51.228.84:8080` // 新oa测试
-const URL = `http://app.xcoa.bj.bob.test` // 新oa/准生产
+const URL = `http://10.51.228.84:8080` // 新oa测试
+//const URL = `http://app.xcoa.bj.bob.test` // 新oa/准生产
 
 export function queryMessage(data) {
     //return ajaxGet('/api/v1/users?limit=1') //测试接口
@@ -210,6 +210,9 @@ export function yyfhbmModifySendDeptAndUsers(data){
 export function addBusinessType(data){
     return ajaxPost(`${URL}/mob/yyfzxzhi/addBusinessType`, data);
 }
+export function addEstimateFieldValue(data){
+    return ajaxPost(`${URL}/mob/businessData/addEstimateFieldValue`, data);
+}
 //获取收藏的意见
 export function getCollectedOpinion(data){
     return ajaxPost(`${URL}/mob/note/NoteServiceContainer/getNoteCollection`, data)
@@ -232,9 +235,21 @@ export function  batchCompleteWorkitem(data){
 export function  getSendbackPrivilige(data){
     return ajaxPost(`${URL}/mob/publicService/getSendbackPrivilige`, data)
 }
+export function  getReassignPrivilige(data){
+    return ajaxPost(`${URL}/mob/publicService/getReassignPrivilige`, data)
+}
 export function getArchiveBorrowList(data){
     return ajaxPost(`${URL}/mob/archiveBorrow/archiveBorrowList`, data)
 }
 export function validateNoteContent(data){
     return ajaxPost(`${URL}/mob/CustomizeNoteService/validateNoteContent`, data)
+}
+export function getAsyncDeptTree(data){
+    return ajaxPost(`${URL}/mob/api/org/selectorg/getAsyncDeptTree`,data)
+}
+export function getUserByDeptUuidForGridNonPage(data){
+    return ajaxPost(`${URL}/mob/org/usernew/getUserByDeptUuidForGridNonPage`,data)
+}
+export function reassignWorkitem(data){
+    return ajaxPost(`${URL}/mob/wfm/ApplicationServiceContainer/mobReassignWorkitem`, data)
 }

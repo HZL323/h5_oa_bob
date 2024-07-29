@@ -168,6 +168,10 @@ export default {
       type: Boolean,
       required: true
     },
+    estimateFieldVerify:{
+      type: Boolean,
+      required: true
+    },
     currentRadio: {
       // navbar标题
       type: String,
@@ -213,6 +217,20 @@ export default {
     this.loadData();
   },
   methods: {
+    addEstimateFieldValue() {
+      let params = {
+        estimateResult: this.dataForm.estimateResult,
+        estimateResultInfo: this.dataForm.estimateResultInfo,
+        isMustTest:this.dataForm.isMustTest,
+        id: this.dataForm.id,
+        configCode: this.dataForm.configCode
+      };
+      api.addEstimateFieldValue(params).then((res) => {
+        if (res.data.status === "200") {
+          console.log("技术可行性评估结果和评估结果说明");
+        }
+      });
+    },
     loadData() {
       api
         .queryHandlerList({
@@ -399,7 +417,20 @@ export default {
           this.addBusinessType();
         }
       }
-      debugger
+      //校验是否是业务数据处理流程
+      if(this.estimateFieldVerify){
+        //校验是否填写了技术可行性评估结果和评估结果说明
+        if (
+          this.dataForm.estimateResult === "" ||
+          this.dataForm.estimateResultInfo === ""
+        ) {
+          Toast(`请填写技术可行性评估结果和评估结果说明再提交`);
+          return;
+        } else {
+          console.log("技术可行性评估结果和评估结果说明保存*******")
+          this.addEstimateFieldValue();
+        }
+      }
       //校验是否必填，必填的话调用意见保存方法 必填生效
       console.log("this.noteRequired---------", this.noteRequired)
       console.log("this.opinionConfig[0]---------", this.opinionConfig[0])

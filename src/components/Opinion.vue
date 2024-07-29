@@ -194,6 +194,16 @@ export default {
     fromOut: {
       type: Boolean,
     },
+    //业务数据处理流程中 技术可行性评估说明输入框带过来的 
+    estimateRemark:{
+      type: String,
+      default: ""
+    }
+  },
+  watch:{
+    estimateRemark(newVal, oldVal){
+      this.opinionConfig[0].noteContent = newVal
+    }
   },
   computed: {
     currentProcess() {

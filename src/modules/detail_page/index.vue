@@ -1,8 +1,5 @@
 <template>
   <div class="detail-wrap">
-    <!-- yinyanhong -->
-    <!-- <router-view v-if="isRouterAlive"/> -->
-
     <div class="header">
       <van-nav-bar
         title="OA详情"
@@ -23,16 +20,25 @@
             <wu-feedback v-if="loading" />
             <template v-else>
               <DetailForm
+                :estimateFieldValue="estimateFieldValue"
+                :estimateRemark="estimateRemark"
                 :formConfig="formConfig"
                 @sendDeptVerify="getSendDeptVerify"
                 @businessTypeVerify="getBusinessTypeVerify"
                 @updateCount="updateCount"
               />
+              <div v-if="softwareEstimate">
+                <FwqqBusiness 
+                  @onEstimateRemark="onEstimateRemark"
+                  @onEstimateFieldValue="onEstimateFieldValue"
+                />
+              </div>
               <div v-if="showOpinion">
                 <Opinion
                   :noteConfig="noteConfig"
                   :opinionConfig.sync="opinionConfig"
                   :fromOut="fromOut"
+                  :estimateRemark="estimateRemark"
                   @onClickInput="onClickInput"
                   @updateCount="updateCount"
                   ref="opinion"
@@ -53,9 +59,18 @@
         </van-tab>
       </van-tabs>
     </div>
-    <!-- <div style="position:relative;bottom:0;left:0;height:60px;width:100%" v-if="showTabbar"> -->
-    <!-- <van-tabbar :safe-area-inset-bottom="true" :placeholder="true" v-if="showTabbar"> -->
     <div class="footer btn-wrap" ref="footer" v-if="showTabbar">
+      <van-button
+        class="send-back"
+        color="#ff4444"
+        plain
+        block
+        round
+        @click="clickReassignEvent"
+        :disabled="buttonDisabled"
+        v-if="showReassignButton"
+        >转办</van-button
+      >
       <van-button
         class="send-back"
         color="#ff4444"
@@ -76,8 +91,6 @@
         >提交</van-button
       >
     </div>
-    <!-- </van-tabbar> -->
-    <!-- </div> -->
     <van-popup
       v-model="show"
       round
@@ -117,6 +130,10 @@
         </van-radio-group>
       </div>
     </van-popup>
+    <ReassignUserCascader 
+      ref="ReassignUserCascader" 
+      @onConfirm1="onConfirm1"
+    />
   </div>
 </template>
 
@@ -135,6 +152,8 @@ import {
   Toast,
   Dialog,
 } from "vant";
+import ReassignUserCascader from "../../components/ReassignUserCascader.vue";
+import FwqqBusiness from "../../components/FwqqBusiness.vue";
 import DetailForm from "../../components/DetailForm.vue";
 import Opinion from "../../components/Opinion.vue";
 import Attachment from "../../components/Attachment.vue";
@@ -144,6 +163,7 @@ import { closeWindow } from "../../core/mxApi";
 export default {
   name: "detail",
   components: {
+    ReassignUserCascader,
     [NavBar.name]: NavBar,
     [Tab.name]: Tab,
     [Tabs.name]: Tabs,
@@ -157,7 +177,8 @@ export default {
     DetailForm,
     Opinion,
     Attachment,
-    ArchiveList
+    ArchiveList,
+    FwqqBusiness
   },
   //yinyanhong
   provide() {
@@ -175,6 +196,8 @@ export default {
   },
   data() {
     return {
+      estimateRemark:"",
+      estimateFieldValue:"",
       activeName: 0,
       show: false, // 退回弹窗展示
       radio: null, // 选择的退回节点
@@ -196,7 +219,9 @@ export default {
       //yinyanhong
       isRouterAlive: true,
       showOpinion: true,
+      softwareEstimate:false,
       showSendbackButton: false,
+      showReassignButton:false,
       saveOpinionParams: [],//意见参数
       archiveBorrowProcess: false,
     };
@@ -310,9 +335,11 @@ export default {
                     let data = res.data.model.curPageData[0];
                     this.$store.commit("setCurrentProcess", data);
                     this.showBackbar();
+                    this.showReassignBar();
                     this.getFromConfig();
                     this.isSubmmit();
                     this.isShowOpinion();
+                    this.isShowSoftWareEstimate();
                     if (this.$store.state.currentList !== "doing") {
                       this.updateProcessState();
                     }
@@ -386,9 +413,11 @@ export default {
           let data = res.data.model.curPageData[0];
           this.$store.commit("setCurrentProcess", data);
           this.showBackbar();
+          this.showReassignBar();
           this.getFromConfig();
           this.isSubmmit();
           this.isShowOpinion();
+          this.isShowSoftWareEstimate()
           if (this.$store.state.currentList !== "doing") {
             this.updateProcessState();
           }
@@ -402,9 +431,11 @@ export default {
         this.updateProcessState();
       }
       this.showBackbar();
+      this.showReassignBar();
       this.getFromConfig();
       this.isSubmmit();
       this.isShowOpinion();
+      this.isShowSoftWareEstimate();
       if (this.currentList === "todo" || this.currentList === "seal" || this.currentList === "fwtodo") {
         this.isSubProcess();
       }
@@ -427,6 +458,20 @@ export default {
     });
   },
   methods: {
+    onConfirm1(value) {
+        console.log("reassignPeople:", value)
+        this.$refs.ReassignUserCascader.show1 = false;
+    },
+    clickReassignEvent() {
+      window.scroll(0, 0);
+      let ele = document.documentElement || document.body;
+      ele.scrollTop = 0;
+      if (this.SubmitPermission === false) {
+        Toast("请前往PC端转办!");
+      } else {
+        this.$refs.ReassignUserCascader.show1 = true;
+      }
+    },
     clickSendbackEvent() {
       window.scroll(0, 0);
       let ele = document.documentElement || document.body;
@@ -450,7 +495,19 @@ export default {
       api.getSendbackPrivilige(params).then((res) => {
         //console.log("getSendbackPrivilige res", res)
         if (res.data.model.code === 0) {
-          this.showSendbackButton = true;
+            this.showSendbackButton = true;
+          }
+      });
+    },
+    showReassignBar() {
+      let params = {
+        configId: this.currentProcess.configId,
+        proDirId: this.currentProcess.proDirId,
+        actDefId: this.currentProcess.actDefId,
+      };
+      api.getReassignPrivilige(params).then((res) => {
+        if (res.data.model.code === 0) {
+          this.showReassignButton = true;
         }
       });
     },
@@ -477,6 +534,12 @@ export default {
         this.showOpinion = true;
         console.log("hideOpinion --------false-------");
       });
+    },
+    isShowSoftWareEstimate(){
+        if((this.$store.state.currentList === "todo" || this.$store.state.currentList === "toback") && this.currentProcess.actDefId === "wsjcl_process_act19"
+         && (this.currentProcess.configCode === "qq_ywsjcl_process" || this.currentProcess.configCode === "fh_ywsjcl_process" || this.currentProcess.configCode === "zh_ywsjcl_process")){
+          this.softwareEstimate = true  
+        }
     },
     recordEnterOaLog() {
       console.log("-----------调用recordEnterOaLog函数-----------");
@@ -646,6 +709,12 @@ export default {
               if (
                 item.extendKey === "isMustEditField" &&
                 item.extendValue === "sendDept"
+              ) {
+                this.SubmitPermission = true;
+              }
+              if (
+                item.extendKey === "isMustEditField" &&
+                item.extendValue === "estimateResult,estimateResultInfo"
               ) {
                 this.SubmitPermission = true;
               }
@@ -927,6 +996,16 @@ export default {
         forbidClick: true,
         duration: 0,
       });
+      if(this.isShowSoftWareEstimate){
+        if(this.estimateFieldValue.trim().length === 0){
+          Toast("请填写技术可行性评估!");
+          return;
+        }
+        if(this.estimateRemark.trim().length === 0){
+          Toast("请填写评估结果说明!");
+          return;
+        }
+      }
       let commited = 0;
       //判断是否是行领导传阅流程 showOpinion是通过hideOpinion扩展属性设置的
       if (this.showOpinion === false) {
@@ -1027,8 +1106,6 @@ export default {
       var u = navigator.userAgent,
         app = navigator.appVersion;
       var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
-      //console.log("isiOS", isiOS);
-      console.log("for 外部???????????????????????????");
       for (let i = 0; i < this.opinionConfig.length; i++) {
         //意见必填时再进行意见填写  20220714
         console.log(this.noteRequired);
@@ -1139,6 +1216,8 @@ export default {
                   backRoute: this.preRoute,
                   sendDeptVerify: this.sendDeptVerify, 
                   businessTypeVerify: this.businessTypeVerify,
+                  estimateFieldVerify: this.isShowSoftWareEstimate,
+                  estimateFieldValue: this.estimateFieldValue
                 },
               });
             }
@@ -1293,6 +1372,12 @@ export default {
             Toast("退回失败");
           }
         });
+    },
+    onEstimateRemark(value){
+      this.estimateRemark = value;
+    },
+    onEstimateFieldValue(value){
+      this.estimateFieldValue = value;
     },
     onClickInput() {
       //console.log("input");
