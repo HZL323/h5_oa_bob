@@ -996,7 +996,7 @@ export default {
         forbidClick: true,
         duration: 0,
       });
-      if(this.isShowSoftWareEstimate){
+      if(this.softWareEstimate){
         if(this.estimateFieldValue.trim().length === 0){
           Toast("请填写技术可行性评估!");
           return;
@@ -1216,7 +1216,7 @@ export default {
                   backRoute: this.preRoute,
                   sendDeptVerify: this.sendDeptVerify, 
                   businessTypeVerify: this.businessTypeVerify,
-                  estimateFieldVerify: this.isShowSoftWareEstimate,
+                  estimateFieldVerify: this.softWareEstimate,
                   estimateFieldValue: this.estimateFieldValue
                 },
               });
