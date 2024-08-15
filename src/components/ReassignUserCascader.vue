@@ -34,64 +34,67 @@ export default {
     [TreeSelect.name]: TreeSelect
   },
   created(){
-    api.getAsyncDeptTree({
-      pexf: "consign",
-      deptTreeId: "T001276001",
-      rootCode: '["T001276001"]',
-    })
-    .then((res) => {
-      let res1 = res.data.model;
-      console.log("res1:",res1)
-      let length =  res.data.model.length;
-      this.items.push({
-          text: '部门级',
-          deptId:"",
-          children: [],
+    if(this.show1){
+      console.log("38hang********************")
+      api.getAsyncDeptTree({
+        pexf: "consign",
+        deptTreeId: "T001276001",
+        rootCode: '["T001276001"]',
       })
-      for(let i = 0; i < length; i++){
+      .then((res) => {
+        let res1 = res.data.model;
+        console.log("res1:",res1)
+        let length =  res.data.model.length;
         this.items.push({
-          text: res1[i].deptName,
-          deptId: res1[i].deptUuid,
-          children: [],
+            text: '部门级',
+            deptId:"",
+            children: [],
         })
-      }
-      let deptUuid = ""
-      for(let i = 0; i < length; i++){
-        deptUuid += res.data.model[i].deptUuid+","
-      }
-      api.getUserByDeptUuidForGridNonPage({
-        deptCode: "T001276001",
-        deptUuid:deptUuid,
-      }).then((response) => {
-        let res2 = response.data.model
-        console.log("res2:",res2)
-        for(const [key, val] of Object.entries(res2)){
-          if(key.startsWith("parent_")){
-            for(let k = 0; k < res2[key].length; k++){
-              this.items[0].children.push({
-                text: res2[key][k].userName,
-                id: k+1,
-                userUuid: res2[key][k].userUuid,
-              })
-            }
-            continue;
-          }
-          for(let j = 1; j < this.items.length; j++){
-            if (key === this.items[j].deptId) {
+        for(let i = 0; i < length; i++){
+          this.items.push({
+            text: res1[i].deptName,
+            deptId: res1[i].deptUuid,
+            children: [],
+          })
+        }
+        let deptUuid = ""
+        for(let i = 0; i < length; i++){
+          deptUuid += res.data.model[i].deptUuid+","
+        }
+        api.getUserByDeptUuidForGridNonPage({
+          deptCode: "T001276001",
+          deptUuid:deptUuid,
+        }).then((response) => {
+          let res2 = response.data.model
+          console.log("res2:",res2)
+          for(const [key, val] of Object.entries(res2)){
+            if(key.startsWith("parent_")){
               for(let k = 0; k < res2[key].length; k++){
-                this.items[j].children.push({
+                this.items[0].children.push({
                   text: res2[key][k].userName,
                   id: k+1,
                   userUuid: res2[key][k].userUuid,
                 })
-              } 
-              break;
+              }
+              continue;
+            }
+            for(let j = 1; j < this.items.length; j++){
+              if (key === this.items[j].deptId) {
+                for(let k = 0; k < res2[key].length; k++){
+                  this.items[j].children.push({
+                    text: res2[key][k].userName,
+                    id: k+1,
+                    userUuid: res2[key][k].userUuid,
+                  })
+                } 
+                break;
+              }
             }
           }
-        }
-        console.log(this.items)
+          console.log(this.items)
+        })
       })
-    })
+    }
   },
   data() {
     return {
