@@ -40,10 +40,41 @@
             >
           </div>
         </div>
-        <div v-if="!specialChangeOrRevoke && !specialRequest">
+        <div v-if="!specialChangeOrRevoke && !specialRequest && !sendDocIsDirect">
           <van-divider />
           <div class="form-wrap">
             <template v-for="(item, index) in formConfig" >
+              <div
+                :class="{
+                  'form-item': true,
+                  'yyxx-row': item.colCode === 'yyxx',
+                }"
+                :key="index"
+              >
+                <div class="form-key">{{ item.colName }}</div>
+                <div
+                  style="margin-top: 6px"
+                  v-if="item.colCode === 'yyxx' && formMatData(item) != ''"
+                ></div>
+                <div
+                  class="formRemark-value"
+                  ref="formValue"
+                  v-if="item.colCode === 'yyxx' && formMatData(item) != ''"
+                >{{ formMatData(item) }}</div>
+                <div
+                  class="form-value"
+                  ref="formValue"
+                  v-if="item.colCode != 'yyxx'"
+                  @click="formClick(item)"
+                >{{ formMatData(item) }}</div>
+              </div>
+            </template>
+          </div>
+        </div>
+        <div v-if="!specialChangeOrRevoke && !specialRequest && sendDocIsDirect">
+          <van-divider />
+          <div class="form-wrap">
+            <template v-for="(item, index) in sendDocFormConfig" >
               <div
                 :class="{
                   'form-item': true,
@@ -337,7 +368,8 @@ export default {
       documentBasisColumns: [], //办文依据列表
       splitFormConfig:[],//分割后的（上部分）表单配置
       changeRevokeLineNames:['','','',''],
-      requestLineNames:['','','','']
+      requestLineNames:['','','',''],
+      sendDocFormConfig:[]//这类的表单需要对字段值拆分,isDirect 发文中的是否直发文
     };
   },
   props: {
@@ -431,6 +463,56 @@ export default {
         this.requestLineNames[3] = (this.enumerationData["requestLineName"]["testLine"].value)
       }
       return isSpecialRequest;
+    },
+    sendDocIsDirect(){
+      console.log("_________enumerationData___________:",this.enumerationData)
+      // 1 false true其实都是需要送投管的意思
+      this.enumerationData["TOUGUAN_FLAG"] = 
+      {0:{dictCode:"0", value:"是", sortNum : null},//代表要送投管
+       1:{dictCode:"1", value:"否", sortNum : null},//代表不需要送投管
+       "false":{dictCode:"false", value:"是", sortNum : null},//送投管送成功了
+       "true":{dictCode:"true", value:"是", sortNum : null}}//表示送投管送失败了
+      console.log("_______44__enumerationData___________:",this.enumerationData)
+      let isSendDocIsDirect = (this.processTitle === "机关纪委发文"
+      || this.processTitle === "工会发文" 
+      || this.processTitle === "总行党委发文"
+      || this.processTitle === "总行发文" 
+      || this.processTitle === "部室发文" 
+      || this.processTitle === "派驻纪检组发文");
+      if(isSendDocIsDirect){
+        console.log("_________formConfig___________:",this.formConfig)
+        console.log("_________formData___________:",this.formData)
+        this.sendDocFormConfig = this.formConfig;
+        let k = 0;
+        let sendDocFormConfigTemp = []
+        let temp = this.sendDocFormConfig.filter(item => item.colCode === "isDirectText")
+        for(let i = 0; i < this.sendDocFormConfig.length; i++){
+          if(this.sendDocFormConfig[i].colCode === "isDirectText"){
+            sendDocFormConfigTemp.push({canEdit:"0", colCode:"isDirect2", colName:"是否直发二级分行", formId: temp.formId, formName: temp.formName, id:"", name: temp.name, required: temp.required, sort:temp.sort, visiable: temp.visiable})
+            sendDocFormConfigTemp.push({canEdit:"0", colCode:"isDirectzh", colName:"是否直发支行", formId: temp.formId, formName: temp.formName, id:"", name: temp.name, required: temp.required, sort:temp.sort, visiable: temp.visiable})
+          }
+          sendDocFormConfigTemp.push(this.sendDocFormConfig[i])
+        }
+        sendDocFormConfigTemp = sendDocFormConfigTemp.filter(item => !(item.colCode === "isDirectText"))
+        this.sendDocFormConfig = sendDocFormConfigTemp
+        if(this.formData["isDirect"] === "fou"){
+          this.formData.isDirect2 = "否"
+          this.formData.isDirectzh = "否"
+        }
+        if(this.formData["isDirect"] === "zfg"){
+          this.formData.isDirect2 = "否"
+          this.formData.isDirectzh = "是"
+        }
+        if(this.formData["isDirect"] === "zfej"){
+          this.formData.isDirect2 = "是"
+          this.formData.isDirectzh = "否"
+        }
+        if(this.formData["isDirect"] === "zfejz"){
+          this.formData.isDirect2 = "是"
+          this.formData.isDirectzh = "是"
+        }
+      }
+      return isSendDocIsDirect;
     }
   },
   created() {
@@ -704,6 +786,8 @@ export default {
           return reg("ACCESSTYPE_DICT", "accessTypeNew3");
         case "accessTypeNew4":
           return reg("ACCESSTYPE_DICT", "accessTypeNew4");
+        case "touguanFlag":
+          return reg("TOUGUAN_FLAG", "touguanFlag");
         default:
           return this.formData[item.colCode] || "";
       }
