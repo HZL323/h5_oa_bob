@@ -88,6 +88,12 @@ export function queryAttachment(data) {
     // console.log(`参数`,data)
     return ajaxPost(`${URL}/mob/attachementService/getAttachements`, data)
 }
+// 查询重要证照附件列表
+export function queryImportantPhoto(data) {
+    // console.log(`查询附件列表`,URL+`/mob/importantPhotoServer/getRelList`)
+    // console.log(`参数`,data)
+    return ajaxPost(`${URL}/mob/importantPhotoServer/getRelList`, data)
+}
 
 // 附件预览
 export function Preview(data) {

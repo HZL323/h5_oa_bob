@@ -51,6 +51,11 @@
             <Attachment />
           </div>
         </van-tab>
+        <van-tab title="重要证照" name="d" v-if="importantPhotoProcess">
+          <div class="tab-wrap-attachment">
+            <ImportantPhoto />
+          </div>
+        </van-tab>
       </van-tabs>
     </div>
     <!-- <div style="position:relative;bottom:0;left:0;height:60px;width:100%" v-if="showTabbar"> -->
@@ -139,6 +144,7 @@ import DetailForm from "../../components/DetailForm.vue";
 import Opinion from "../../components/Opinion.vue";
 import Attachment from "../../components/Attachment.vue";
 import ArchiveList from "../../components/ArchiveList.vue";
+import ImportantPhoto from "../../components/ImportantPhoto.vue";
 import { api } from "../../core/api/index";
 import { closeWindow } from "../../core/mxApi";
 export default {
@@ -157,7 +163,8 @@ export default {
     DetailForm,
     Opinion,
     Attachment,
-    ArchiveList
+    ArchiveList,
+    ImportantPhoto
   },
   //yinyanhong
   provide() {
@@ -199,6 +206,7 @@ export default {
       showSendbackButton: false,
       saveOpinionParams: [],//意见参数
       archiveBorrowProcess: false,
+      importantPhotoProcess: false
     };
   },
   computed: {
@@ -416,6 +424,16 @@ export default {
       }
     }, 1500);
     this.archiveBorrowProcess = (this.$store.state.currentProcess.configCode === "da_jy_process")
+    api.queryImportantPhoto({
+      proInstId: this.currentProcess.proInstId,
+    })
+    .then((res) => {
+      if (res.data.status === "200") {
+        if (res.data.model.relPhotoList !== null && res.data.model.relPhotoList.length > 0) {
+          this.importantPhotoProcess = true;
+        }
+      }
+    });
   },
   mounted() {
     this.$nextTick(() => {
