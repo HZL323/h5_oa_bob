@@ -626,7 +626,6 @@ export default {
         let dateTime = moment(this.formData[item.colCode]).format(format);
         return this.formData[item.colCode] ? dateTime : "";
       }
-
       //   const mapDictKey = (item) =>{
       //     switch (item.colCode) {
       //       case "fwType":
@@ -700,6 +699,8 @@ export default {
           return reg("BusinessDataType", "dataType");
         case "demandType":
           return reg("DemandType", "demandType");
+        case "isProjectApproval":
+          return reg("IsProjectApproval", "isProjectApproval");
         case "isEffectClient":
           return reg("IsEffectClient", "isEffectClient");
         case "isInvolveInfo":

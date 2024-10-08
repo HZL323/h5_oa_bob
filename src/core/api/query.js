@@ -186,6 +186,10 @@ export function sealDetail(data) {
     // console.log(`参数`,data)
     return ajaxPost(`${URL}/mob/taskDetailService/getPrintAttachInfo`, data)
 }
+// 获取需求条目
+export function getDemandNumTable(data) {
+    return ajaxPost(`${URL}/mob/taskDetailService/getDemandNumTable`, data)
+}
 //获取扩展字段的值
 export function getActivityExtendConfigByName(data){
     return ajaxPost(`${URL}/mob/activity/ExtendServiceAttribute/getActivityExtendConfigByName`, data);
