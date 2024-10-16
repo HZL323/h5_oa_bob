@@ -35,114 +35,44 @@ router.beforeEach((to, from, next) => {
         });
         getCurrentUser().then(user => {
             //console.log("获取当前用户信息", user);
-            api.checkUser({
-                 id: user.login_name,//生产 - 新oa测试 - 新oa
-                 uCode: ""//生产 - 新oa测试 - 新oa
-                // //戴伟
-                // id: "009185",
-                // uCode: "daiwei"
-                //赵建彰
-                // id: "008922",//平时测试
-                // uCode: "zhaojianzhang"//平时测试
-                // id: "055639",
-                // uCode: "huoxuewen"
-                //李嫣然
-                //   id: "009234",
-                //   uCode:"liyanran"
-                 //孙雪霏
-                 //id: "018866",
-                 //uCode:"sunxuefeibf"
-                //郭建涛
-                // id: "005470",//平时测试
-                // uCode: "guozhentaocs"//平时测试
-                //陈金金
-                // id: "025143",
-                // uCode: "chenjinjinhz"
-                // 赵则灵
-                // id: "010586",
-                // uCode: "zhaozelingbf"
-                // 刘彦雷
-                // id: "005622",
-                // uCode: "liuyanlei"
-                //骆京京
-                // id:"004911",
-                // uCode:"luojingjingbf"
-                //
-                // id:"015650",
-                // uCode:"chengli1bf"
-                // id:"027707",
-                // uCode:"cailixuan"
-                // id:"024787",
-                // uCode:"	wangqianbf"
-                // id:"008990",
-                // uCode: "tangwenbf"
-                // id: "025551",
-                // uCode: "yansuqianbf"
-                // id: "015650",
-                //  uCode: "chengli1bf"
-                // id: "046231",
-                // id:"007137",
-                // uCode:"sunyi1bf",
-                // id:"046241",
-                // uCode: "yanmingxia"
-                // id: "012442",
-                // uCode: "liuhao3zgc"
-                // id:"015170",
-                // uCode:"zhanglei8zgc",
-                // id : "009859",
-                // uCode:"liyue2zgc"
-                // id: "024328",
-                // uCode:"duxinxinzgc"
-                // id :"059652",
-                // uCode:"libingzgc"
-                // id:"014621",
-                // uCode:"wenhuinazgc"
-                // id: "006543",
-                // uCode: "mayuezgc"
-                // id: "046231",
-                // uCode: "yanmingxia"
-                // id: "003821",
-                // uCode: "panmiaofzx"
-                // id: "005539",
-                // uCode: "liuhaimeifzx"
-                    // id: "017260",
-                    // uCode:"houxueyanfzx"
-                     //id: "028379",
-                 //uCode: "yexiaozhaobf"
-                //       id: "004219",
-                //  uCode: "caoxiaojingzgc"
-                //       id: "009279",
-                //  uCode: "chendandanzgc"
-                //       id: "001763",
-                //  uCode: "wuyihongzgc"
-                // id:"004114",
-                // uCode :"liangyan"
-                //  id:"007177",
-                // uCode :"liujiangtao"
+            api.getJsonWebToken({
+                jobNumber: user.login_name,
+                userName: user.name,
+                userEmail: user.email
             }).then(res => {
-                //console.log("checkUser status", res)
-                if (res.data.status === '200') {
-                    if (res.data.model.code === -1) {
-                        Toast.clear()
-                        Dialog.alert({
-                            message: res.data.model.msg,
-                            width: "300px",
-                            confirmButtonColor: "#ff4444",
-                        }).then(() => {
-                            closeWindow()
-                        });
-                    } else {
-                        Store.commit('setUserInfo', {
-                            userCode: res.data.model.data.usercode,
-                            userId: res.data.model.data.useruuid,
-                            userName: res.data.model.data.username,
-                            ou: res.data.model.data.ou
-                        })
-                        Toast.clear()
-                        next()
+                api.checkUser_v2({
+                    jobNumber: user.login_name,
+                    userNameZh: user.name,
+                    userNamePinyin:"",
+                    userEmail: user.email,
+                    resourceId:"",
+                    header: res.data.model.data
+                }).then(res => {
+                    //console.log("checkUser status", res)
+                    if (res.data.status === '200') {
+                        if (res.data.model.code === -1) {
+                            Toast.clear()
+                            Dialog.alert({
+                                message: res.data.model.msg,
+                                width: "300px",
+                                confirmButtonColor: "#ff4444",
+                            }).then(() => {
+                                closeWindow()
+                            });
+                        } else {
+                            Store.commit('setUserInfo', {
+                                userCode: res.data.model.data.usercode,
+                                userId: res.data.model.data.useruuid,
+                                userName: res.data.model.data.username,
+                                ou: res.data.model.data.ou
+                            })
+                            Toast.clear()
+                            next()
+                        }
                     }
-                }
-            })
+                })
+            });
+            
         })
     }
 })

@@ -22,14 +22,21 @@ export function checkUser(data) {
     // console.log(`参数`,data)
     return ajaxPost(`${URL}/mob/userDeptService/checkUser`, data)
 }
-
+export function checkUser_v2(data) {
+    return ajaxPost(`${URL}/mob/userDeptService/checkUser_v2`, data)
+}
+export function getJsonWebToken(data) {
+    return ajaxPost(`${URL}/mob/userDeptService/getJsonWebToken`, data)
+}
 // 用户兼职部门列表
 export function loadUserDeptList(data) {
     // console.log(`用户兼职部门列表`,URL+`/mob/userDeptService/loadUserDeptList`)
     // console.log(`参数`,data)
     return ajaxPost(`${URL}/mob/userDeptService/loadUserDeptList`, data)
 }
-
+export function loadUserDeptList_v2(data) {
+    return ajaxPost(`${URL}/mob/userDeptService/loadUserDeptList_v2`, data)
+}
 // 查询待办、待阅接口
 export function queryList(data) {
     // console.log(`查询待办、待阅接口`,URL+`/mob/taskService/mobDataList`)
