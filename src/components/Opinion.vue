@@ -175,7 +175,7 @@ export default {
       showAdd: true, // 控制多行文本显示
       showNote: true, //控制意见显示
       show: false,
-      columns: ["同意", "已阅"], // TODO 这块要去后端获取意见列表
+      columns: [], // TODO 这块要去后端获取意见列表
       sealList: [], // 用印申请明细列表
       placeholder: false,
     };
@@ -196,6 +196,9 @@ export default {
     },
   },
   computed: {
+    enumerationData(){
+      return this.$store.state.enumerationData;
+    },
     currentProcess() {
       return this.$store.state.currentProcess;
     },
@@ -246,9 +249,24 @@ export default {
         })
         .then((res) => {
           if (res.data.status === "200") {
-            for (let i = 0; i < res.data.model.noteList.length; i++) {
-              this.columns.push(res.data.model.noteList[i].note);
+            let publicNote = []
+            publicNote =  this.enumerationData["PUBLIC_NOTE"];
+            for(let k in publicNote){
+              this.columns.push(publicNote[k].value)
             }
+            api.getPublicModifyNote({
+              userId: this.$store.state.userInfo.userId,
+            }).then((result) => {
+              if(result.data.status === "200" && result.data.model.code === 0){
+                const noteContentsToRemove = result.data.model.data.map(item => item.noteContent);
+                for(let i = 0; i < noteContentsToRemove.length; i++){
+                  this.columns = this.columns.filter(e => (e !== noteContentsToRemove[i]));
+                }
+              }
+            });  
+          }
+          for (let i = 0; i < res.data.model.noteList.length; i++) {
+            this.columns.push(res.data.model.noteList[i].note);
           }
         });
     },
