@@ -90,7 +90,11 @@ export default {
           if (res.data.status === "200") {
             this.list = res.data.model;
             console.log(this.list)
-            if(this.$store.state.currentProcess.configCode === "yy_zh_process" || this.$store.state.currentProcess.configCode === "yy_fh_process"){
+            if(this.$store.state.currentProcess.configCode === "yy_zh_process" 
+            || this.$store.state.currentProcess.configCode === "yy_fh_process"
+            || this.$store.state.currentProcess.configCode === "yy_zhi_process"
+            || this.$store.state.currentProcess.configCode === "yy_fzxzhi_process"
+            || this.$store.state.currentProcess.configCode === "yy_fhbm_process"){
               let temp = []
               this.list.forEach((item) => {
                 item.fileData = item.fileData.filter((e) => {
