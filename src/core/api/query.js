@@ -57,7 +57,7 @@ export function queryKeyValueByTypes() {
     // console.log(`参数`,`DOC_PRIORITY,DOC_SECURITY_LEVEL,FILE_TYPE,is_direct,send_method,PRESERVATION_PERIOD,sys_file_position,HOST_DEP,APPLY_CHANGE_TYPE,DOC_TYPE,ARCHIVE_YEAR,OPEN_STATE,RESPON_PERSON,AUDIO_VISUAL_TYPE,TEXT_SOURCE,PRINT_WAY`)
     return ajaxPost(`${URL}/mob/oa/DictServiceContainer/queryKeyValueByTypes`,
         {
-            dictTypes: `DOC_PRIORITY,DOC_SECURITY_LEVEL,FILE_TYPE,is_direct,send_method,PRESERVATION_PERIOD,sys_file_position,HOST_DEP,APPLY_CHANGE_TYPE,DOC_TYPE,ARCHIVE_YEAR,OPEN_STATE,RESPON_PERSON,AUDIO_VISUAL_TYPE,TEXT_SOURCE,PRINT_WAY,BUSINESS_TYPE,BusinessDataType,DemandType,IsEffectClient,IsInvolveInfo,IsClientRequire,EstimateResult,DemandScreen,IsSearchSynDept,testResult,confirmResult,IsMustTest,isDataDelete,smsPubType,OPERATOR_DICT,PAYER_NAME,ZHUANXIAN_NAME,IS_NEED_MANAGE_NAME,ACCESSTYPE_DICT,DATA_TYPE_NAME,USE_SCENE_NAME,requestLineName,changeRevokeLineName`
+            dictTypes: `DOC_PRIORITY_TEXT,DOC_SECURITY_LEVEL,FILE_TYPE,is_direct,send_method,PRESERVATION_PERIOD,sys_file_position,HOST_DEP,APPLY_CHANGE_TYPE,DOC_TYPE,ARCHIVE_YEAR,OPEN_STATE,RESPON_PERSON,AUDIO_VISUAL_TYPE,TEXT_SOURCE,PRINT_WAY,BUSINESS_TYPE,BusinessDataType,DemandType,IsEffectClient,IsInvolveInfo,IsClientRequire,EstimateResult,DemandScreen,IsSearchSynDept,testResult,confirmResult,IsMustTest,isDataDelete,smsPubType,OPERATOR_DICT,PAYER_NAME,ZHUANXIAN_NAME,IS_NEED_MANAGE_NAME,ACCESSTYPE_DICT,DATA_TYPE_NAME,USE_SCENE_NAME,requestLineName,changeRevokeLineName`
         })
 }
 
