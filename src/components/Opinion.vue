@@ -452,8 +452,10 @@ export default {
           proInstId: this.currentProcess.proInstId,
         })
         .then((res) => {
-          this.demandNumTable = res.data.model;
-          this.demandNumTable !== null && this.demandNumTable.length > 0 && this.activeNames.push("demandNumTable");
+          if(res.data.model != null){
+            this.demandNumTable = res.data.model;
+            this.demandNumTable.length > 0 && this.activeNames.push("demandNumTable");
+          } 
         });
     },
     autoFill() {
