@@ -23,14 +23,21 @@ export function checkUser(data) {
     // console.log(`参数`,data)
     return ajaxPost(`${URL}/mob/userDeptService/checkUser`, data)
 }
-
+export function checkUser_v2(data) {
+    return ajaxPost(`${URL}/mob/userDeptService/checkUser_v2`, data)
+}
+export function getJsonWebToken(data) {
+    return ajaxPost(`${URL}/mob/userDeptService/getJsonWebToken`, data)
+}
 // 用户兼职部门列表
 export function loadUserDeptList(data) {
     // console.log(`用户兼职部门列表`,URL+`/mob/userDeptService/loadUserDeptList`)
     // console.log(`参数`,data)
     return ajaxPost(`${URL}/mob/userDeptService/loadUserDeptList`, data)
 }
-
+export function loadUserDeptList_v2(data) {
+    return ajaxPost(`${URL}/mob/userDeptService/loadUserDeptList_v2`, data)
+}
 // 查询待办、待阅接口
 export function queryList(data) {
     // console.log(`查询待办、待阅接口`,URL+`/mob/taskService/mobDataList`)
@@ -51,7 +58,7 @@ export function queryKeyValueByTypes() {
     // console.log(`参数`,`DOC_PRIORITY,DOC_SECURITY_LEVEL,FILE_TYPE,is_direct,send_method,PRESERVATION_PERIOD,sys_file_position,HOST_DEP,APPLY_CHANGE_TYPE,DOC_TYPE,ARCHIVE_YEAR,OPEN_STATE,RESPON_PERSON,AUDIO_VISUAL_TYPE,TEXT_SOURCE,PRINT_WAY`)
     return ajaxPost(`${URL}/mob/oa/DictServiceContainer/queryKeyValueByTypes`,
         {
-            dictTypes: `DOC_PRIORITY,DOC_SECURITY_LEVEL,FILE_TYPE,is_direct,send_method,PRESERVATION_PERIOD,sys_file_position,HOST_DEP,APPLY_CHANGE_TYPE,DOC_TYPE,ARCHIVE_YEAR,OPEN_STATE,RESPON_PERSON,AUDIO_VISUAL_TYPE,TEXT_SOURCE,PRINT_WAY,BUSINESS_TYPE,BusinessDataType,DemandType,IsEffectClient,IsInvolveInfo,IsClientRequire,EstimateResult,DemandScreen,IsSearchSynDept,testResult,confirmResult,IsMustTest,isDataDelete,smsPubType,OPERATOR_DICT,PAYER_NAME,ZHUANXIAN_NAME,IS_NEED_MANAGE_NAME,ACCESSTYPE_DICT,DATA_TYPE_NAME,USE_SCENE_NAME,requestLineName,changeRevokeLineName`
+            dictTypes: `DOC_PRIORITY_TEXT,DOC_SECURITY_LEVEL,FILE_TYPE,is_direct,send_method,PRESERVATION_PERIOD,sys_file_position,HOST_DEP,APPLY_CHANGE_TYPE,DOC_TYPE,ARCHIVE_YEAR,OPEN_STATE,RESPON_PERSON,AUDIO_VISUAL_TYPE,TEXT_SOURCE,PRINT_WAY,BUSINESS_TYPE,BusinessDataType,DemandType,IsEffectClient,IsInvolveInfo,IsClientRequire,EstimateResult,DemandScreen,IsSearchSynDept,testResult,confirmResult,IsMustTest,isDataDelete,smsPubType,OPERATOR_DICT,PAYER_NAME,ZHUANXIAN_NAME,IS_NEED_MANAGE_NAME,ACCESSTYPE_DICT,DATA_TYPE_NAME,USE_SCENE_NAME,requestLineName,changeRevokeLineName`
         })
 }
 
@@ -88,6 +95,12 @@ export function queryAttachment(data) {
     // console.log(`查询附件列表`,URL+`/mob/attachementService/getAttachements`)
     // console.log(`参数`,data)
     return ajaxPost(`${URL}/mob/attachementService/getAttachements`, data)
+}
+// 查询重要证照附件列表
+export function queryImportantPhoto(data) {
+    // console.log(`查询附件列表`,URL+`/mob/importantPhotoServer/getRelList`)
+    // console.log(`参数`,data)
+    return ajaxPost(`${URL}/mob/importantPhotoServer/getRelList`, data)
 }
 
 // 附件预览

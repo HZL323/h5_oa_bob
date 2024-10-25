@@ -693,7 +693,7 @@ export default {
 
       switch (item.colCode) {
         case "priorityText":
-          return reg("DOC_PRIORITY", "priority");
+          return reg("DOC_PRIORITY_TEXT", "priority");
         case "secretLevelText":
           return reg("DOC_SECURITY_LEVEL", "secretLevel");
         case "fileTypeText":

@@ -57,6 +57,11 @@
             <Attachment />
           </div>
         </van-tab>
+        <van-tab title="重要证照" name="d" v-if="importantPhotoProcess">
+          <div class="tab-wrap-attachment">
+            <ImportantPhoto />
+          </div>
+        </van-tab>
       </van-tabs>
     </div>
     <div class="footer btn-wrap" ref="footer" v-if="showTabbar">
@@ -158,6 +163,7 @@ import DetailForm from "../../components/DetailForm.vue";
 import Opinion from "../../components/Opinion.vue";
 import Attachment from "../../components/Attachment.vue";
 import ArchiveList from "../../components/ArchiveList.vue";
+import ImportantPhoto from "../../components/ImportantPhoto.vue";
 import { api } from "../../core/api/index";
 import { closeWindow } from "../../core/mxApi";
 export default {
@@ -178,6 +184,7 @@ export default {
     Opinion,
     Attachment,
     ArchiveList,
+    ImportantPhoto,
     FwqqBusiness
   },
   //yinyanhong
@@ -224,6 +231,7 @@ export default {
       showReassignButton:false,
       saveOpinionParams: [],//意见参数
       archiveBorrowProcess: false,
+      importantPhotoProcess: false
     };
   },
   computed: {
@@ -284,101 +292,109 @@ export default {
         if (this.$route.query.hasOwnProperty("resourceid")) {
           resourceid = this.$route.query.resourceid;
         }
-        api
-          .checkUser({
-            uCode: this.$route.query.userCode,
-            id: "",
-            resourceid: resourceid,
-          })
-          .then((res) => {
-            if (res.data.status === "200") {
-              if (res.data.model.code == 0) {
-                this.$store.commit("setUserInfo", {
-                  userCode: res.data.model.data.usercode,
-                  userId: res.data.model.data.useruuid,
-                  userName: res.data.model.data.username,
-                  ou: res.data.model.data.ou,
-                });
-                this.$store.commit("setFromOut", true);
-                const queryKind = this.$route.query.queryKind;
-                const workItemId = this.$route.query.workItemId;
-                const pubFormDataId = this.$route.query.pubFormDataId;
-                // 此处需调用接口获取数据
-                this.getData(queryKind, workItemId, pubFormDataId).then(
-                  (res) => {
-                    if (res.data.model == null) {
-                      Dialog.confirm({
-                        title:
-                          "未查询到该待办详情，有可能该待办已经失效，请刷新列表，检查该流程的待办是否已经办理完成，您是否留在OA系统？",
-                        confirmButtonColor: "#ff4444",
-                        cancelButtonText: "返回待办",
-                        width: "300px",
-                        closeOnClickOverlay: false,
-                      })
-                        .then(() => {
-                          this.$store.commit("setFromOut", false);
-                          this.$router.replace({
-                            name: this.preRoute,
-                          });
-                        })
-                        .catch((action) => {
-                          //console.log("action", action);
-                          if (action !== "overlay") {
-                            setTimeout(() => {
-                              closeWindow();
-                            }, 2000);
-                          }
-                        });
-
-                      return;
-                    }
-                    let data = res.data.model.curPageData[0];
-                    this.$store.commit("setCurrentProcess", data);
-                    this.showBackbar();
-                    this.showReassignBar();
-                    this.getFromConfig();
-                    this.isSubmmit();
-                    this.isShowOpinion();
-                    this.isShowSoftWareEstimate();
-                    if (this.$store.state.currentList !== "doing") {
-                      this.updateProcessState();
-                    }
-                    if (
-                      this.currentList === "todo" ||
-                      this.currentList === "seal" ||
-                      this.currentList === "fwtodo"
-                    ) {
-                      this.isSubProcess();
-                    }
-                  }
-                );
-              } else if (res.data.model.code == -1) {
-                //兼职已删除提示“对不起，你没有访问权限，请检查该待办所属兼职是否已删除”
-                Dialog.confirm({
-                  title: res.data.model.msg + "，您是否留在OA系统？",
-                  confirmButtonColor: "#ff4444",
-                  cancelButtonText: "返回待办",
-                  width: "300px",
-                  closeOnClickOverlay: false,
-                })
-                  .then(() => {
-                    this.$store.commit("setFromOut", false);
-                    this.$router.replace({
-                      name: this.preRoute,
+        api.getJsonWebToken({
+          resourceid: resourceid,
+        }).then((res) => {
+            if (res.data.model.code === 0) {
+              api
+              .checkUser({
+                userNamePinyin: this.$route.query.userCode,
+                jobNumber:"",
+                resourceid: resourceid,
+                header: res.data.model.header,
+              })
+              .then((res) => {
+                if (res.data.status === "200") {
+                  if (res.data.model.code == 0) {
+                    this.$store.commit("setUserInfo", {
+                      userCode: res.data.model.data.usercode,
+                      userId: res.data.model.data.useruuid,
+                      userName: res.data.model.data.username,
+                      ou: res.data.model.data.ou,
                     });
-                  })
-                  .catch((action) => {
-                    //console.log("action", action);
-                    if (action !== "overlay") {
-                      setTimeout(() => {
-                        closeWindow();
-                      }, 2000);
-                    }
-                  });
-                return;
-              }
+                    this.$store.commit("setFromOut", true);
+                    const queryKind = this.$route.query.queryKind;
+                    const workItemId = this.$route.query.workItemId;
+                    const pubFormDataId = this.$route.query.pubFormDataId;
+                    // 此处需调用接口获取数据
+                    this.getData(queryKind, workItemId, pubFormDataId).then(
+                      (res) => {
+                        if (res.data.model == null) {
+                          Dialog.confirm({
+                            title:
+                              "未查询到该待办详情，有可能该待办已经失效，请刷新列表，检查该流程的待办是否已经办理完成，您是否留在OA系统？",
+                            confirmButtonColor: "#ff4444",
+                            cancelButtonText: "返回待办",
+                            width: "300px",
+                            closeOnClickOverlay: false,
+                          })
+                            .then(() => {
+                              this.$store.commit("setFromOut", false);
+                              this.$router.replace({
+                                name: this.preRoute,
+                              });
+                            })
+                            .catch((action) => {
+                              //console.log("action", action);
+                              if (action !== "overlay") {
+                                setTimeout(() => {
+                                  closeWindow();
+                                }, 2000);
+                              }
+                            });
+
+                          return;
+                        }
+                        let data = res.data.model.curPageData[0];
+                        this.$store.commit("setCurrentProcess", data);
+                        this.showBackbar();
+                        this.showReassignBar();
+                        this.getFromConfig();
+                        this.isSubmmit();
+                        this.isShowOpinion();
+                        this.isShowSoftWareEstimate();
+                    if (this.$store.state.currentList !== "doing") {
+                          this.updateProcessState();
+                        }
+                        if (
+                          this.currentList === "todo" ||
+                          this.currentList === "seal" ||
+                          this.currentList === "fwtodo"
+                        ) {
+                          this.isSubProcess();
+                        }
+                      }
+                    );
+                  } else if (res.data.model.code == -1) {
+                    //兼职已删除提示“对不起，你没有访问权限，请检查该待办所属兼职是否已删除”
+                    Dialog.confirm({
+                      title: res.data.model.msg + "，您是否留在OA系统？",
+                      confirmButtonColor: "#ff4444",
+                      cancelButtonText: "返回待办",
+                      width: "300px",
+                      closeOnClickOverlay: false,
+                    })
+                      .then(() => {
+                        this.$store.commit("setFromOut", false);
+                        this.$router.replace({
+                          name: this.preRoute,
+                        });
+                      })
+                      .catch((action) => {
+                        //console.log("action", action);
+                        if (action !== "overlay") {
+                          setTimeout(() => {
+                            closeWindow();
+                          }, 2000);
+                        }
+                      });
+                    return;
+                  }
+                }
+              });
             }
-          });
+          })
+        
       } else {
         this.$store.commit("setFromOut", true);
         const queryKind = this.$route.query.queryKind;
@@ -447,6 +463,16 @@ export default {
       }
     }, 1500);
     this.archiveBorrowProcess = (this.$store.state.currentProcess.configCode === "da_jy_process")
+    api.queryImportantPhoto({
+      proInstId: this.currentProcess.proInstId,
+    })
+    .then((res) => {
+      if (res.data.status === "200") {
+        if (res.data.model.relPhotoList !== null && res.data.model.relPhotoList.length > 0) {
+          this.importantPhotoProcess = true;
+        }
+      }
+    });
   },
   mounted() {
     this.$nextTick(() => {

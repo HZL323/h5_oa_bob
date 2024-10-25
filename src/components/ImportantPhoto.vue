@@ -10,39 +10,53 @@
   <div class="attachment-wrap">
     <wu-feedback v-if="loading" />
     <template v-else>
+      <div class="round-card">
+          <div class="wu-card">
+              <div class="form-wrap">
+                  <template >
+                      <div class="form-item">
+                          <div class="vertical-divider"></div>
+                          <div class="form-key" style="font-size: 16px;color: #323233;">领用目的</div>
+                          <div class="form-value">{{ this.purpose }}</div>
+                      </div>
+                      <div class="form-item">
+                          <div class="vertical-divider"></div>
+                          <div class="form-key" style="font-size: 16px;color: #323233;">发送单位</div>
+                          <div class="form-value">{{ this.sendUnit }}</div>
+                      </div>
+                  </template>
+              </div>
+          </div>
+      </div>
       <van-collapse
         v-model="activeNames"
         :border="false"
-        v-if="list.length > 0"
+        v-if="this.activeNames.length > 0"
       >
-        <template v-for="(item, index) in list">
-          <div :key="index">
+        <template v-for="([key, value], index) in Object.entries(this.map)">
+          <div :key="key + '_' + index">
             <van-collapse-item
-              :title="item.name"
-              :name="item.type"
-              :disabled="item.fileData.length === 0"
+              :title="value[0].ptypeName"
+              :disabled="value.length === 0"
               :border="false"
             >
               <template slot="icon">
                 <div class="vertical-divider"></div>
               </template>
-              <template slot="right-icon" v-if="item.fileData.length === 0"
-                ><span>暂无</span></template
-              >
-              <template v-if="item.fileData.length > 0">
+              <template slot="right-icon" v-if="value.length === 0"
+                ><span>暂无</span>
+              </template>
+              <template v-if="value.length > 0">
                 <div
                   class="file-wrap van-hairline--top"
-                  v-for="item_ in item.fileData"
-                  :key="item_.attachmentId"
-                  @click="onPreview(item_)"
+                  v-for="(item_, index) in value"
+                  :key="index"
                 >
                   <div class="file-icon">
-                    <i :class="fileIcon(item_)"></i>
+                    <i :class="fileIcon()"></i>
                   </div>
-                  <div class="file-name">{{ item_.attachmentName }}</div>
-                  <div class="check-icon">
-                    <i class="iconfont icon-yulan"></i>
-                  </div>
+                  <div class="file-name">{{ item_.photoName }}</div>
+                  <div class="check-icon">{{ item_.pcount }}份</div>
                 </div>
               </template>
             </van-collapse-item>
@@ -60,7 +74,7 @@ import { api } from "../core/api/index";
 import { openUrlPage } from "../core/mxApi/index";
 
 export default {
-  name: "attachment",
+  name: "importantPhoto",
   components: {
     [Collapse.name]: Collapse,
     [CollapseItem.name]: CollapseItem,
@@ -68,8 +82,10 @@ export default {
   data() {
     return {
       activeNames: [], // 展开意见标识list
-      list: [], // 附件列表
+      map: [], // 附件列表
       loading: true, // 等待加载数据
+      sendUnit: "",
+      purpose:"",
     };
   },
   computed: {
@@ -83,70 +99,39 @@ export default {
   methods: {
     init() {
       api
-        .queryAttachment({
+        .queryImportantPhoto({
           proInstId: this.currentProcess.proInstId,
         })
         .then((res) => {
           if (res.data.status === "200") {
-            this.list = res.data.model;
-            console.log(this.list)
-            if(this.$store.state.currentProcess.configCode === "yy_zh_process" 
-            || this.$store.state.currentProcess.configCode === "yy_fh_process"
-            || this.$store.state.currentProcess.configCode === "yy_zhi_process"
-            || this.$store.state.currentProcess.configCode === "yy_fzxzhi_process"
-            || this.$store.state.currentProcess.configCode === "yy_fhbm_process"){
-              let temp = []
-              this.list.forEach((item) => {
-                item.fileData = item.fileData.filter((e) => {
-                  return e.attachmentType !== "certificate";
-                })
-                temp.push(item)
-              });
-              console.log(temp)
-              this.list = temp
+            console.log(res.data.model)
+            if(res.data.model.relPhotoInfo != null){
+              this.purpose = res.data.model.relPhotoInfo.purpose;
+              this.sendUnit = res.data.model.relPhotoInfo.sendUnit;
             }
-            console.log("list", this.list)
-            this.list.forEach((item) => {
-              if (item.fileData.length > 0) {
-                this.activeNames.push(item.type);
-              }
-            });
+            let ptypeName = {}; // 用于存储分组的信息
+            if (res.data.model.relPhotoList !== null && res.data.model.relPhotoList.length > 0) {
+              res.data.model.relPhotoList.forEach(item => {
+                if (!ptypeName[item.ptypeName]) {
+                  // 如果 ptypeName 中还没有这个类型的项，则初始化一个数组
+                  ptypeName[item.ptypeName] = [];
+                }
+                // 将 item 添加到对应类型的数组中
+                ptypeName[item.ptypeName].push(item);
+              });
+            }
+            this.map = ptypeName
+            console.log("&&&&&&&:",Object.entries(this.map))
+            // 获取 ptypeName 的所有键名
+            this.activeNames = Object.keys(ptypeName);
+            console.log("activeNames", this.activeNames)
+            console.log("ptypeName", ptypeName)
             this.loading = false;
           }
         });
     },
-    fileIcon(file) {
-      let type = file.attachmentName.split(".").pop().toLowerCase();
-      switch (type) {
-        case "pdf":
-          return "iconfont icon-file_pdf";
-        case "pptx":
-          return "iconfont icon-file_ppt";
-        case "ppt":
-          return "iconfont icon-file_ppt";
-        case "xls":
-          return "iconfont icon-file_excel";
-        case "xlsx":
-          return "iconfont icon-file_excel";
-        case "doc":
-          return "iconfont icon-file_word";
-        case "docx":
-          return "iconfont icon-file_word";
-        case "jpg":
-          return "iconfont icon-jpg1";
-        case "jpeg":
-          return "iconfont icon-jpg1";
-        case "png":
-          return "iconfont icon-jpg1";
-        case "txt":
-          return "iconfont icon-file_txt";
-        case "zip":
-          return "iconfont icon-file_zip";
-        case "rar":
-          return "iconfont icon-file_zip";
-        default:
-          return "iconfont icon-file-unknown-fill";
-      }
+    fileIcon() {
+      return "iconfont icon-file_pdf";
     },
     onPreview(file) {
       debugger
@@ -250,4 +235,49 @@ export default {
     }
   }
 }
+.attachment-wrap {
+    height: 100%;
+    .round-card {
+        margin-bottom: 16px;
+    }
+
+    .wu-card {
+        margin: 0;
+        .title {
+        display: flex;
+        align-items: center;
+
+        .vertical-divider {
+            width: 3px;
+            height: 18px;
+            background-color: #ff4444;
+            margin-right: 5px;
+        }
+        .process-title {
+            flex: 1;
+        }
+        }
+
+        .form-wrap {
+        font-size: 14px;
+
+        .form-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 8px;
+
+            .form-key {
+            width: 40%;
+            color: #697184;
+            }
+
+            .form-value {
+            width: 60%;
+            text-align: right;
+            color: #323233;
+            }
+        }
+        }
+    }
+  }
 </style>
