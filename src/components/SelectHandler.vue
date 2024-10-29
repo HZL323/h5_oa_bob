@@ -417,6 +417,7 @@ export default {
           this.addBusinessType();
         }
       }
+      console.log("420被触发——————————————————————————", this.estimateFieldVerify)
       //校验是否是业务数据处理流程
       if(this.estimateFieldVerify){
         //校验是否填写了技术可行性评估结果和评估结果说明

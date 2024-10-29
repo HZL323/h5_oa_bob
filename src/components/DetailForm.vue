@@ -62,7 +62,7 @@
                   v-if="item.colCode === 'yyxx' && formMatData(item) != ''"
                 >{{ formMatData(item) }}</div>
                 <div
-                  class="form-value"
+                  class="form-value break-word"
                   ref="formValue"
                   v-if="item.colCode != 'yyxx'"
                   @click="formClick(item)"
@@ -93,7 +93,7 @@
                   v-if="item.colCode === 'yyxx' && formMatData(item) != ''"
                 >{{ formMatData(item) }}</div>
                 <div
-                  class="form-value"
+                  class="form-value break-word"
                   ref="formValue"
                   v-if="item.colCode != 'yyxx'"
                   @click="formClick(item)"
@@ -124,7 +124,7 @@
                   v-if="item.colCode === 'yyxx' && formMatData(item) != ''"
                 >{{ formMatData(item) }}</div>
                 <div
-                  class="form-value"
+                  class="form-value break-word"
                   ref="formValue"
                   v-if="item.colCode != 'yyxx'"
                   @click="formClick(item)"
@@ -145,7 +145,7 @@
               >
                 <div class="form-key">{{ item.colName }}</div>
                 <div
-                  class="form-value"
+                  class="form-value break-word"
                   ref="formValue"
                   @click="formClick(item)"
                 >{{ formMatData(item) }}</div>
@@ -163,7 +163,7 @@
               >
                 <div class="form-key">{{ item.colName }}</div>
                 <div
-                  class="form-value"
+                  class="form-value break-word"
                   ref="formValue"
                   @click="formClick(item)"
                 >{{ formMatData(item) }}</div>
@@ -181,7 +181,7 @@
               >
                 <div class="form-key">{{ item.colName }}</div>
                 <div
-                  class="form-value"
+                  class="form-value break-word"
                   ref="formValue"
                   @click="formClick(item)"
                 >{{ formMatData(item) }}</div>
@@ -199,7 +199,7 @@
               >
                 <div class="form-key">{{ item.colName }}</div>
                 <div
-                  class="form-value"
+                  class="form-value break-word"
                   ref="formValue"
                   @click="formClick(item)"
                 >{{ formMatData(item) }}</div>
@@ -219,7 +219,7 @@
               >
                 <div class="form-key">{{ item.colName }}</div>
                 <div
-                  class="form-value"
+                  class="form-value break-word"
                   ref="formValue"
                   @click="formClick(item)"
                 >{{ formMatData(item) }}</div>
@@ -237,7 +237,7 @@
               >
                 <div class="form-key">{{ item.colName }}</div>
                 <div
-                  class="form-value"
+                  class="form-value break-word"
                   ref="formValue"
                   @click="formClick(item)"
                 >{{ formMatData(item) }}</div>
@@ -255,7 +255,7 @@
               >
                 <div class="form-key">{{ item.colName }}</div>
                 <div
-                  class="form-value"
+                  class="form-value break-word"
                   ref="formValue"
                   @click="formClick(item)"
                 >{{ formMatData(item) }}</div>
@@ -273,7 +273,7 @@
               >
                 <div class="form-key">{{ item.colName }}</div>
                 <div
-                  class="form-value"
+                  class="form-value break-word"
                   ref="formValue"
                   @click="formClick(item)"
                 >{{ formMatData(item) }}</div>
@@ -540,6 +540,7 @@ export default {
           this.$set(this.formData, "isMustTest", "N");
         }
       }else{
+        console.log("不通过543----------------------------")
         this.$set(this.formData, "estimateResult", "N");
         this.$set(this.formData, "isMustTest", "");
       }
@@ -1046,13 +1047,18 @@ export default {
           width: 40%;
           color: #697184;
         }
-
+        
         .form-value {
           width: 60%;
           text-align: right;
           color: #323233;
         }
-
+        .break-word {
+          word-break: break-all; /* 强制文本在任何字符处换行 */
+          word-wrap: break-word; /* 允许长单词或 URL 地址换行到下一行 */
+          width: 250px; /* 设置固定宽度以测试换行效果 */
+          display: block; /* 确保输入框独占一行 */
+        }
         .formRemark-value {
           width: 100%;
           text-align: right;

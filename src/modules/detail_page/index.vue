@@ -27,7 +27,7 @@
                 @businessTypeVerify="getBusinessTypeVerify"
                 @updateCount="updateCount"
               />
-              <div v-if="softwareEstimate">
+              <div v-if="softWareEstimate">
                 <FwqqBusiness 
                   @onEstimateRemark="onEstimateRemark"
                   @onEstimateFieldValue="onEstimateFieldValue"
@@ -135,10 +135,27 @@
         </van-radio-group>
       </div>
     </van-popup>
-    <ReassignUserCascader 
-      ref="ReassignUserCascader" 
-      @onConfirm1="onConfirm1"
-    />
+    <van-popup
+        v-model="localValue"
+        round
+        :style="{ height: '70%' }"
+        position="bottom"
+      >
+      <van-search
+        v-model="keyWord"
+        show-action
+        placeholder="在这里查询人员"
+        @search="onSearch"
+        @cancel="onCancel"
+      />
+      <van-tree-select
+        height="100%"
+        :items="items"
+        :active-id.sync="activeId"
+        :main-active-index.sync="activeIndex"
+        @click-item="confirm"
+      />
+    </van-popup>
   </div>
 </template>
 
@@ -155,9 +172,10 @@ import {
   Radio,
   RadioGroup,
   Toast,
-  Dialog,
+  Search, 
+  Dialog, 
+  TreeSelect
 } from "vant";
-import ReassignUserCascader from "../../components/ReassignUserCascader.vue";
 import FwqqBusiness from "../../components/FwqqBusiness.vue";
 import DetailForm from "../../components/DetailForm.vue";
 import Opinion from "../../components/Opinion.vue";
@@ -169,7 +187,6 @@ import { closeWindow } from "../../core/mxApi";
 export default {
   name: "detail",
   components: {
-    ReassignUserCascader,
     [NavBar.name]: NavBar,
     [Tab.name]: Tab,
     [Tabs.name]: Tabs,
@@ -180,12 +197,15 @@ export default {
     [CellGroup.name]: CellGroup,
     [Radio.name]: Radio,
     [RadioGroup.name]: RadioGroup,
+    [Search.name]: Search,
+    [Dialog.name]: Dialog,
+    [TreeSelect.name]: TreeSelect,
     DetailForm,
     Opinion,
     Attachment,
     ArchiveList,
     ImportantPhoto,
-    FwqqBusiness
+    FwqqBusiness,
   },
   //yinyanhong
   provide() {
@@ -200,11 +220,17 @@ export default {
         this.getBackLink();
       }
     },
+    localValue(newVal){
+      if(newVal){
+        this.fetchData();
+      }
+    }
   },
   data() {
     return {
       estimateRemark:"",
       estimateFieldValue:"",
+      softWareEstimate:false,
       activeName: 0,
       show: false, // 退回弹窗展示
       radio: null, // 选择的退回节点
@@ -226,12 +252,16 @@ export default {
       //yinyanhong
       isRouterAlive: true,
       showOpinion: true,
-      softwareEstimate:false,
       showSendbackButton: false,
       showReassignButton:false,
       saveOpinionParams: [],//意见参数
       archiveBorrowProcess: false,
-      importantPhotoProcess: false
+      importantPhotoProcess: false,
+      localValue:false,
+      items: [],
+      activeId: 1,
+      activeIndex: 0,
+      keyWord: "", // 搜索关键字
     };
   },
   computed: {
@@ -484,9 +514,133 @@ export default {
     });
   },
   methods: {
+    fetchData(){
+      api.getAsyncDeptTree({
+        pexf: "consign",
+        deptTreeId: "T001276001",
+        rootCode: '["T001276001"]',
+      })
+      .then((res) => {
+        let res1 = res.data.model;
+        console.log("res1:",res1)
+        let length =  res.data.model.length;
+        this.items.push({
+            text: '部门级',
+            deptId:"",
+            children: [],
+        })
+        for(let i = 0; i < length; i++){
+          this.items.push({
+            text: res1[i].deptName,
+            deptId: res1[i].deptUuid,
+            children: [],
+          })
+        }
+        let deptUuid = ""
+        for(let i = 0; i < length; i++){
+          deptUuid += res.data.model[i].deptUuid+","
+        }
+        api.getUserByDeptUuidForGridNonPage({
+          deptCode: "T001276001",
+          deptUuid:deptUuid,
+        }).then((response) => {
+          let res2 = response.data.model
+          console.log("res2:",res2)
+          for(const [key, val] of Object.entries(res2)){
+            if(key.startsWith("parent_")){
+              for(let k = 0; k < res2[key].length; k++){
+                this.items[0].children.push({
+                  text: res2[key][k].userName,
+                  id: k+1,
+                  userUuid: res2[key][k].userUuid,
+                })
+              }
+              continue;
+            }
+            for(let j = 1; j < this.items.length; j++){
+              if (key === this.items[j].deptId) {
+                for(let k = 0; k < res2[key].length; k++){
+                  this.items[j].children.push({
+                    text: res2[key][k].userName,
+                    id: k+1,
+                    userUuid: res2[key][k].userUuid,
+                  })
+                } 
+                break;
+              }
+            }
+          }
+          console.log(this.items)
+        })
+      })
+    },
+    confirm(value){
+      console.log("confirm:", value)
+      Dialog.confirm({
+        title:"是否转办给"+value.text,
+        confirmButtonColor: "#ff4444",
+        cancelButtonText: "否",
+        width: "300px",
+        closeOnClickOverlay: false,
+      })
+      .then(() => {
+        let data = {};
+        data.wfmData = {
+          actInstId: this.currentProcess.actInstId,
+          proInstId: this.currentProcess.proInstId,
+          workitemId: this.currentProcess.workitemId,
+          configId: this.currentProcess.configId,
+          proDirId: this.currentProcess.proDirId,
+          actDefId: this.currentProcess.actDefId,
+          processName: this.currentProcess.processName || "",
+          userId: this.userInfo.userId,
+          reassignResourceId: value.userUuid
+        };
+        api.reassignWorkitem(data).then((res) => {
+          console.log(res)
+          this.localValue = false
+          this.$store.commit("setFromOut", false);
+          Dialog.alert({
+            message: "转办成功",
+            width: "200px",
+            confirmButtonColor: "#ff4444",
+          }).then(() => {
+            this.$store.commit("setRefresh", true);
+            this.$router.replace({name:"home", force: true});
+          });
+        }) 
+      })
+      .catch((action) => {
+        if (action !== "overlay") {
+          setTimeout(() => {
+            closeWindow();
+          }, 2000);
+        }
+      });
+    },
+    cancel(){
+      this.localValue = false
+    },
+    onCancel() {
+    },
+    // 检索人名
+    onSearch(){
+      console.log("this.keyWord:",this.keyWord)
+      if(this.keyWord !== ""){
+        for (let i = 0; i < this.items.length; i++) {
+          for(let j = 0; j < this.items[i].children.length; j++){
+            let val = this.items[i].children[j].text
+            if (val === this.keyWord) {
+                this.activeIndex = i;
+                this.activeId = j+1;
+            }
+          }    
+        }
+      }
+    },
     onConfirm1(value) {
         console.log("reassignPeople:", value)
-        this.$refs.ReassignUserCascader.show1 = false;
+        this.localValue = false;
     },
     clickReassignEvent() {
       window.scroll(0, 0);
@@ -495,7 +649,8 @@ export default {
       if (this.SubmitPermission === false) {
         Toast("请前往PC端转办!");
       } else {
-        this.$refs.ReassignUserCascader.show1 = true;
+        this.localValue = true;
+        // this.fetchData()
       }
     },
     clickSendbackEvent() {
@@ -562,10 +717,10 @@ export default {
       });
     },
     isShowSoftWareEstimate(){
-        if((this.$store.state.currentList === "todo" || this.$store.state.currentList === "toback") && this.currentProcess.actDefId === "wsjcl_process_act19"
-         && (this.currentProcess.configCode === "qq_ywsjcl_process" || this.currentProcess.configCode === "fh_ywsjcl_process" || this.currentProcess.configCode === "zh_ywsjcl_process")){
-          this.softwareEstimate = true  
-        }
+      if((this.$store.state.currentList === "todo" || this.$store.state.currentList === "toback") && this.currentProcess.actDefId === "wsjcl_process_act19"
+        && (this.currentProcess.configCode === "qq_ywsjcl_process" || this.currentProcess.configCode === "fh_ywsjcl_process" || this.currentProcess.configCode === "zh_ywsjcl_process")){
+        this.softWareEstimate = true  
+      }
     },
     recordEnterOaLog() {
       console.log("-----------调用recordEnterOaLog函数-----------");
@@ -1022,7 +1177,9 @@ export default {
         forbidClick: true,
         duration: 0,
       });
+      console.log("1181行__________this.softWareEstimate__________,",this.softWareEstimate)
       if(this.softWareEstimate){
+        console.log("1183行____________________")
         if(this.estimateFieldValue.trim().length === 0){
           Toast("请填写技术可行性评估!");
           return;
@@ -1236,6 +1393,7 @@ export default {
               //if(this.currentProcess.)
               //进入选择环节页面
               this.$toast.clear();
+              console.log("进入选择环节页面1394", this.estimateFieldValue)
               this.$router.replace({
                 name: "selectlink",
                 params: {

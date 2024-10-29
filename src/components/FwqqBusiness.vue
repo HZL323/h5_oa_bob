@@ -53,10 +53,6 @@
         ref="CommonCascader"
         @onConfirm="onConfirm"
         />
-      <ReassignUserCascader 
-        ref="ReassignUserCascader" 
-        @onConfirm="onConfirm"
-      />
     </div>
   </template>
   
@@ -71,12 +67,10 @@
     Cascader
   } from "vant";
   import CommonCascader from "./CommonCascader.vue";
-  import ReassignUserCascader from "./ReassignUserCascader.vue";
   export default {
     name: "fwqqBusiness",
     components: {
       CommonCascader,
-      ReassignUserCascader,
       [Divider.name]: Divider,
       [Field.name]: Field,
       [Skeleton.name]: Skeleton,
