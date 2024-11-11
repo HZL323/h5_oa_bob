@@ -26,7 +26,7 @@ router.beforeEach((to, from, next) => {
         return
     }
     if (Store.state.userInfo.userCode) {
-        next()
+        next()   
     } else {
         Toast.loading({
             duration: 0,
@@ -35,44 +35,32 @@ router.beforeEach((to, from, next) => {
         });
         getCurrentUser().then(user => {
             //console.log("获取当前用户信息", user);
-            api.getJsonWebToken({
-                jobNumber: user.login_name,
-                userName: user.name,
-                userEmail: user.email
+            api.checkUser({
+                id: user.login_name,//生产 - 新oa测试 - 新oa
+                uCode: ""//生产 - 新oa测试 - 新oa
             }).then(res => {
-                api.checkUser_v2({
-                    jobNumber: user.login_name,
-                    userNameZh: user.name,
-                    userNamePinyin:"",
-                    userEmail: user.email,
-                    resourceId:"",
-                    header: res.data.model.data
-                }).then(res => {
-                    //console.log("checkUser status", res)
-                    if (res.data.status === '200') {
-                        if (res.data.model.code === -1) {
-                            Toast.clear()
-                            Dialog.alert({
-                                message: res.data.model.msg,
-                                width: "300px",
-                                confirmButtonColor: "#ff4444",
-                            }).then(() => {
-                                closeWindow()
-                            });
-                        } else {
-                            Store.commit('setUserInfo', {
-                                userCode: res.data.model.data.usercode,
-                                userId: res.data.model.data.useruuid,
-                                userName: res.data.model.data.username,
-                                ou: res.data.model.data.ou
-                            })
-                            Toast.clear()
-                            next()
-                        }
+                if (res.data.status === '200') {
+                    if (res.data.model.code === -1) {
+                        Toast.clear()
+                        Dialog.alert({
+                            message: res.data.model.msg,
+                            width: "300px",
+                            confirmButtonColor: "#ff4444",
+                        }).then(() => {
+                            closeWindow()
+                        });
+                    } else {
+                        Store.commit('setUserInfo', {
+                            userCode: res.data.model.data.usercode,
+                            userId: res.data.model.data.useruuid,
+                            userName: res.data.model.data.username,
+                            ou: res.data.model.data.ou
+                        })
+                        Toast.clear()
+                        next()
                     }
-                })
-            });
-            
+                }
+            })
         })
     }
 })

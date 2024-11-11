@@ -20,15 +20,11 @@ export function queryMessage(data) {
 
 // 校验用户信息
 export function checkUser(data) {
-    // console.log(`校验用户信息`,URL+`/mob/userDeptService/checkUser`)
-    // console.log(`参数`,data)
     return Axios.post(`${URL}/mob/userDeptService/checkUser`, data)
 }
 
 // 用户兼职部门列表
 export function loadUserDeptList(data) {
-    // console.log(`用户兼职部门列表`,URL+`/mob/userDeptService/loadUserDeptList`)
-    // console.log(`参数`,data)
     return Axios.post(`${URL}/mob/userDeptService/loadUserDeptList`, data)
 }
 

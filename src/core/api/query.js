@@ -8,8 +8,8 @@
  */
 import { ajaxGet, ajaxPost } from '../mxApi'
 //const URL = `http://oa.bj.bob` // 生产
-const URL = `http://10.51.228.84:8080` // 新oa测试
-//const URL = `http://app.xcoa.bj.bob.test` // 新oa/准生产
+//const URL = `http://10.51.228.84:8080` // 新oa测试
+const URL = `http://app.xcoa.bj.bob.test` // 新oa/准生产
 
 export function queryMessage(data) {
     //return ajaxGet('/api/v1/users?limit=1') //测试接口
@@ -18,24 +18,11 @@ export function queryMessage(data) {
 
 // 校验用户信息
 export function checkUser(data) {
-    // console.log(`校验用户信息`,URL+`/mob/userDeptService/checkUser`)
-    // console.log(`参数`,data)
     return ajaxPost(`${URL}/mob/userDeptService/checkUser`, data)
-}
-export function checkUser_v2(data) {
-    return ajaxPost(`${URL}/mob/userDeptService/checkUser_v2`, data)
-}
-export function getJsonWebToken(data) {
-    return ajaxPost(`${URL}/mob/userDeptService/getJsonWebToken`, data)
 }
 // 用户兼职部门列表
 export function loadUserDeptList(data) {
-    // console.log(`用户兼职部门列表`,URL+`/mob/userDeptService/loadUserDeptList`)
-    // console.log(`参数`,data)
     return ajaxPost(`${URL}/mob/userDeptService/loadUserDeptList`, data)
-}
-export function loadUserDeptList_v2(data) {
-    return ajaxPost(`${URL}/mob/userDeptService/loadUserDeptList_v2`, data)
 }
 // 查询待办、待阅接口
 export function queryList(data) {
