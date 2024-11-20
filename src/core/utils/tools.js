@@ -17,7 +17,7 @@ router.beforeEach((to, from, next) => {
 
     // 路由守卫，动态设置缓存组件
     if (to.name === 'detail' || to.name === 'selectlink' || to.name === 'tracking' || to.name === 'preview') {
-        Store.commit('setCacheList', ['homePage', 'listPage', 'detail', 'selectLink', 'processTracking'])
+        Store.commit('setCacheList', ['homePage', 'listPage', 'detail', 'processTracking'])
     } else {
         Store.commit('setCacheList', ['homePage', 'listPage'])
     }
