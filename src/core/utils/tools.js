@@ -26,64 +26,42 @@ router.beforeEach((to, from, next) => {
         return
     }
     if (Store.state.userInfo.userCode) {
-        next()
+        next()   
     } else {
         Toast.loading({
             duration: 0,
             forbidClick: true,
             loadingType: 'spinner',
         });
-        getCurrentUser().then(user => {
-            //console.log("获取当前用户信息", user);
-            api.getJsonWebToken({
-                jobNumber: user.login_name,
-                userName: user.name,
-                userEmail: user.email
-            }).then(res => {
-                api.checkUser_v2({
-                    jobNumber: user.login_name,
-                    userNameZh: user.name,
-                    userNamePinyin:"",
-                    userEmail: user.email,
-                    resourceId:"",
-                    header: res.data.model.data
-                }).then(res => {
-                    //console.log("checkUser status", res)
-                    if (res.data.status === '200') {
-                        if (res.data.model.code === -1) {
-                            Toast.clear()
-                            Dialog.alert({
-                                message: res.data.model.msg,
-                                width: "300px",
-                                confirmButtonColor: "#ff4444",
-                            }).then(() => {
-                                closeWindow()
-                            });
-                        } else {
-                            Store.commit('setUserInfo', {
-                                userCode: res.data.model.data.usercode,
-                                userId: res.data.model.data.useruuid,
-                                userName: res.data.model.data.username,
-                                ou: res.data.model.data.ou
-                            })
-                            Toast.clear()
-                            next()
-                        }
-                    }
-                })
-            });
-            
-        })
+        document.addEventListener('deviceready', () => {
+            console.log(MXCommon.getEncryptString())
+            MXCommon.getEncryptString(
+              {
+                onSuccess: encryptString => {
+                    //认证
+                    console.log("encryptString:",encryptString)
+                    api.validateEncryptString({
+                        encryptString:encryptString
+                    }).then(res => {
+                        console.log("validate:",res)
+                        if(res.data.model != null){
+                            Store.commit('setJwt', res.data.model.jwt)
+                            Store.commit("setRefreshToken", res.data.model.refreshToken)
+                            setUserInfo(next)
+                            getDict()
+                        }    
+                    })
+                },
+                onFail: err => {
+                  // mobileLog.log(err)
+                  console.log(err)
+                }
+              }
+            );
+        });
+        
     }
 })
-
-api.queryKeyValueByTypes().then(res => {
-    // 获取枚举数据
-    if (res.data.status === '200') {
-        Store.commit('setEnumerationData', res.data.model)
-        // console.log("queryKeyValueByTypes", res)
-    }
-}).catch(err => console.log(err))
 
 const dateFormat = (fmt, date) => {
     let ret;
@@ -106,5 +84,47 @@ const dateFormat = (fmt, date) => {
 
     return fmt;
 }
-Vue.prototype.$oaVersion = "1.4.2.8"
+Vue.prototype.$oaVersion = "1.4.3.1"
 Vue.prototype.$format = dateFormat
+function getDict() {
+    api.queryKeyValueByTypes().then(res => {
+        // 获取枚举数据
+        if (res.data.status === '200') {
+            Store.commit('setEnumerationData', res.data.model)
+            // console.log("queryKeyValueByTypes", res)
+        }
+    }).catch(err => console.log(err))
+}
+
+function setUserInfo(next) {
+    getCurrentUser().then(user => {
+        //console.log("获取当前用户信息", user);
+        api.checkUser({
+            id: user.login_name, //生产 - 新oa测试 - 新oa
+            uCode: "" //生产 - 新oa测试 - 新oa
+        }).then(res => {
+            if (res.data.status === '200') {
+                if (res.data.model.code === -1) {
+                    Toast.clear()
+                    Dialog.alert({
+                        message: res.data.model.msg,
+                        width: "300px",
+                        confirmButtonColor: "#ff4444",
+                    }).then(() => {
+                        closeWindow()
+                    })
+                } else {
+                    Store.commit('setUserInfo', {
+                        userCode: res.data.model.data.usercode,
+                        userId: res.data.model.data.useruuid,
+                        userName: res.data.model.data.username,
+                        ou: res.data.model.data.ou
+                    })
+                    Toast.clear()
+                    next()
+                }
+            }
+        })
+    })
+}
+
