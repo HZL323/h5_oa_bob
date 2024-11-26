@@ -715,19 +715,22 @@ export default {
       let userAgent = navigator.userAgent.toLowerCase();
       console.log("userAgent:", userAgent);
       let PCType = "";
-      if (userAgent.indexOf("windows") !== -1) PCType = "windows";
-      if (userAgent.indexOf("macintosh") !== -1) PCType = "macintosh";
-      let isAndroid =
-        /android/.test(userAgent) && !/iphone|ipad|ipod/.test(userAgent);
-      let isIPad = /ipad/.test(userAgent);
+      
+      // 判断操作系统类型
+      if (userAgent.indexOf("windows") !== -1) {
+        PCType = "windows";
+      } else if (userAgent.indexOf("macintosh") !== -1) {
+        PCType = "macintosh"; 
+      } else if (userAgent.indexOf("harmony") !== -1) {
+        PCType = "Harmony";
+      } else {
+        let isAndroid = /android/.test(userAgent) && !/iphone|ipad|ipod/.test(userAgent);
+        let isIPad = /ipad/.test(userAgent);
+        
+        PCType = isAndroid ? "Android" : isIPad ? "iPad" : "iPhone";
+      }
+      
       console.log("-----------调用recordEnterOaLog接口-----------");
-      PCType = (PCType == ""
-              ? isAndroid
-                ? "Android"
-                : isIPad
-                ? "iPad"
-                : "iPhone"
-              : PCType);
       let type = PCType + "|oa版本:"+this.$oaVersion
       api
         .recordEnterOaLog({
@@ -1320,7 +1323,7 @@ export default {
       //保存意见是否必填  20220714
       this.$store.commit("setNoteRequired", this.noteRequired);
       this.$store.commit("setOpinionData", this.opinionConfig);
-      //如果多人会签环节，并且不是最后一个人提交则直接提交
+      //如果多人会签环节，并且不��最后一个人提交则��接提交
       api
         .queryNextLink({
           wfmData: {
@@ -1664,7 +1667,7 @@ export default {
           }
         });
       }else{
-        this.$toast("提交失败，请关闭页面重试");//方便排查问题
+        this.$toast("提交失败，请关闭页面重试");//方便排查���题
         console.log("用户名", this.userInfo.userName);
         console.log("else hldNotShowNextActivities ---- this.noteRequired",this.noteRequired);
         console.log("else hldNotShowNextActivities ---- this.opinionConfig[0]",this.opinionConfig[0]);
