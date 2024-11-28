@@ -7,10 +7,9 @@
  * @FilePath: \bjbank-xcoa\src\core\api\query.js
  */
 import { ajaxGet, ajaxPost } from '../mxApi'
-const URL = `http://oa.bj.bob` // 生产
-////const URL = `http://10.51.228.84:8080` // 84测试
-//const URL = `http://app.xcoa.bj.bob.test` // 准生产
-//const URL = `http://10.51.252.191:8089` // 预发版
+
+const URL = `http://app.xcoa.bj.bob.test`
+
 
 export function queryMessage(data) {
     //return ajaxGet('/api/v1/users?limit=1') //测试接口
