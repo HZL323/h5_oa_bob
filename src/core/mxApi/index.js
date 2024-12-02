@@ -72,6 +72,18 @@ export const MXSelectUsers = () => new Promise((resolve, reject) => {
         canSelectSelf: true
     })
 })
+export const openNoPermissionPage = (params) => new Promise((resolve, reject) => {
+    MXCommon('openNoPermissionPage', {
+        name: params.name,
+        phoneNumb: params.phoneNumb || "",
+        guidePage: params.guidePage || "",
+        onSuccess: () => {
+            params.onSuccess && params.onSuccess();
+            resolve();
+        }
+    });
+});
+
 
 export const ajax = params => new Promise((resolve, reject) => {
     const token = Store.state.jwt; // 从 Vuex 中获取 jwt
