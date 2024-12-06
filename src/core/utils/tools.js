@@ -7,7 +7,7 @@
  * @FilePath: \vue_demo\src\core\utils\tools.js
  */
 import Vue from 'vue'
-import { getCurrentUser, closeWindow } from '../../core/mxApi'
+import { getCurrentUser, closeWindow, openNoPermissionPage } from '../../core/mxApi'
 import router from '../../rootRouter/index'
 import Store from '../../store/index'
 import { api } from '../api/index'
@@ -106,13 +106,18 @@ function setUserInfo(next) {
             if (res.data.status === '200') {
                 if (res.data.model.code === -1) {
                     Toast.clear()
-                    Dialog.alert({
-                        message: res.data.model.msg,
-                        width: "300px",
-                        confirmButtonColor: "#ff4444",
-                    }).then(() => {
-                        closeWindow()
-                    })
+                    // 添加错误信息提示
+                    console.error("权限验证失败:", res.data.model.msg);
+                     document.addEventListener('deviceready', () => {
+                        openNoPermissionPage({
+                            name: "郑睿之",
+                            phoneNumb: "18801486763",
+                            guidePage: "http://oa.bj.bob.test",
+                            onSuccess: () => {
+                                console.log("打开无权限页面成功");
+                            }
+                        });
+                     });
                 } else {
                     Store.commit('setUserInfo', {
                         userCode: res.data.model.data.usercode,

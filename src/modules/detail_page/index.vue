@@ -334,17 +334,18 @@ export default {
               );
             } else if (res.data.model.code == -1) {
               //兼职已删除提示“对不起，你没有访问权限，请检查该待办所属兼职是否已删除”
-              document.addEventListener('deviceready', () => {
                 console.log('进入deviceready');
-                openNoPermissionPage({
-                  name: this.userInfo.userName,
-                  phoneNumb: "",
-                  guidePage: "",
-                  onSuccess: () => {
-                    console.log("打开无权限页面成功");
-                  }
+                document.addEventListener('deviceready', () => {
+                  openNoPermissionPage({
+                      name: "郑睿之",
+                      phoneNumb: "18801486763",
+                      guidePage: "",
+                      onSuccess: () => {
+                          console.log("打开无权限页面成功");
+                      }
+                  });
                 });
-              });
+              
             }
           }
         });
