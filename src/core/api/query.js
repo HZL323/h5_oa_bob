@@ -8,9 +8,9 @@
  */
 import { ajaxGet, ajaxPost } from '../mxApi'
 
-const URL = `http://app.xcoa.bj.bob.test`
-
-
+//const URL = `http://app.xcoa.bj.bob.test`
+//const URL = `http://10.51.252.191:8089`
+const URL = `http://oa.bj.bob`
 export function queryMessage(data) {
     //return ajaxGet('/api/v1/users?limit=1') //测试接口
     return ajaxGet('/api/resoftCtrl/OFDController') //测试接口
