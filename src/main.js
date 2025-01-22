@@ -20,7 +20,6 @@ import './core/utils/tools'
 import Components from './components/index'
 import VConsose from 'vconsole'
 import Vuex from 'vuex';
-import ajax from 'vux/src/plugins/ajax';
 import axios from "axios";
 import qs from "qs";
 import cors from "cors"

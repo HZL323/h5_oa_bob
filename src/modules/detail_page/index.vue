@@ -1,8 +1,5 @@
 <template>
   <div class="detail-wrap">
-    <!-- yinyanhong -->
-    <!-- <router-view v-if="isRouterAlive"/> -->
-
     <div class="header">
       <van-nav-bar
         title="OA详情"
@@ -23,16 +20,25 @@
             <wu-feedback v-if="loading" />
             <template v-else>
               <DetailForm
+                :estimateFieldValue="estimateFieldValue"
+                :estimateRemark="estimateRemark"
                 :formConfig="formConfig"
                 @sendDeptVerify="getSendDeptVerify"
                 @businessTypeVerify="getBusinessTypeVerify"
                 @updateCount="updateCount"
               />
+              <div v-if="softWareEstimate">
+                <FwqqBusiness 
+                  @onEstimateRemark="onEstimateRemark"
+                  @onEstimateFieldValue="onEstimateFieldValue"
+                />
+              </div>
               <div v-if="showOpinion">
                 <Opinion
                   :noteConfig="noteConfig"
                   :opinionConfig.sync="opinionConfig"
                   :fromOut="fromOut"
+                  :estimateRemark="estimateRemark"
                   @onClickInput="onClickInput"
                   @updateCount="updateCount"
                   ref="opinion"
@@ -58,9 +64,18 @@
         </van-tab>
       </van-tabs>
     </div>
-    <!-- <div style="position:relative;bottom:0;left:0;height:60px;width:100%" v-if="showTabbar"> -->
-    <!-- <van-tabbar :safe-area-inset-bottom="true" :placeholder="true" v-if="showTabbar"> -->
     <div class="footer btn-wrap" ref="footer" v-if="showTabbar">
+      <van-button
+        class="send-back"
+        color="#ff4444"
+        plain
+        block
+        round
+        @click="clickReassignEvent"
+        :disabled="buttonDisabled"
+        v-if="showReassignButton"
+        >转办</van-button
+      >
       <van-button
         class="send-back"
         color="#ff4444"
@@ -81,8 +96,6 @@
         >提交</van-button
       >
     </div>
-    <!-- </van-tabbar> -->
-    <!-- </div> -->
     <van-popup
       v-model="show"
       round
@@ -122,6 +135,27 @@
         </van-radio-group>
       </div>
     </van-popup>
+    <van-popup
+        v-model="localValue"
+        round
+        :style="{ height: '70%' }"
+        position="bottom"
+      >
+      <van-search
+        v-model="keyWord"
+        show-action
+        placeholder="在这里查询人员"
+        @search="onSearch"
+        @cancel="onCancel"
+      />
+      <van-tree-select
+        height="100%"
+        :items="items"
+        :active-id.sync="activeId"
+        :main-active-index.sync="activeIndex"
+        @click-item="confirm"
+      />
+    </van-popup>
   </div>
 </template>
 
@@ -138,8 +172,11 @@ import {
   Radio,
   RadioGroup,
   Toast,
-  Dialog,
+  Search, 
+  Dialog, 
+  TreeSelect
 } from "vant";
+import FwqqBusiness from "../../components/FwqqBusiness.vue";
 import DetailForm from "../../components/DetailForm.vue";
 import Opinion from "../../components/Opinion.vue";
 import Attachment from "../../components/Attachment.vue";
@@ -160,11 +197,15 @@ export default {
     [CellGroup.name]: CellGroup,
     [Radio.name]: Radio,
     [RadioGroup.name]: RadioGroup,
+    [Search.name]: Search,
+    [Dialog.name]: Dialog,
+    [TreeSelect.name]: TreeSelect,
     DetailForm,
     Opinion,
     Attachment,
     ArchiveList,
-    ImportantPhoto
+    ImportantPhoto,
+    FwqqBusiness,
   },
   //yinyanhong
   provide() {
@@ -179,9 +220,17 @@ export default {
         this.getBackLink();
       }
     },
+    localValue(newVal){
+      if(newVal){
+        this.fetchData();
+      }
+    }
   },
   data() {
     return {
+      estimateRemark:"",
+      estimateFieldValue:"",
+      softWareEstimate:false,
       activeName: 0,
       show: false, // 退回弹窗展示
       radio: null, // 选择的退回节点
@@ -204,9 +253,15 @@ export default {
       isRouterAlive: true,
       showOpinion: true,
       showSendbackButton: false,
+      showReassignButton:false,
       saveOpinionParams: [],//意见参数
       archiveBorrowProcess: false,
-      importantPhotoProcess: false
+      importantPhotoProcess: false,
+      localValue:false,
+      items: [],
+      activeId: 1,
+      activeIndex: 0,
+      keyWord: "", // 搜索关键字
     };
   },
   computed: {
@@ -286,8 +341,7 @@ export default {
               const workItemId = this.$route.query.workItemId;
               const pubFormDataId = this.$route.query.pubFormDataId;
               // 此处需调用接口获取数据
-              this.getData(queryKind, workItemId, pubFormDataId).then(
-                (res) => {
+              this.getData(queryKind, workItemId, pubFormDataId).then((res) => {
                   if (res.data.model == null) {
                     Dialog.confirm({
                       title:
@@ -311,17 +365,18 @@ export default {
                           }, 2000);
                         }
                       });
-
-                    return;
+                      return;
                   }
                   let data = res.data.model.curPageData[0];
                   this.$store.commit("setCurrentProcess", data);
                   this.showBackbar();
+                  this.showReassignBar();
                   this.getFromConfig();
                   this.isSubmmit();
                   this.isShowOpinion();
+                  this.isShowSoftWareEstimate();
                   if (this.$store.state.currentList !== "doing") {
-                    this.updateProcessState();
+                      this.updateProcessState();
                   }
                   if (
                     this.currentList === "todo" ||
@@ -330,8 +385,7 @@ export default {
                   ) {
                     this.isSubProcess();
                   }
-                }
-              );
+              });
             } else if (res.data.model.code == -1) {
               //兼职已删除提示“对不起，你没有访问权限，请检查该待办所属兼职是否已删除”
                 console.log('进入deviceready');
@@ -346,10 +400,33 @@ export default {
                   });
                 });
               
+                    //兼职已删除提示“对不起，你没有访问权限，请检查该待办所属兼职是否已删除”
+              Dialog.confirm({
+                title: res.data.model.msg + "，您是否留在OA系统？",
+                confirmButtonColor: "#ff4444",
+                cancelButtonText: "返回待办",
+                width: "300px",
+                closeOnClickOverlay: false,
+              })
+                .then(() => {
+                  this.$store.commit("setFromOut", false);
+                  this.$router.replace({
+                    name: this.preRoute,
+                  });
+                })
+                .catch((action) => {
+                  //console.log("action", action);
+                  if (action !== "overlay") {
+                    setTimeout(() => {
+                      closeWindow();
+                    }, 2000);
+                  }
+                });
+              return;
             }
           }
         });
-      } else {
+      }else {
         this.$store.commit("setFromOut", true);
         const queryKind = this.$route.query.queryKind;
         const workItemId = this.$route.query.workItemId;
@@ -383,9 +460,11 @@ export default {
           let data = res.data.model.curPageData[0];
           this.$store.commit("setCurrentProcess", data);
           this.showBackbar();
+          this.showReassignBar();
           this.getFromConfig();
           this.isSubmmit();
           this.isShowOpinion();
+          this.isShowSoftWareEstimate()
           if (this.$store.state.currentList !== "doing") {
             this.updateProcessState();
           }
@@ -399,9 +478,11 @@ export default {
         this.updateProcessState();
       }
       this.showBackbar();
+      this.showReassignBar();
       this.getFromConfig();
       this.isSubmmit();
       this.isShowOpinion();
+      this.isShowSoftWareEstimate();
       if (this.currentList === "todo" || this.currentList === "seal" || this.currentList === "fwtodo") {
         this.isSubProcess();
       }
@@ -434,6 +515,145 @@ export default {
     });
   },
   methods: {
+    fetchData(){
+      api.getAsyncDeptTree({
+        pexf: "consign",
+        deptTreeId: "T001276001",
+        rootCode: '["T001276001"]',
+      })
+      .then((res) => {
+        let res1 = res.data.model;
+        console.log("res1:",res1)
+        let length =  res.data.model.length;
+        this.items.push({
+            text: '部门级',
+            deptId:"",
+            children: [],
+        })
+        for(let i = 0; i < length; i++){
+          this.items.push({
+            text: res1[i].deptName,
+            deptId: res1[i].deptUuid,
+            children: [],
+          })
+        }
+        let deptUuid = ""
+        for(let i = 0; i < length; i++){
+          deptUuid += res.data.model[i].deptUuid+","
+        }
+        api.getUserByDeptUuidForGridNonPage({
+          deptCode: "T001276001",
+          deptUuid:deptUuid,
+        }).then((response) => {
+          let res2 = response.data.model
+          console.log("res2:",res2)
+          for(const [key, val] of Object.entries(res2)){
+            if(key.startsWith("parent_")){
+              for(let k = 0; k < res2[key].length; k++){
+                this.items[0].children.push({
+                  text: res2[key][k].userName,
+                  id: k+1,
+                  userUuid: res2[key][k].userUuid,
+                })
+              }
+              continue;
+            }
+            for(let j = 1; j < this.items.length; j++){
+              if (key === this.items[j].deptId) {
+                for(let k = 0; k < res2[key].length; k++){
+                  this.items[j].children.push({
+                    text: res2[key][k].userName,
+                    id: k+1,
+                    userUuid: res2[key][k].userUuid,
+                  })
+                } 
+                break;
+              }
+            }
+          }
+          console.log(this.items)
+        })
+      })
+    },
+    confirm(value){
+      console.log("confirm:", value)
+      Dialog.confirm({
+        title:"是否转办给"+value.text,
+        confirmButtonColor: "#ff4444",
+        cancelButtonText: "否",
+        width: "300px",
+        closeOnClickOverlay: false,
+      })
+      .then(() => {
+        let data = {};
+        data.wfmData = {
+          actInstId: this.currentProcess.actInstId,
+          proInstId: this.currentProcess.proInstId,
+          workitemId: this.currentProcess.workitemId,
+          configId: this.currentProcess.configId,
+          proDirId: this.currentProcess.proDirId,
+          actDefId: this.currentProcess.actDefId,
+          processName: this.currentProcess.processName || "",
+          userId: this.userInfo.userId,
+          reassignResourceId: value.userUuid
+        };
+        api.reassignWorkitem(data).then((res) => {
+          console.log(res)
+          this.localValue = false
+          this.$store.commit("setFromOut", false);
+          Dialog.alert({
+            message: "转办成功",
+            width: "200px",
+            confirmButtonColor: "#ff4444",
+          }).then(() => {
+            this.$store.commit("setRefresh", true);
+            this.$router.replace({name:"home", force: true});
+          });
+        }) 
+      })
+      .catch((action) => {
+        if (action !== "overlay") {
+          setTimeout(() => {
+            closeWindow();
+          }, 2000);
+        }
+      });
+    },
+    cancel(){
+      this.localValue = false
+    },
+    onCancel() {
+    },
+    // 检索人名
+    onSearch(){
+      console.log("this.keyWord:",this.keyWord)
+      if(this.keyWord !== ""){
+        for (let i = 0; i < this.items.length; i++) {
+          for(let j = 0; j < this.items[i].children.length; j++){
+            let val = this.items[i].children[j].text
+            if (val === this.keyWord) {
+                this.activeIndex = i;
+                this.activeId = j+1;
+            }
+          }    
+        }
+      }
+    },
+    onConfirm1(value) {
+        console.log("reassignPeople:", value)
+        this.localValue = false;
+    },
+    clickReassignEvent() {
+      window.scroll(0, 0);
+      let ele = document.documentElement || document.body;
+      ele.scrollTop = 0;
+      if (this.SubmitPermission === false) {
+        Toast("请前往PC端转办!");
+      } else {
+        this.localValue = true;
+        // this.fetchData()
+      }
+    },
     clickSendbackEvent() {
       window.scroll(0, 0);
       let ele = document.documentElement || document.body;
@@ -457,7 +677,19 @@ export default {
       api.getSendbackPrivilige(params).then((res) => {
         //console.log("getSendbackPrivilige res", res)
         if (res.data.model.code === 0) {
-          this.showSendbackButton = true;
+            this.showSendbackButton = true;
+          }
+      });
+    },
+    showReassignBar() {
+      let params = {
+        configId: this.currentProcess.configId,
+        proDirId: this.currentProcess.proDirId,
+        actDefId: this.currentProcess.actDefId,
+      };
+      api.getReassignPrivilige(params).then((res) => {
+        if (res.data.model.code === 0) {
+          this.showReassignButton = true;
         }
       });
     },
@@ -485,24 +717,33 @@ export default {
         console.log("hideOpinion --------false-------");
       });
     },
+    isShowSoftWareEstimate(){
+      if((this.$store.state.currentList === "todo" || this.$store.state.currentList === "toback") && this.currentProcess.actDefId === "wsjcl_process_act19"
+        && (this.currentProcess.configCode === "qq_ywsjcl_process" || this.currentProcess.configCode === "fh_ywsjcl_process" || this.currentProcess.configCode === "zh_ywsjcl_process")){
+        this.softWareEstimate = true  
+      }
+    },
     recordEnterOaLog() {
       console.log("-----------调用recordEnterOaLog函数-----------");
       let userAgent = navigator.userAgent.toLowerCase();
       console.log("userAgent:", userAgent);
       let PCType = "";
-      if (userAgent.indexOf("windows") !== -1) PCType = "windows";
-      if (userAgent.indexOf("macintosh") !== -1) PCType = "macintosh";
-      let isAndroid =
-        /android/.test(userAgent) && !/iphone|ipad|ipod/.test(userAgent);
-      let isIPad = /ipad/.test(userAgent);
+      
+      // 判断操作系统类型
+      if (userAgent.indexOf("windows") !== -1) {
+        PCType = "windows";
+      } else if (userAgent.indexOf("macintosh") !== -1) {
+        PCType = "macintosh"; 
+      } else if (userAgent.indexOf("harmony") !== -1) {
+        PCType = "Harmony";
+      } else {
+        let isAndroid = /android/.test(userAgent) && !/iphone|ipad|ipod/.test(userAgent);
+        let isIPad = /ipad/.test(userAgent);
+        
+        PCType = isAndroid ? "Android" : isIPad ? "iPad" : "iPhone";
+      }
+      
       console.log("-----------调用recordEnterOaLog接口-----------");
-      PCType = (PCType == ""
-              ? isAndroid
-                ? "Android"
-                : isIPad
-                ? "iPad"
-                : "iPhone"
-              : PCType);
       let type = PCType + "|oa版本:"+this.$oaVersion
       api
         .recordEnterOaLog({
@@ -653,6 +894,12 @@ export default {
               if (
                 item.extendKey === "isMustEditField" &&
                 item.extendValue === "sendDept"
+              ) {
+                this.SubmitPermission = true;
+              }
+              if (
+                item.extendKey === "isMustEditField" &&
+                item.extendValue === "estimateResult,estimateResultInfo"
               ) {
                 this.SubmitPermission = true;
               }
@@ -934,6 +1181,18 @@ export default {
         forbidClick: true,
         duration: 0,
       });
+      console.log("1181行__________this.softWareEstimate__________,",this.softWareEstimate)
+      if(this.softWareEstimate){
+        console.log("1183行____________________")
+        if(this.estimateFieldValue.trim().length === 0){
+          Toast("请填写技术可行性评估!");
+          return;
+        }
+        if(this.estimateRemark.trim().length === 0){
+          Toast("请填写评估结果说明!");
+          return;
+        }
+      }
       let commited = 0;
       //判断是否是行领导传阅流程 showOpinion是通过hideOpinion扩展属性设置的
       if (this.showOpinion === false) {
@@ -1034,8 +1293,6 @@ export default {
       var u = navigator.userAgent,
         app = navigator.appVersion;
       var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
-      //console.log("isiOS", isiOS);
-      console.log("for 外部???????????????????????????");
       for (let i = 0; i < this.opinionConfig.length; i++) {
         //意见必填时再进行意见填写  20220714
         console.log(this.noteRequired);
@@ -1079,7 +1336,7 @@ export default {
       //保存意见是否必填  20220714
       this.$store.commit("setNoteRequired", this.noteRequired);
       this.$store.commit("setOpinionData", this.opinionConfig);
-      //如果多人会签环节，并且不是最后一个人提交则直接提交
+      //如果多人会签环节，并且不��最后一个人提交则��接提交
       api
         .queryNextLink({
           wfmData: {
@@ -1140,12 +1397,15 @@ export default {
               //if(this.currentProcess.)
               //进入选择环节页面
               this.$toast.clear();
+              console.log("进入选择环节页面1394", this.estimateFieldValue)
               this.$router.replace({
                 name: "selectlink",
                 params: {
                   backRoute: this.preRoute,
                   sendDeptVerify: this.sendDeptVerify, 
                   businessTypeVerify: this.businessTypeVerify,
+                  estimateFieldVerify: this.softWareEstimate,
+                  estimateFieldValue: this.estimateFieldValue
                 },
               });
             }
@@ -1301,6 +1561,12 @@ export default {
           }
         });
     },
+    onEstimateRemark(value){
+      this.estimateRemark = value;
+    },
+    onEstimateFieldValue(value){
+      this.estimateFieldValue = value;
+    },
     onClickInput() {
       //console.log("input");
       var u = navigator.userAgent,
@@ -1414,7 +1680,7 @@ export default {
           }
         });
       }else{
-        this.$toast("提交失败，请关闭页面重试");//方便排查问题
+        this.$toast("提交失败，请关闭页面重试");//方便排查���题
         console.log("用户名", this.userInfo.userName);
         console.log("else hldNotShowNextActivities ---- this.noteRequired",this.noteRequired);
         console.log("else hldNotShowNextActivities ---- this.opinionConfig[0]",this.opinionConfig[0]);
