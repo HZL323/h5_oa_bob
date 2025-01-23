@@ -399,30 +399,7 @@ export default {
                       }
                   });
                 });
-              
-                    //兼职已删除提示“对不起，你没有访问权限，请检查该待办所属兼职是否已删除”
-              Dialog.confirm({
-                title: res.data.model.msg + "，您是否留在OA系统？",
-                confirmButtonColor: "#ff4444",
-                cancelButtonText: "返回待办",
-                width: "300px",
-                closeOnClickOverlay: false,
-              })
-                .then(() => {
-                  this.$store.commit("setFromOut", false);
-                  this.$router.replace({
-                    name: this.preRoute,
-                  });
-                })
-                .catch((action) => {
-                  //console.log("action", action);
-                  if (action !== "overlay") {
-                    setTimeout(() => {
-                      closeWindow();
-                    }, 2000);
-                  }
-                });
-              return;
+                return;
             }
           }
         });

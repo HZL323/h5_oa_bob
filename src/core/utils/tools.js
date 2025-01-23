@@ -112,7 +112,7 @@ function setUserInfo(next) {
                         openNoPermissionPage({
                             name: "郑睿之",
                             phoneNumb: "18801486763",
-                            guidePage: "http://oa.bj.bob.test",
+                            guidePage: "",
                             onSuccess: () => {
                                 console.log("打开无权限页面成功");
                             }
