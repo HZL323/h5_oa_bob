@@ -155,43 +155,8 @@ export const ajaxDelete = (url, id) => {
     });
 };
 
-// 新增异步更新接口
-export const verifyAppUpdate = (callbacks) => {
-    MXCommon('verifyAppUpdate', callbacks);
-};
 
-export const fetchLatestVersion = (callbacks) => {
-    MXCommon('fetchLatestVersion', callbacks);
-};
 
-export const launchUpdatedApp = () => {
-    MXCommon('launchUpdatedApp');
-};
-
-// // 在deviceready事件中调用异步更新接口
-// document.addEventListener('deviceready', () => {
-//     console.log('进入deviceready');
-
-//     verifyAppUpdate({
-//         onSuccess: function (res) {
-//             console.log('查询是否存在新版本成功返回结果', res);
-//         },
-//         onFail: function (err) {
-//             console.log('查询是否存在新版本失败返回结果', err);
-//         }
-//     });
-
-//     fetchLatestVersion({
-//         onSuccess: function (res) {
-//             console.log('下载新版本成功返回结果', res);
-//         },
-//         onFail: function (err) {
-//             console.log('下载新版本失败返回结果', err);
-//         }
-//     });
-
-//     launchUpdatedApp();
-// });
 
 
 
