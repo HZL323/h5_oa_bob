@@ -20,6 +20,7 @@
         :selectIsSubProcess="selectIsSubProcess"
         :sendDeptVerify="sendDeptVerify"
         :businessTypeVerify="businessTypeVerify"
+        :estimateFieldVerify="estimateFieldVerify"
       />
     </div>
     <div class="selet-ling-wrap" v-else>
@@ -135,6 +136,8 @@ export default {
       subProcessName: "", //子流程的名称
       sendDeptVerify: this.$route.params.sendDeptVerify, 
       businessTypeVerify: this.$route.params.businessTypeVerify,
+      estimateFieldVerify: this.$route.params.estimateFieldVerify,
+      estimateFieldValue: this.$route.params.estimateFieldValue,
       saveOpinionParams: []//意见参数
     };
   },
@@ -179,6 +182,7 @@ export default {
             actDefId: this.currentProcess.actDefId,
             userId: this.userInfo.userId,
             // sendUserIds: this.currentProcess.sendUserIds ? this.currentProcess.sendUserIds:"",
+            estimateFieldValue: this.estimateFieldValue
           },
         })
         .then((res) => {
@@ -188,10 +192,15 @@ export default {
                 if (res.data.model.flag == false) {
                     this.onMultiCommit();
                 } else {
+                    console.log("res.data.model.nextActDefIds:", res.data.model.nextActDefIds)
                     this.linkList = res.data.model.nextActDefIds.map((item) => ({
                         ...item,
                         ...{ data: [] },
                     }));
+                    this.linkList = this.linkList.filter((item) => {
+                        return item.actDefId !== this.currentProcess.actDefId
+                    })
+                    console.log("this.linkeList:", this.linkList)
                 }
             }
             this.loading = false;

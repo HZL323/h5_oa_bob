@@ -34,8 +34,16 @@ export default new Vuex.Store({
         sendDeptText: null ,
         businessTypeText: null,
         fwqqProcess:null,
+        jwt:"",
+        refreshToken:"",
     },
     mutations: {
+        setRefreshToken(state, payload){
+            state.refreshToken = payload
+        },
+        setJwt(state, payload){
+            state.jwt = payload
+        },
         setDataForm(state, payload){
             state.dataForm = payload
         },

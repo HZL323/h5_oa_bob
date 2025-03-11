@@ -13,6 +13,24 @@
     </div>
     <template v-else>
       <van-collapse v-model="activeNames" :border="false">
+        <template v-if="demandNumTable.length > 0">
+          <van-collapse-item
+            title="需求条目"
+            name="sealDetail"
+            :disabled="demandNumTable.length === 0"
+            :border="true"
+          >
+            <template slot="icon">
+              <div class="vertical-divider"></div>
+            </template>
+            <template slot="right-icon" v-if="demandNumTable.length === 0"
+              ><span>暂无</span></template
+            >
+            <template v-else>
+              <DemandNumTable :demandNumTable="demandNumTable" />
+            </template>
+          </van-collapse-item>
+        </template>
         <template v-if="sealList.length > 0">
           <van-collapse-item
             title="用印文件信息详情"
@@ -149,12 +167,14 @@ import {
 } from "vant";
 import { api } from "../core/api/index";
 import SealList from "./SealList.vue";
+import DemandNumTable from "./DemandNumTable.vue";
 import CommonOpinions from "./CommonOpinions.vue";
 import moment from "moment";
 export default {
   name: "opinion",
   components: {
     SealList,
+    DemandNumTable,
     CommonOpinions,
     [Collapse.name]: Collapse,
     [CollapseItem.name]: CollapseItem,
@@ -177,6 +197,7 @@ export default {
       show: false,
       columns: [], // TODO 这块要去后端获取意见列表
       sealList: [], // 用印申请明细列表
+      demandNumTable:[],
       placeholder: false,
     };
   },
@@ -194,6 +215,16 @@ export default {
     fromOut: {
       type: Boolean,
     },
+    //业务数据处理流程中 技术可行性评估说明输入框带过来的 
+    estimateRemark:{
+      type: String,
+      default: ""
+    }
+  },
+  watch:{
+    estimateRemark(newVal, oldVal){
+      this.opinionConfig[0].noteContent = newVal
+    }
   },
   computed: {
     enumerationData(){
@@ -212,6 +243,7 @@ export default {
   created() {
     this.init();
     this.getSealList();
+    this.getDemandNumTable();
   },
   methods: {
     formatCreateUserName(name) {
@@ -439,6 +471,19 @@ export default {
         .then((res) => {
           this.sealList = res.data.model;
           this.sealList.length > 0 && this.activeNames.push("sealDetail");
+        });
+    },
+    getDemandNumTable() {
+      // 获取用印申请明细列表
+      api
+        .getDemandNumTable({
+          proInstId: this.currentProcess.proInstId,
+        })
+        .then((res) => {
+          if(res.data.model != null){
+            this.demandNumTable = res.data.model;
+            this.demandNumTable.length > 0 && this.activeNames.push("demandNumTable");
+          } 
         });
     },
     autoFill() {

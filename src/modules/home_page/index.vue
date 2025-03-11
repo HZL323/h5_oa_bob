@@ -290,24 +290,27 @@ export default {
   },
   methods: {
     recordEnterOaLog(){
-        let userAgent = navigator.userAgent.toLowerCase();
-        let PCType = "";
-        if(userAgent.indexOf('windows') !== -1 )
-            PCType = "windows";
-
-        if(userAgent.indexOf('macintosh') !== -1){
-            PCType = "macintosh";
-        }
+      let userAgent = navigator.userAgent.toLowerCase();
+      console.log("userAgent:", userAgent);
+      let PCType = "";
+      
+      // 判断操作系统类型
+      if (userAgent.indexOf("windows") !== -1) {
+        PCType = "windows";
+      } else if (userAgent.indexOf("macintosh") !== -1) {
+        PCType = "macintosh"; 
+      } else if (userAgent.indexOf("harmony") !== -1) {
+        PCType = "Harmony";
+      } else {
         let isAndroid = /android/.test(userAgent) && !/iphone|ipad|ipod/.test(userAgent);
         let isIPad = /ipad/.test(userAgent);
-        PCType = (PCType == ""
-              ? isAndroid
-                ? "Android"
-                : isIPad
-                ? "iPad"
-                : "iPhone"
-              : PCType);
-        let type = PCType + " | oa版本:"+this.$oaVersion
+        
+        PCType = isAndroid ? "Android" : isIPad ? "iPad" : "iPhone";
+      }
+      
+      let type = PCType + " | oa版本:"+this.$oaVersion
+      console.log("-----------调用recordEnterOaLog接口-----------：", type);
+
         api
         .recordEnterOaLog({
           userUuid: this.$store.state.userInfo.userId,

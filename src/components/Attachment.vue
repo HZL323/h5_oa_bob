@@ -161,11 +161,17 @@ export default {
               file.attachmentId = res.data.model;
           }
           //console.log("查找之后id",file.attachmentId);
+          let userAgent = navigator.userAgent.toLowerCase();
+          let clientType = "";
+          if(userAgent.indexOf("harmony") !== -1){
+            clientType = "harmony";
+          }
           api
             .Preview({
               fileid: file.attachmentId,
               userid: this.$store.state.userInfo.userId,
-              proInstId : this.currentProcess.proInstId
+              proInstId : this.currentProcess.proInstId,
+              clientType: clientType
             })
             .then((res) => {
               if (res.data.status === "200") {
