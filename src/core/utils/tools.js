@@ -7,7 +7,7 @@
  * @FilePath: \vue_demo\src\core\utils\tools.js
  */
 import Vue from 'vue'
-import { getCurrentUser, closeWindow } from '../../core/mxApi'
+import { getCurrentUser, closeWindow, openNoPermissionPage } from '../../core/mxApi'
 import router from '../../rootRouter/index'
 import Store from '../../store/index'
 import { api } from '../api/index'
@@ -34,17 +34,40 @@ router.beforeEach((to, from, next) => {
             loadingType: 'spinner',
         });
         document.addEventListener('deviceready', () => {
-            console.log(MXCommon.getEncryptString())
-            MXCommon.getEncryptString(
-              {
+            proceedWithAuthentication()
+            // 检查并处理应用更新
+            MXCommon.verifyAppUpdate({
+                onSuccess: function (res) {
+                    console.log('查询是否存在新版本成功返回结果', res);
+                    if (res.exist === true) {
+                        console.log('存在新版本');
+                        // 有更新时，下载并启动新版本
+                        MXCommon.fetchLatestVersion({
+                            onSuccess:function(res){
+                                console.log('下载新版本成功返回结果',res)
+                            },
+                            onFail:function(err){
+                                console.log('下载新版本失败返回结果',err)
+                            }
+                        })
+                    } 
+                },
+                onFail: function (err) {
+                    console.log('查询是否存在新版本失败返回结果', err);
+                }
+            });
+        });
+        
+        // 将认证逻辑抽取为单独的函数
+        function proceedWithAuthentication() {
+            MXCommon.getEncryptString({
                 onSuccess: encryptString => {
-                    //认证
-                    console.log("encryptString:",encryptString)
+                    console.log("encryptString:", encryptString)
                     api.validateEncryptString({
-                        encryptString:encryptString
+                        encryptString: encryptString
                     }).then(res => {
-                        console.log("validate:",res)
-                        if(res.data.model != null){
+                        console.log("validate:", res)
+                        if(res.data.model != null) {
                             Store.commit('setJwt', res.data.model.jwt)
                             Store.commit("setRefreshToken", res.data.model.refreshToken)
                             setUserInfo(next)
@@ -53,13 +76,11 @@ router.beforeEach((to, from, next) => {
                     })
                 },
                 onFail: err => {
-                  // mobileLog.log(err)
-                  console.log(err)
+                    console.log(err)
+                    Toast.clear()
                 }
-              }
-            );
-        });
-        
+            });
+        }
     }
 })
 
@@ -106,13 +127,19 @@ function setUserInfo(next) {
             if (res.data.status === '200') {
                 if (res.data.model.code === -1) {
                     Toast.clear()
-                    Dialog.alert({
-                        message: res.data.model.msg,
-                        width: "300px",
-                        confirmButtonColor: "#ff4444",
-                    }).then(() => {
-                        closeWindow()
-                    })
+                    // 添加错误信息提示
+                    console.error("权限验证失败:", res.data.model.msg);
+                     document.addEventListener('deviceready', () => {
+                        openNoPermissionPage({
+                            name:"11",
+                            phoneNumb:"11",
+                            guidePage:"",
+                            customContent:"总行用户，请发起“OA系统用户权限申请”服务请求流程，分支行用户请联系各自分行系统管理员。",
+                            onSuccess: () => {
+                                console.log("打开无权限页面成功");
+                            }
+                        });
+                     });
                 } else {
                     Store.commit('setUserInfo', {
                         userCode: res.data.model.data.usercode,

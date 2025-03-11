@@ -183,7 +183,7 @@ import Attachment from "../../components/Attachment.vue";
 import ArchiveList from "../../components/ArchiveList.vue";
 import ImportantPhoto from "../../components/ImportantPhoto.vue";
 import { api } from "../../core/api/index";
-import { closeWindow } from "../../core/mxApi";
+import { closeWindow, openNoPermissionPage } from "../../core/mxApi";
 export default {
   name: "detail",
   components: {
@@ -387,29 +387,20 @@ export default {
                   }
               });
             } else if (res.data.model.code == -1) {
-                    //兼职已删除提示“对不起，你没有访问权限，请检查该待办所属兼职是否已删除”
-              Dialog.confirm({
-                title: res.data.model.msg + "，您是否留在OA系统？",
-                confirmButtonColor: "#ff4444",
-                cancelButtonText: "返回待办",
-                width: "300px",
-                closeOnClickOverlay: false,
-              })
-                .then(() => {
-                  this.$store.commit("setFromOut", false);
-                  this.$router.replace({
-                    name: this.preRoute,
+              //兼职已删除提示“对不起，你没有访问权限，请检查该待办所属兼职是否已删除”
+                console.log('进入deviceready');
+                document.addEventListener('deviceready', () => {
+                  openNoPermissionPage({
+                          name:"11",
+                          phoneNumb:"11",
+                          guidePage:"",
+                          customContent:"总行用户，请发起“OA系统用户权限申请”服务请求流程，分支行用户请联系各自分行系统管理员。",
+                          onSuccess: () => {
+                          console.log("打开无权限页面成功");
+                      }
                   });
-                })
-                .catch((action) => {
-                  //console.log("action", action);
-                  if (action !== "overlay") {
-                    setTimeout(() => {
-                      closeWindow();
-                    }, 2000);
-                  }
                 });
-              return;
+                return; 
             }
           }
         });
