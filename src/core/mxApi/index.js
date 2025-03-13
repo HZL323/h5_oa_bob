@@ -69,6 +69,7 @@ export const openNoPermissionPage = (params) => new Promise((resolve, reject) =>
         name: params.name,
         phoneNumb: params.phoneNumb || "",
         guidePage: params.guidePage || "",
+        customContent: params.customContent || "",
         onSuccess: () => {
             params.onSuccess && params.onSuccess();
             resolve();
