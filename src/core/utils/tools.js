@@ -131,7 +131,7 @@ function setUserInfo(next) {
                     console.error("权限验证失败:", res.data.model.msg);
                      document.addEventListener('deviceready', () => {
                         openNoPermissionPage({
-                            customContent:"总行用户，请发起“OA系统用户权限申请”服务请求流程，分支行用户请联系各自分行系统管理员。",
+                            customContent:"总行用户请联系各部门综合发起“OA系统用户权限申请”服务请求流程，分支行用户请联系各自分行系统管理员。",
                             onSuccess: () => {
                                 console.log("打开无权限页面成功");
                             }

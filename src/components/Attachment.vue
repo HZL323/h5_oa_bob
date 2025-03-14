@@ -10,46 +10,61 @@
   <div class="attachment-wrap">
     <wu-feedback v-if="loading" />
     <template v-else>
-      <van-collapse
-        v-model="activeNames"
-        :border="false"
-        v-if="list.length > 0"
-      >
-        <template v-for="(item, index) in list">
-          <div :key="index">
-            <van-collapse-item
-              :title="item.name"
-              :name="item.type"
-              :disabled="item.fileData.length === 0"
-              :border="false"
-            >
-              <template slot="icon">
-                <div class="vertical-divider"></div>
-              </template>
-              <template slot="right-icon" v-if="item.fileData.length === 0"
-                ><span>暂无</span></template
-              >
-              <template v-if="item.fileData.length > 0">
-                <div
-                  class="file-wrap van-hairline--top"
-                  v-for="item_ in item.fileData"
-                  :key="item_.attachmentId"
-                  @click="onPreview(item_)"
-                >
-                  <div class="file-icon">
-                    <i :class="fileIcon(item_)"></i>
-                  </div>
-                  <div class="file-name">{{ item_.attachmentName }}</div>
-                  <div class="check-icon">
-                    <i class="iconfont icon-yulan"></i>
-                  </div>
-                </div>
-              </template>
-            </van-collapse-item>
+      <!-- 脱密盖章公文单独显示 -->
+      <div v-if="sealedDoc" class="sealed-doc-wrap">
+        <div class="file-wrap" @click="onPreview(sealedDoc)">
+          <div class="file-icon">
+            <i :class="fileIcon(sealedDoc)"></i>
           </div>
-        </template>
-      </van-collapse>
-      <wu-feedback v-else types="empty" />
+          <div class="file-name">查看公文</div>
+          <div class="check-icon">
+            <i class="iconfont icon-yulan"></i>
+          </div>
+        </div>
+      </div>
+
+        <van-collapse
+          v-model="activeNames"
+          :border="false"
+          v-if="list.length > 0"
+        >
+          <!-- 添加调试信息显示每个item -->
+          <template v-for="(item, index) in list">
+            <div :key="index">
+              <van-collapse-item
+                :title="item.name"
+                :name="item.type"
+                :disabled="item.fileData.length === 0"
+                :border="false"
+                :ref="`collapseItem_${index}`"
+              >
+                <template slot="icon">
+                  <div class="vertical-divider"></div>
+                </template>
+                <template slot="right-icon" v-if="item.fileData.length === 0"
+                  ><span>暂无</span></template
+                >
+                <template v-if="item.fileData.length > 0">
+                  <div
+                    class="file-wrap van-hairline--top"
+                    v-for="item_ in item.fileData"
+                    :key="item_.attachmentId"
+                    @click="onPreview(item_)"
+                  >
+                    <div class="file-icon">
+                      <i :class="fileIcon(item_)"></i>
+                    </div>
+                    <div class="file-name">{{ item_.attachmentName }}</div>
+                    <div class="check-icon">
+                      <i class="iconfont icon-yulan"></i>
+                    </div>
+                  </div>
+                </template>
+              </van-collapse-item>
+            </div>
+          </template>
+        </van-collapse>
+        <wu-feedback v-else types="empty" />
     </template>
   </div>
 </template>
@@ -70,6 +85,7 @@ export default {
       activeNames: [], // 展开意见标识list
       list: [], // 附件列表
       loading: true, // 等待加载数据
+      sealedDoc: null, // 脱密盖章公文
     };
   },
   computed: {
@@ -81,6 +97,17 @@ export default {
     this.init();
   },
   methods: {
+    // 处理附件列表，删除重复的gw类型附件
+    handleAttachments (attachments){
+      // 检查是否同时存在gw和tmsignedgw类型的附件
+      const hasGw = attachments.some(item => item.type === 'gw');
+      const hasTmSignedGw = attachments.some(item => item.type === 'tmsignedgw');
+      // 如果两种类型都存在，则过滤掉gw类型的附件
+      if (hasGw && hasTmSignedGw) {
+        return attachments.filter(item => item.type !== 'gw');
+      }
+      return attachments;
+    },
     init() {
       api
         .queryAttachment({
@@ -88,24 +115,22 @@ export default {
         })
         .then((res) => {
           if (res.data.status === "200") {
-            this.list = res.data.model;
-            console.log(this.list)
-            if(this.$store.state.currentProcess.configCode === "yy_zh_process" 
-            || this.$store.state.currentProcess.configCode === "yy_fh_process"
-            || this.$store.state.currentProcess.configCode === "yy_zhi_process"
-            || this.$store.state.currentProcess.configCode === "yy_fzxzhi_process"
-            || this.$store.state.currentProcess.configCode === "yy_fhbm_process"){
-              let temp = []
-              this.list.forEach((item) => {
-                item.fileData = item.fileData.filter((e) => {
-                  return e.attachmentType !== "certificate";
-                })
-                temp.push(item)
-              });
-              console.log(temp)
-              this.list = temp
+            let attachments = res.data.model;
+            if(this.$store.state.currentProcess.configCode.startsWith("yy_")) {
+              attachments = attachments.map(item => ({
+                ...item,
+                fileData: item.fileData.filter(e => e.attachmentType !== "certificate")
+              }));
             }
-            console.log("list", this.list)
+            // 先进行 handleAttachments 处理
+            this.list = this.handleAttachments(attachments);
+            // 在处理后的列表中查找脱密盖章公文
+            const tmsignedgwDoc = this.list.find(item => item.type === 'tmsignedgw');
+            if (tmsignedgwDoc && tmsignedgwDoc.fileData.length > 0) {
+              this.sealedDoc = tmsignedgwDoc.fileData[0];
+              // 从列表中移除脱密盖章公文
+              this.list = this.list.filter(item => item.type !== 'tmsignedgw');
+            }
             this.list.forEach((item) => {
               if (item.fileData.length > 0) {
                 this.activeNames.push(item.type);
@@ -149,18 +174,14 @@ export default {
       }
     },
     onPreview(file) {
-      debugger
-      //console.log("未查找之前id",file.attachmentId);
       api
         .getSealAttach({
           fileId: file.attachmentId,proInstId: this.currentProcess.proInstId,
         })
         .then((res) => {
-          //console.log("查找文件中",res);
           if (res.data.status === "200" && res.data.model!=false) {
               file.attachmentId = res.data.model;
           }
-          //console.log("查找之后id",file.attachmentId);
           let userAgent = navigator.userAgent.toLowerCase();
           let clientType = "";
           if(userAgent.indexOf("harmony") !== -1){
@@ -176,23 +197,10 @@ export default {
             .then((res) => {
               if (res.data.status === "200") {
                 openUrlPage(res.data.model.url).then((res) => {
-                  //console.log(res);
                 });
               }
             });
         });
-
-      //api
-      //  .Preview({
-      //    fileid: file.attachmentId,
-      //  })
-      //  .then((res) => {
-      //    if (res.data.status === "200") {
-      //      openUrlPage(res.data.model.url).then((res) => {
-      //        console.log(res);
-      //      });
-      //    }
-      //  });
     },
   },
 };
@@ -254,6 +262,13 @@ export default {
         color: #ff4444;
       }
     }
+  }
+
+  .sealed-doc-wrap {
+    margin-bottom: 16px;
+    box-shadow: 0px 2px 6px 0px rgba(97, 101, 105, 0.08);
+    border-radius: 8px;
+    padding: 0 16px;
   }
 }
 </style>
