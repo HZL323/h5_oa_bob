@@ -9,7 +9,13 @@ module.exports = {
   env: {
     browser: true,
   },
-  extends: 'airbnb-base',
+  extends: [
+    'airbnb-base',
+    // 使用更宽松的配置
+    'eslint:recommended',
+    // 或者对于 TypeScript
+    'plugin:@typescript-eslint/recommended-requiring-type-checking',
+  ],
   // required to lint *.vue files
   plugins: [
     'html'
