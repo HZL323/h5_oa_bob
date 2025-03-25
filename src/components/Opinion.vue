@@ -281,10 +281,13 @@ export default {
         })
         .then((res) => {
           if (res.data.status === "200") {
-            let publicNote = []
-            publicNote =  this.enumerationData["PUBLIC_NOTE"];
-            for(let k in publicNote){
-              this.columns.push(publicNote[k].value)
+            let publicNote = [];
+            publicNote = this.enumerationData["PUBLIC_NOTE"];
+            // 将对象的值转为数组并按 sortNum 排序
+            const sortedNotes = Object.values(publicNote).sort((a, b) => a.sortNum - b.sortNum);
+            // 按顺序插入到 columns
+            for (const note of sortedNotes) {
+              this.columns.push(note.value);
             }
             api.getPublicModifyNote({
               userId: this.$store.state.userInfo.userId,

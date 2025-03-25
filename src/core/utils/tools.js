@@ -36,26 +36,26 @@ router.beforeEach((to, from, next) => {
         document.addEventListener('deviceready', () => {
             proceedWithAuthentication()
             // 检查并处理应用更新
-            MXCommon.verifyAppUpdate({
-                onSuccess: function (res) {
-                    console.log('查询是否存在新版本成功返回结果', res);
-                    if (res.exist === true) {
-                        console.log('存在新版本');
-                        // 有更新时，下载并启动新版本
-                        MXCommon.fetchLatestVersion({
-                            onSuccess:function(res){
-                                console.log('下载新版本成功返回结果',res)
-                            },
-                            onFail:function(err){
-                                console.log('下载新版本失败返回结果',err)
-                            }
-                        })
-                    } 
-                },
-                onFail: function (err) {
-                    console.log('查询是否存在新版本失败返回结果', err);
-                }
-            });
+            // MXCommon.verifyAppUpdate({
+            //     onSuccess: function (res) {
+            //         console.log('查询是否存在新版本成功返回结果', res);
+            //         if (res.exist === true) {
+            //             console.log('存在新版本');
+            //             // 有更新时，下载并启动新版本
+            //             MXCommon.fetchLatestVersion({
+            //                 onSuccess:function(res){
+            //                     console.log('下载新版本成功返回结果',res)
+            //                 },
+            //                 onFail:function(err){
+            //                     console.log('下载新版本失败返回结果',err)
+            //                 }
+            //             })
+            //         } 
+            //     },
+            //     onFail: function (err) {
+            //         console.log('查询是否存在新版本失败返回结果', err);
+            //     }
+            // });
         });
         
         // 将认证逻辑抽取为单独的函数
