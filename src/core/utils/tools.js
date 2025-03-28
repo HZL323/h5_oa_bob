@@ -105,7 +105,7 @@ const dateFormat = (fmt, date) => {
 
     return fmt;
 }
-Vue.prototype.$oaVersion = "1.4.3.3"
+Vue.prototype.$oaVersion = "1.4.3.4"
 Vue.prototype.$format = dateFormat
 function getDict() {
     api.queryKeyValueByTypes().then(res => {
